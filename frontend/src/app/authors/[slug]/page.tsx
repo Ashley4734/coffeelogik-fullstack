@@ -193,7 +193,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
               <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles yet</h3>
               <p className="text-gray-600">
-                {author.name} hasn't published any articles yet. Check back soon for new content!
+                {author.name} hasn&apos;t published any articles yet. Check back soon for new content!
               </p>
             </div>
           )}

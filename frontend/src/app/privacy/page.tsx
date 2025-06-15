@@ -21,7 +21,7 @@ export default function PrivacyPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
     <p>
-      This Privacy Policy outlines how Coffee Logik ("we," "us," or "our") collects, uses, shares, and protects your personal data when you visit or interact with our website. By accessing or using our site, you consent to the practices described in this policy.
+      This Privacy Policy outlines how Coffee Logik (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) collects, uses, shares, and protects your personal data when you visit or interact with our website. By accessing or using our site, you consent to the practices described in this policy.
     </p>
   </section>
 

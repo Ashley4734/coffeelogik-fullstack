@@ -21,7 +21,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Agreement to Terms</h2>
     <p>
-      By accessing or using Coffee Culture ("we," "our," or "us"), including its content, features, and affiliated services,
+      By accessing or using Coffee Culture (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), including its content, features, and affiliated services,
       you agree to comply with and be bound by these Terms of Service. If you do not agree, you may not access or use the website.
     </p>
   </section>

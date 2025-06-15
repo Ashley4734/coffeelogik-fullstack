@@ -5,7 +5,18 @@ import { notFound } from "next/navigation";
 import { marked } from "marked";
 
 // Helper function to convert Strapi rich text to markdown string
-function strapiRichTextToMarkdown(richText: any): string {
+interface RichTextChild {
+  text?: string;
+}
+
+interface RichTextBlock {
+  type: string;
+  children?: RichTextChild[];
+  format?: string;
+  level?: number;
+}
+
+function strapiRichTextToMarkdown(richText: string | RichTextBlock[]): string {
   if (typeof richText === 'string') {
     return richText;
   }
@@ -14,18 +25,18 @@ function strapiRichTextToMarkdown(richText: any): string {
     return '';
   }
   
-  return richText.map((block: any) => {
+  return richText.map((block: RichTextBlock) => {
     if (block.type === 'paragraph') {
-      return block.children?.map((child: any) => child.text || '').join('') || '';
+      return block.children?.map((child: RichTextChild) => child.text || '').join('') || '';
     } else if (block.type === 'list') {
-      const items = block.children?.map((item: any) => {
-        const text = item.children?.map((child: any) => child.text || '').join('') || '';
+      const items = block.children?.map((item: RichTextChild) => {
+        const text = (item as any).children?.map((child: RichTextChild) => child.text || '').join('') || '';
         return block.format === 'ordered' ? `1. ${text}` : `- ${text}`;
       }).join('\n') || '';
       return items;
     } else if (block.type === 'heading') {
       const level = '#'.repeat(Math.min(block.level || 1, 6));
-      const text = block.children?.map((child: any) => child.text || '').join('') || '';
+      const text = block.children?.map((child: RichTextChild) => child.text || '').join('') || '';
       return `${level} ${text}`;
     }
     return '';
