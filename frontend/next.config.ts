@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'strapi.tealogik.com',
+        hostname: 'y0o4w84ckoockck8o0ss8s48.tealogik.com',
         pathname: '/uploads/**',
       },
       {

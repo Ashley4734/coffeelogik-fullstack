@@ -202,7 +202,7 @@ export default async function RecipesPage() {
                 <span className="text-6xl mb-4 block">☕</span>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No recipes yet</h3>
                 <p className="text-gray-600">Create some coffee recipes in Strapi to see them here.</p>
-                <Link href="http://localhost:1337/admin" target="_blank" className="inline-flex items-center mt-4 rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
+                <Link href={`${process.env.NEXT_PUBLIC_STRAPI_URL}/admin`} target="_blank" className="inline-flex items-center mt-4 rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
                   Go to Strapi Admin
                 </Link>
               </div>

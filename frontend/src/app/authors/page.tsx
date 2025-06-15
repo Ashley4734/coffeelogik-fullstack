@@ -100,7 +100,7 @@ export default async function AuthorsPage() {
               <UserIcon className="mx-auto h-24 w-24 text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No authors yet</h3>
               <p className="text-gray-600 mb-6">Create some author profiles in Strapi to see them here.</p>
-              <Link href="http://localhost:1337/admin" target="_blank" className="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
+              <Link href={`${process.env.NEXT_PUBLIC_STRAPI_URL}/admin`} target="_blank" className="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
                 Go to Strapi Admin
               </Link>
             </div>
