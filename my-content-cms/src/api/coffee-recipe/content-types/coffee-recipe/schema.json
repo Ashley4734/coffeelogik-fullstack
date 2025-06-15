@@ -1,0 +1,101 @@
+{
+  "kind": "collectionType",
+  "collectionName": "coffee_recipes",
+  "info": {
+    "singularName": "coffee-recipe",
+    "pluralName": "coffee-recipes",
+    "displayName": "Coffee Recipe",
+    "description": "Coffee brewing recipes and tutorials"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "maxLength": 500
+    },
+    "brew_method": {
+      "type": "enumeration",
+      "enum": ["Espresso", "Pour Over", "French Press", "AeroPress", "Cold Brew", "Chemex", "V60", "Moka Pot", "Turkish"]
+    },
+    "difficulty_level": {
+      "type": "enumeration",
+      "enum": ["Beginner", "Intermediate", "Advanced"]
+    },
+    "prep_time": {
+      "type": "integer",
+      "min": 1
+    },
+    "total_time": {
+      "type": "integer",
+      "min": 1
+    },
+    "servings": {
+      "type": "integer",
+      "min": 1,
+      "default": 1
+    },
+    "coffee_amount": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "water_amount": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "grind_size": {
+      "type": "enumeration",
+      "enum": ["Extra Fine", "Fine", "Medium-Fine", "Medium", "Medium-Coarse", "Coarse", "Extra Coarse"]
+    },
+    "water_temperature": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "ingredients": {
+      "type": "json"
+    },
+    "instructions": {
+      "type": "richtext",
+      "required": true
+    },
+    "tips": {
+      "type": "richtext"
+    },
+    "featured_image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "step_images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "equipment_needed": {
+      "type": "json"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

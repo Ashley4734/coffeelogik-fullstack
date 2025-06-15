@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "authors",
+  "info": {
+    "singularName": "author",
+    "pluralName": "authors",
+    "displayName": "Author",
+    "description": "Blog authors and writers"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "bio": {
+      "type": "text",
+      "maxLength": 1000
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "social_links": {
+      "type": "json"
+    },
+    "expertise": {
+      "type": "enumeration",
+      "enum": [
+        "Brewing & Equipment",
+        "Coffee Beans & Roasting",
+        "Barista Skills & Techniques",
+        "Coffee Culture & Lifestyle",
+        "Business & Industry",
+        "Education & History",
+        "Product Reviews"
+      ]
+    },
+    "blog_posts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog-post.blog-post",
+      "mappedBy": "author"
+    },
+    "brewing_guides": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::brewing-guide.brewing-guide",
+      "mappedBy": "author"
+    }
+  }
+}

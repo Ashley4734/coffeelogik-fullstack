@@ -1,0 +1,92 @@
+{
+  "kind": "collectionType",
+  "collectionName": "brewing_guides",
+  "info": {
+    "singularName": "brewing-guide",
+    "pluralName": "brewing-guides",
+    "displayName": "Brewing Guide"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "method": {
+      "type": "string",
+      "required": true
+    },
+    "difficulty_level": {
+      "type": "enumeration",
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+      ]
+    },
+    "prep_time": {
+      "type": "integer"
+    },
+    "total_time": {
+      "type": "integer"
+    },
+    "servings": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "overview": {
+      "type": "blocks"
+    },
+    "equipment": {
+      "type": "json"
+    },
+    "ingredients": {
+      "type": "json"
+    },
+    "steps": {
+      "type": "blocks",
+      "required": true
+    },
+    "tips": {
+      "type": "blocks"
+    },
+    "featured_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "step_images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "brewing_guides"
+    }
+  }
+}

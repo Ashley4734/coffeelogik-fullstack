@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "coffee_products",
+  "info": {
+    "singularName": "coffee-product",
+    "pluralName": "coffee-products",
+    "displayName": "Coffee Product",
+    "description": "Coffee products for reviews and recommendations"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "brand": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "product_type": {
+      "type": "enumeration",
+      "enum": ["Coffee Beans", "Ground Coffee", "Espresso Machine", "Coffee Grinder", "Brewing Equipment", "Accessories"]
+    },
+    "origin": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "roast_level": {
+      "type": "enumeration",
+      "enum": ["Light", "Medium-Light", "Medium", "Medium-Dark", "Dark", "Extra Dark"]
+    },
+    "flavor_notes": {
+      "type": "json"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "price": {
+      "type": "decimal",
+      "min": 0
+    },
+    "rating": {
+      "type": "decimal",
+      "min": 0,
+      "max": 5
+    },
+    "pros": {
+      "type": "json"
+    },
+    "cons": {
+      "type": "json"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "affiliate_link": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
