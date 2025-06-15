@@ -29,8 +29,8 @@ function strapiRichTextToMarkdown(richText: string | RichTextBlock[]): string {
     if (block.type === 'paragraph') {
       return block.children?.map((child: RichTextChild) => child.text || '').join('') || '';
     } else if (block.type === 'list') {
-      const items = block.children?.map((item: RichTextChild) => {
-        const text = (item as any).children?.map((child: RichTextChild) => child.text || '').join('') || '';
+      const items = block.children?.map((item: RichTextChild | RichTextBlock) => {
+        const text = (item as RichTextBlock).children?.map((child: RichTextChild) => child.text || '').join('') || '';
         return block.format === 'ordered' ? `1. ${text}` : `- ${text}`;
       }).join('\n') || '';
       return items;
