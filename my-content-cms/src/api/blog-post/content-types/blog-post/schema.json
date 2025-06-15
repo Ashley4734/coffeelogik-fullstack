@@ -38,9 +38,6 @@
         "images"
       ]
     },
-    "published_at": {
-      "type": "datetime"
-    },
     "reading_time": {
       "type": "integer",
       "min": 1
