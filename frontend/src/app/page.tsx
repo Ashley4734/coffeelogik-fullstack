@@ -1,3 +1,5 @@
+export const revalidate = 60; // Revalidate every 60 seconds
+
 import Link from "next/link";
 import { getBlogPosts, getRecipes, getStrapiMedia, calculateReadingTime } from "@/lib/api";
 
