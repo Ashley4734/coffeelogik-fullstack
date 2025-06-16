@@ -1,7 +1,5 @@
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const revalidate = 60; // Revalidate every 60 seconds
-
 import Link from "next/link";
 import { UserIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { getAuthors, getStrapiMedia } from "@/lib/api";
