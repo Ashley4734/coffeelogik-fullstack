@@ -399,7 +399,7 @@ export function getStrapiMedia(url: string | undefined): string {
     return url;
   }
   
-  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://y0o4w84ckoockck8o0ss8s48.tealogik.com';
   return `${strapiUrl}${url}`;
 }
 
