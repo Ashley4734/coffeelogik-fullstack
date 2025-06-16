@@ -1,0 +1,57 @@
+services:
+    y0o4w84ckoockck8o0ss8s48-041307058474:
+        image: 'y0o4w84ckoockck8o0ss8s48:81a0a1b80bf5c63bb33d6bb5f8e78242a74db3b1'
+        container_name: y0o4w84ckoockck8o0ss8s48-041307058474
+        restart: unless-stopped
+        expose:
+            - '1337'
+        networks:
+            coolify:
+                aliases:
+                    - y0o4w84ckoockck8o0ss8s48-041307058474
+        mem_limit: '0'
+        memswap_limit: '0'
+        mem_swappiness: 60
+        mem_reservation: '0'
+        cpus: 0.0
+        cpu_shares: 1024
+        env_file:
+            - .env
+        labels:
+            - traefik.enable=true
+            - traefik.http.middlewares.gzip.compress=true
+            - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+            - traefik.http.routers.http-0-y0o4w84ckoockck8o0ss8s48.entryPoints=http
+            - traefik.http.routers.http-0-y0o4w84ckoockck8o0ss8s48.middlewares=redirect-to-https
+            - 'traefik.http.routers.http-0-y0o4w84ckoockck8o0ss8s48.rule=Host(`y0o4w84ckoockck8o0ss8s48.tealogik.com`) && PathPrefix(`/`)'
+            - traefik.http.routers.http-0-y0o4w84ckoockck8o0ss8s48.service=http-0-y0o4w84ckoockck8o0ss8s48
+            - traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.entryPoints=https
+            - traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.middlewares=gzip
+            - 'traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.rule=Host(`y0o4w84ckoockck8o0ss8s48.tealogik.com`) && PathPrefix(`/`)'
+            - traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.service=https-0-y0o4w84ckoockck8o0ss8s48
+            - traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.tls.certresolver=letsencrypt
+            - traefik.http.routers.https-0-y0o4w84ckoockck8o0ss8s48.tls=true
+            - traefik.http.services.http-0-y0o4w84ckoockck8o0ss8s48.loadbalancer.server.port=1337
+            - traefik.http.services.https-0-y0o4w84ckoockck8o0ss8s48.loadbalancer.server.port=1337
+            - 'caddy_0.encode=zstd gzip'
+            - 'caddy_0.handle_path.0_reverse_proxy={{upstreams 1337}}'
+            - 'caddy_0.handle_path=/*'
+            - caddy_0.header=-Server
+            - 'caddy_0.try_files={path} /index.html /index.php'
+            - 'caddy_0=https://y0o4w84ckoockck8o0ss8s48.tealogik.com'
+            - caddy_ingress_network=coolify
+            - coolify.managed=true
+            - coolify.version=4.0.0-beta.418
+            - coolify.applicationId=9
+            - coolify.type=application
+            - coolify.name=y0o4w84ckoockck8o0ss8s48
+            - coolify.resourceName=strapi-backend
+            - coolify.projectName=strapi-coffee-site
+            - coolify.serviceName=strapi-backend
+            - coolify.environmentName=production
+            - coolify.pullRequestId=0
+networks:
+    coolify:
+        external: true
+        name: coolify
+        attachable: true
