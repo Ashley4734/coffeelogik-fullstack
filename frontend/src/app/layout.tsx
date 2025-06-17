@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Coffee Culture - Your Ultimate Coffee Guide",
+  title: "CoffeeLogik - Your Ultimate Coffee Guide",
   description: "Discover the best coffee recipes, product reviews, and brewing techniques. From bean to cup, we're your coffee companion.",
   keywords: "coffee, recipes, brewing, reviews, barista, espresso, pour over",
 };
