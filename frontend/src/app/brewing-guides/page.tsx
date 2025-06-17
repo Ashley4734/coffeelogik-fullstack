@@ -1,3 +1,5 @@
+export const revalidate = 60; // Revalidate every 60 seconds
+
 import Link from "next/link";
 import { ClockIcon, UserIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
 import { getBrewingGuides, getStrapiMedia } from "@/lib/api";
