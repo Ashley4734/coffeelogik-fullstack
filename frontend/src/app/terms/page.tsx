@@ -21,7 +21,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Agreement to Terms</h2>
     <p>
-      By accessing or using Coffee Culture (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), including its content, features, and affiliated services,
+      By accessing or using Coffee Logik (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), including its content, features, and affiliated services,
       you agree to comply with and be bound by these Terms of Service. If you do not agree, you may not access or use the website.
     </p>
   </section>
@@ -36,7 +36,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Intellectual Property</h2>
     <p>
-      All content on Coffee Culture—including text, graphics, logos, icons, and software—is the property of Coffee Culture or its content providers
+      All content on Coffee Logik—including text, graphics, logos, icons, and software—is the property of Coffee Logik or its content providers
       and protected by intellectual property laws. You may not reproduce, distribute, or modify any content without express written consent.
     </p>
   </section>
@@ -76,7 +76,7 @@ export default function TermsPage() {
       <li>Violate any local, national, or international law</li>
       <li>Post or transmit malicious code, viruses, or harmful data</li>
       <li>Harvest or collect user data without consent</li>
-      <li>Impersonate Coffee Culture or its staff</li>
+      <li>Impersonate Coffee Logik or its staff</li>
     </ul>
     <p>
       We reserve the right to remove content and restrict access to users who violate these terms.
@@ -118,7 +118,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Limitation of Liability</h2>
     <p>
-      In no event shall Coffee Culture or its affiliates be liable for any indirect, special, incidental, or consequential damages,
+      In no event shall Coffee Logik or its affiliates be liable for any indirect, special, incidental, or consequential damages,
       including but not limited to loss of profits or data, arising out of the use—or inability to use—this site.
     </p>
   </section>
@@ -126,7 +126,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Indemnification</h2>
     <p>
-      You agree to indemnify and hold harmless Coffee Culture, its affiliates, and their employees from any claims, losses, or
+      You agree to indemnify and hold harmless Coffee Logik, its affiliates, and their employees from any claims, losses, or
       damages (including legal fees) arising from your use of the website or violation of these Terms.
     </p>
   </section>
@@ -150,7 +150,7 @@ export default function TermsPage() {
   <section className="mb-12">
     <h2 className="text-2xl font-bold text-gray-900 mb-4">Modifications</h2>
     <p>
-      Coffee Culture may revise these Terms at any time without notice. Your continued use of the website
+      Coffee Logik may revise these Terms at any time without notice. Your continued use of the website
       signifies acceptance of the updated terms.
     </p>
   </section>
