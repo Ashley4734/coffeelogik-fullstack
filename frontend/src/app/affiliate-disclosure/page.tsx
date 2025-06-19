@@ -29,7 +29,7 @@ export default function AffiliateDisclosurePage() {
 
             <h2>FTC Disclosure Statement</h2>
             <p>
-              In accordance with the Federal Trade Commission's (FTC) guidelines concerning the use of endorsements and testimonials in advertising, we are required to inform you of the following:
+              In accordance with the Federal Trade Commission&apos;s (FTC) guidelines concerning the use of endorsements and testimonials in advertising, we are required to inform you of the following:
             </p>
 
             <h3>Material Connection Disclosure</h3>
@@ -41,7 +41,7 @@ export default function AffiliateDisclosurePage() {
             <ul>
               <li><strong>Honest Recommendations:</strong> All product recommendations and reviews on this site represent our honest opinions based on our research and experience</li>
               <li><strong>Editorial Independence:</strong> Our editorial content is not influenced by compensation received from affiliate partnerships</li>
-              <li><strong>Clear Identification:</strong> Affiliate links are clearly marked with terms such as "affiliate link," "sponsored," or similar disclosure language</li>
+              <li><strong>Clear Identification:</strong> Affiliate links are clearly marked with terms such as &quot;affiliate link,&quot; &quot;sponsored,&quot; or similar disclosure language</li>
             </ul>
 
             <h2>Types of Affiliate Relationships</h2>
@@ -59,9 +59,9 @@ export default function AffiliateDisclosurePage() {
             <h3>Sponsored Content</h3>
             <p>Occasionally, we may publish sponsored content. All sponsored posts will be clearly labeled as:</p>
             <ul>
-              <li>"Sponsored Post"</li>
-              <li>"Paid Partnership"</li>
-              <li>"Advertisement"</li>
+              <li>&quot;Sponsored Post&quot;</li>
+              <li>&quot;Paid Partnership&quot;</li>
+              <li>&quot;Advertisement&quot;</li>
               <li>Similar clear disclosure language</li>
             </ul>
 
@@ -127,7 +127,7 @@ export default function AffiliateDisclosurePage() {
               <li>Customer service</li>
               <li>Payment processing</li>
             </ul>
-            <p>...are governed by the merchant's terms and conditions.</p>
+            <p>...are governed by the merchant&apos;s terms and conditions.</p>
 
             <h2>Contact Information</h2>
             <p>If you have any questions about our affiliate relationships or this disclosure, please contact us:</p>
@@ -148,7 +148,7 @@ export default function AffiliateDisclosurePage() {
 
             <h2>Updates to This Disclosure</h2>
             <p>
-              We reserve the right to update this disclosure at any time. Material changes will be posted with a new "Last Updated" date. Your continued use of this website after any changes constitutes acceptance of the updated terms.
+              We reserve the right to update this disclosure at any time. Material changes will be posted with a new &quot;Last Updated&quot; date. Your continued use of this website after any changes constitutes acceptance of the updated terms.
             </p>
           </div>
         </div>
