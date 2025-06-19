@@ -107,12 +107,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           {postData.author && (
             <div className="mt-12 pt-8 border-t border-gray-200">
               <div className="flex items-start space-x-4">
-                <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {postData.author.avatar ? (
                     <img
                       src={getStrapiMedia(postData.author.avatar.url)}
                       alt={postData.author.name}
-                      className="h-16 w-16 rounded-full object-cover"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <span className="text-lg font-semibold text-amber-800">
