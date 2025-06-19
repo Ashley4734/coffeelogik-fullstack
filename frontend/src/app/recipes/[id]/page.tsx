@@ -20,7 +20,7 @@ function getDifficultyColor(difficulty: string) {
 export default async function RecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  let recipe: import("@/lib/api").CoffeeRecipe  < /dev/null |  null = null;
+  let recipe: import("@/lib/api").CoffeeRecipe | null = null;
 
   try {
     recipe = await getRecipe(id);
@@ -159,7 +159,7 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
                 <ul className="space-y-2 text-sm">
                   {recipe.ingredients.map((ingredient, index) => {
                     let displayText = "";
-                    if (typeof ingredient === "object" && ingredient \!== null && "item" in ingredient) {
+                    if (typeof ingredient === "object" && ingredient !== null && "item" in ingredient) {
                       const item = ingredient as {item: string; amount?: string};
                       displayText = item.item + (item.amount ? ` - ${item.amount}` : "");
                     } else {
@@ -184,7 +184,7 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
                 <ul className="space-y-2 text-sm">
                   {recipe.equipment_needed.map((item, index) => {
                     let displayText = "";
-                    if (typeof item === "object" && item \!== null && "item" in item) {
+                    if (typeof item === "object" && item !== null && "item" in item) {
                       const equipment = item as {item: string; essential?: boolean};
                       displayText = equipment.item + (equipment.essential === false ? " (optional)" : "");
                     } else {
