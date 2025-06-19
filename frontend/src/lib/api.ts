@@ -162,7 +162,7 @@ export async function getBlogPosts(options: {
     }
     
     // Default populate
-    const populate = options.populate || ["author", "categories", "featured_image"];
+    const populate = options.populate || ["author.avatar", "categories", "featured_image"];
     populate.forEach(field => {
       params.append("populate[]", field);
     });
@@ -181,7 +181,7 @@ export async function getBlogPost(slug: string) {
   try {
     const params = new URLSearchParams();
     params.append("filters[slug][$eq]", slug);
-    params.append("populate[]", "author");
+    params.append("populate[]", "author.avatar");
     params.append("populate[]", "categories");
     params.append("populate[]", "featured_image");
     
