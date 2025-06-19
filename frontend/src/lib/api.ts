@@ -28,7 +28,7 @@ export interface BlogPost {
   featured_image?: {
     url: string;
     alternativeText?: string;
-  }  < /dev/null |  null;
+  } | null;
   publishedAt?: string;
   reading_time?: number;
   featured?: boolean;
@@ -212,11 +212,11 @@ export async function getRecipes(options: {
       params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.brewMethod && options.brewMethod \!== "All Methods") {
+    if (options.brewMethod && options.brewMethod !== "All Methods") {
       params.append("filters[brew_method][$eq]", options.brewMethod);
     }
     
-    if (options.difficulty && options.difficulty \!== "All Levels") {
+    if (options.difficulty && options.difficulty !== "All Levels") {
       params.append("filters[difficulty_level][$eq]", options.difficulty);
     }
     
@@ -270,7 +270,7 @@ export async function getProducts(options: {
       params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.productType && options.productType \!== "All Products") {
+    if (options.productType && options.productType !== "All Products") {
       params.append("filters[product_type][$eq]", options.productType);
     }
     
@@ -345,11 +345,11 @@ export async function getBrewingGuides(options: {
       params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.method && options.method \!== "All Methods") {
+    if (options.method && options.method !== "All Methods") {
       params.append("filters[method][$eq]", options.method);
     }
     
-    if (options.difficulty && options.difficulty \!== "All Levels") {
+    if (options.difficulty && options.difficulty !== "All Levels") {
       params.append("filters[difficulty_level][$eq]", options.difficulty);
     }
     
@@ -393,7 +393,7 @@ export async function getBrewingGuide(slug: string) {
 
 // Helper function to get full image URL
 export function getStrapiMedia(url: string | undefined): string {
-  if (\!url) return "/placeholder-image.jpg";
+  if (!url) return "/placeholder-image.jpg";
   
   if (url.startsWith("http")) {
     return url;

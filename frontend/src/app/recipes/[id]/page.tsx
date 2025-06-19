@@ -29,7 +29,7 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
     notFound();
   }
 
-  if (\!recipe) {
+  if (!recipe) {
     notFound();
   }
   
