@@ -2,6 +2,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
 import { getBlogPosts, getCategories, getStrapiMedia, calculateReadingTime, formatDate } from "@/lib/api";
+import { MagnifyingGlassIcon, FireIcon, ClockIcon, TrendingUpIcon } from "@heroicons/react/24/outline";
 
 export default async function BlogPage() {
   // Fetch blog posts and categories from Strapi
@@ -22,30 +23,103 @@ export default async function BlogPage() {
     // Fallback to just the "All" category if Strapi is not available
     categories = [{ id: 0, name: "All", slug: "all" } as import("@/lib/api").Category];
   }
-  return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Header */}
-        <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl font-playfair">
-            Coffee Blog
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Discover the latest insights, guides, and reviews from coffee enthusiasts around the world.
-          </p>
-        </div>
+  // Group categories by type for better organization
+  const mainCategories = categories.filter(cat => 
+    ['All', 'Brewing Methods', 'Coffee Origins', 'Equipment Reviews', 'Beginner Guides'].includes(cat.name)
+  ).slice(0, 5);
+  
+  const featuredPosts = blogPosts.filter(post => post.featured).slice(0, 2);
+  const recentPosts = blogPosts.slice(0, 6);
+  const totalPosts = blogPosts.length;
 
-        {/* Category Filter */}
-        <div className="mx-auto mt-16 max-w-2xl">
-          <div className="flex flex-wrap justify-center gap-3">
-            {categories.filter(category => category.name).map((category, index) => (
-              <button
-                key={index}
-                className="inline-flex items-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors"
-              >
-                {category.name}
-              </button>
-            ))}
+  return (
+    <div className="bg-white">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f59e0b" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center space-x-4 bg-white/70 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm">
+                <FireIcon className="h-5 w-5 text-amber-600" />
+                <span className="text-sm font-medium text-amber-700">{totalPosts} Articles & Counting</span>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl font-playfair mb-6">
+              Coffee <span className="text-amber-600">Chronicles</span>
+            </h1>
+            <p className="text-xl leading-8 text-gray-700 mb-8">
+              From bean to cup, discover expert brewing guides, equipment reviews, and coffee culture insights that elevate your daily ritual.
+            </p>
+            
+            {/* Search Bar */}
+            <div className="mx-auto max-w-md relative">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search coffee topics..."
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-full bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+        {/* Quick Stats & Category Filter */}
+        <div className="-mt-12 relative z-10">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 mx-auto max-w-4xl p-8">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
+                  <ClockIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{totalPosts}</div>
+                <div className="text-sm text-gray-600">Total Articles</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
+                  <TrendingUpIcon className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{featuredPosts.length}</div>
+                <div className="text-sm text-gray-600">Featured Posts</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mx-auto mb-3">
+                  <FireIcon className="h-6 w-6 text-amber-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{mainCategories.length - 1}</div>
+                <div className="text-sm text-gray-600">Categories</div>
+              </div>
+            </div>
+            
+            {/* Popular Categories */}
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Topics</h3>
+              <div className="flex flex-wrap justify-center gap-3">
+                {mainCategories.map((category, index) => (
+                  <button
+                    key={index}
+                    className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      category.name === 'All' 
+                        ? 'bg-amber-100 text-amber-800 border-2 border-amber-200 shadow-sm' 
+                        : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-700'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+                {categories.length > 5 && (
+                  <button className="inline-flex items-center rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors">
+                    +{categories.length - 5} more
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
