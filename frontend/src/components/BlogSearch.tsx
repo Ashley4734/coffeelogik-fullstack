@@ -8,7 +8,7 @@ interface BlogPost {
   title: string;
   content: string;
   excerpt?: string;
-  slug: string;
+  slug?: string;
   featured?: boolean;
   categories?: Array<{ name: string }>;
   author?: { name: string };

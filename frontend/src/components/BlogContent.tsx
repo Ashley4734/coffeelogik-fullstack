@@ -11,7 +11,7 @@ interface BlogPost {
   title: string;
   content: string;
   excerpt?: string;
-  slug: string;
+  slug?: string;
   featured?: boolean;
   featured_image?: { url: string; alternativeText?: string };
   categories?: Array<{ name: string }>;
@@ -191,7 +191,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
                     </div>
                     <div className="group relative">
                       <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-amber-600">
-                        <Link href={`/blog/${post.slug}`}>
+                        <Link href={`/blog/${post.slug || post.id}`}>
                           <span className="absolute inset-0" />
                           {post.title}
                         </Link>
@@ -271,7 +271,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
                     </div>
                     <div className="group relative">
                       <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-amber-600">
-                        <Link href={`/blog/${post.slug}`}>
+                        <Link href={`/blog/${post.slug || post.id}`}>
                           <span className="absolute inset-0" />
                           {post.title}
                         </Link>
