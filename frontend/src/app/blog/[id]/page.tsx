@@ -3,6 +3,8 @@ import { ArrowLeftIcon, ClockIcon, CalendarIcon, UserIcon } from "@heroicons/rea
 import { getBlogPost, getBlogPosts, getStrapiMedia, calculateReadingTime, formatDate } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
+import AmazonDisclaimer from "@/components/AmazonDisclaimer";
+import { hasAmazonLinks } from "@/lib/amazon";
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -30,6 +32,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
 
   // Use actual data from Strapi - flat structure in v5
   const postData = blogPost;
+  
+  // Check if the post content contains Amazon links
+  const showAmazonDisclaimer = hasAmazonLinks(postData.content);
   return (
     <div className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -96,6 +101,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
               </div>
             )}
           </div>
+
+          {/* Amazon Disclaimer */}
+          {showAmazonDisclaimer && <AmazonDisclaimer />}
 
           {/* Content */}
           <div 
