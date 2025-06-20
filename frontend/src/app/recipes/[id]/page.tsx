@@ -118,35 +118,35 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
             {/* Recipe Details */}
             <div className="bg-amber-50 rounded-2xl p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recipe Details</h3>
-              <div className="space-y-3 text-sm">
+              <div className="space-y-4 text-sm">
                 {recipe.coffee_amount && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Coffee Amount:</span>
-                    <span className="font-medium">{recipe.coffee_amount}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-700 font-medium">Coffee Amount:</span>
+                    <span className="font-bold text-gray-900 text-amber-700 bg-amber-50 px-3 py-1 rounded-full">{recipe.coffee_amount}</span>
                   </div>
                 )}
                 {recipe.water_amount && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Water Amount:</span>
-                    <span className="font-medium">{recipe.water_amount}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-700 font-medium">Water Amount:</span>
+                    <span className="font-bold text-gray-900 text-blue-700 bg-blue-50 px-3 py-1 rounded-full">{recipe.water_amount}</span>
                   </div>
                 )}
                 {recipe.grind_size && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Grind Size:</span>
-                    <span className="font-medium">{recipe.grind_size}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-700 font-medium">Grind Size:</span>
+                    <span className="font-bold text-gray-900 text-green-700 bg-green-50 px-3 py-1 rounded-full">{recipe.grind_size}</span>
                   </div>
                 )}
                 {recipe.water_temperature && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Water Temp:</span>
-                    <span className="font-medium">{recipe.water_temperature}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-700 font-medium">Water Temp:</span>
+                    <span className="font-bold text-gray-900 text-red-700 bg-red-50 px-3 py-1 rounded-full">{recipe.water_temperature}</span>
                   </div>
                 )}
                 {recipe.prep_time && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Prep Time:</span>
-                    <span className="font-medium">{recipe.prep_time} min</span>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-gray-700 font-medium">Prep Time:</span>
+                    <span className="font-bold text-gray-900 text-purple-700 bg-purple-50 px-3 py-1 rounded-full">{recipe.prep_time} min</span>
                   </div>
                 )}
               </div>
