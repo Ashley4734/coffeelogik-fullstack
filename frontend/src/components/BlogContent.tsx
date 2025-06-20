@@ -13,12 +13,12 @@ interface BlogPost {
   excerpt?: string;
   slug?: string;
   featured?: boolean;
-  featured_image?: { url: string; alternativeText?: string };
+  featured_image?: { url: string; alternativeText?: string } | null;
   categories?: Array<{ name: string }>;
   author?: { 
     name: string;
-    avatar?: { url: string };
-  };
+    avatar?: { url: string } | null;
+  } | null;
   publishedAt?: string;
   reading_time?: number;
 }

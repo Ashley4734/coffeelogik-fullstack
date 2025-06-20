@@ -11,7 +11,7 @@ interface BlogPost {
   slug?: string;
   featured?: boolean;
   categories?: Array<{ name: string }>;
-  author?: { name: string };
+  author?: { name: string } | null;
 }
 
 interface BlogSearchProps {
