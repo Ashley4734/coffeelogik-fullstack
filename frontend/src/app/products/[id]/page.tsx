@@ -122,7 +122,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             {/* Description */}
             {product.description && (
               <div className="mb-8">
-                <div className="prose" dangerouslySetInnerHTML={{ __html: marked(product.description) }} />
+                <div className="prose prose-amber max-w-none" dangerouslySetInnerHTML={{ __html: marked(product.description) }} />
               </div>
             )}
 

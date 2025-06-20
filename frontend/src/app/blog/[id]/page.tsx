@@ -99,7 +99,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
 
           {/* Content */}
           <div 
-            className="prose"
+            className="prose prose-amber max-w-none"
             dangerouslySetInnerHTML={{ __html: marked(postData.content) }}
           />
 

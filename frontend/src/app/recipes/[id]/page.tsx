@@ -101,14 +101,14 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
             {/* Instructions */}
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Instructions</h2>
-              <div className="prose" dangerouslySetInnerHTML={{ __html: marked(recipe.instructions) }} />
+              <div className="prose prose-amber max-w-none" dangerouslySetInnerHTML={{ __html: marked(recipe.instructions) }} />
             </div>
 
             {/* Tips */}
             {recipe.tips && (
               <div className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Pro Tips</h2>
-                <div className="prose" dangerouslySetInnerHTML={{ __html: marked(recipe.tips) }} />
+                <div className="prose prose-amber max-w-none" dangerouslySetInnerHTML={{ __html: marked(recipe.tips) }} />
               </div>
             )}
           </div>
