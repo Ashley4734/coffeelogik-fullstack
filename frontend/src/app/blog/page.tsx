@@ -2,7 +2,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
 import { getBlogPosts, getCategories, getStrapiMedia, calculateReadingTime, formatDate } from "@/lib/api";
-import { MagnifyingGlassIcon, FireIcon, ClockIcon, TrendingUpIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, FireIcon, ClockIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 
 export default async function BlogPage() {
   // Fetch blog posts and categories from Strapi
@@ -29,7 +29,6 @@ export default async function BlogPage() {
   ).slice(0, 5);
   
   const featuredPosts = blogPosts.filter(post => post.featured).slice(0, 2);
-  const recentPosts = blogPosts.slice(0, 6);
   const totalPosts = blogPosts.length;
 
   return (
@@ -83,7 +82,7 @@ export default async function BlogPage() {
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
-                  <TrendingUpIcon className="h-6 w-6 text-green-600" />
+                  <ChartBarIcon className="h-6 w-6 text-green-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{featuredPosts.length}</div>
                 <div className="text-sm text-gray-600">Featured Posts</div>
