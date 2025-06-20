@@ -98,10 +98,18 @@ export default async function BlogPage() {
                       </p>
                     </div>
                     <div className="relative mt-8 flex items-center gap-x-4">
-                      <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                        <span className="text-sm font-semibold text-amber-800">
-                          {post.author?.name?.split(' ').map((n: string) => n[0]).join('') || 'A'}
-                        </span>
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {post.author?.avatar ? (
+                          <img
+                            src={getStrapiMedia(post.author.avatar.url)}
+                            alt={post.author.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-sm font-semibold text-amber-800">
+                            {post.author?.name?.split(' ').map((n: string) => n[0]).join('') || 'A'}
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm leading-6">
                         <p className="font-semibold text-gray-900">
@@ -173,10 +181,18 @@ export default async function BlogPage() {
                     </p>
                   </div>
                   <div className="relative mt-8 flex items-center gap-x-4">
-                    <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-amber-800">
-                        {post.author?.name?.split(' ').map((n: string) => n[0]).join('') || 'A'}
-                      </span>
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {post.author?.avatar ? (
+                        <img
+                          src={getStrapiMedia(post.author.avatar.url)}
+                          alt={post.author.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-xs font-semibold text-amber-800">
+                          {post.author?.name?.split(' ').map((n: string) => n[0]).join('') || 'A'}
+                        </span>
+                      )}
                     </div>
                     <div className="text-sm leading-6">
                       <p className="font-semibold text-gray-900">

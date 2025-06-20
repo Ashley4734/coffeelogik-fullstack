@@ -1,4 +1,4 @@
-import strapi from './strapi';
+import strapi from "./strapi";
 
 // Types for Strapi responses
 export interface StrapiResponse<T> {
@@ -87,13 +87,13 @@ export interface CoffeeRecipe {
   water_amount?: string;
   grind_size?: string;
   water_temperature?: string;
-  ingredients?: string[];
+  ingredients?: Array<{item: string; amount?: string}> | string[];
   instructions: string;
   tips?: string;
   featured_image?: {
     url: string;
   } | null;
-  equipment_needed?: string[];
+  equipment_needed?: Array<{item: string; essential?: boolean}> | string[];
   featured: boolean;
   author?: Author | null;
 }
@@ -154,25 +154,25 @@ export async function getBlogPosts(options: {
     const params = new URLSearchParams();
     
     if (options.featured) {
-      params.append('filters[featured][$eq]', 'true');
+      params.append("filters[featured][$eq]", "true");
     }
     
     if (options.limit) {
-      params.append('pagination[limit]', options.limit.toString());
+      params.append("pagination[limit]", options.limit.toString());
     }
     
     // Default populate
-    const populate = options.populate || ['author', 'categories', 'featured_image'];
+    const populate = options.populate || ["author.avatar", "categories", "featured_image"];
     populate.forEach(field => {
-      params.append('populate[]', field);
+      params.append("populate[]", field);
     });
     
-    params.append('sort[0]', 'publishedAt:desc');
+    params.append("sort[0]", "publishedAt:desc");
     
     const response = await strapi.get(`/blog-posts?${params.toString()}`);
     return response.data as StrapiResponse<BlogPost>;
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
+    console.error("Error fetching blog posts:", error);
     return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
   }
 }
@@ -180,21 +180,21 @@ export async function getBlogPosts(options: {
 export async function getBlogPost(slug: string) {
   try {
     const params = new URLSearchParams();
-    params.append('filters[slug][$eq]', slug);
-    params.append('populate[]', 'author');
-    params.append('populate[]', 'categories');
-    params.append('populate[]', 'featured_image');
+    params.append("filters[slug][$eq]", slug);
+    params.append("populate[]", "author.avatar");
+    params.append("populate[]", "categories");
+    params.append("populate[]", "featured_image");
     
     const response = await strapi.get(`/blog-posts?${params.toString()}`);
     const data = response.data as StrapiResponse<BlogPost>;
     
     if (data.data.length === 0) {
-      throw new Error('Blog post not found');
+      throw new Error("Blog post not found");
     }
     
     return data.data[0];
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    console.error("Error fetching blog post:", error);
     throw error;
   }
 }
@@ -209,29 +209,29 @@ export async function getRecipes(options: {
     const params = new URLSearchParams();
     
     if (options.featured) {
-      params.append('filters[featured][$eq]', 'true');
+      params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.brewMethod && options.brewMethod !== 'All Methods') {
-      params.append('filters[brew_method][$eq]', options.brewMethod);
+    if (options.brewMethod && options.brewMethod !== "All Methods") {
+      params.append("filters[brew_method][$eq]", options.brewMethod);
     }
     
-    if (options.difficulty && options.difficulty !== 'All Levels') {
-      params.append('filters[difficulty_level][$eq]', options.difficulty);
+    if (options.difficulty && options.difficulty !== "All Levels") {
+      params.append("filters[difficulty_level][$eq]", options.difficulty);
     }
     
     if (options.limit) {
-      params.append('pagination[limit]', options.limit.toString());
+      params.append("pagination[limit]", options.limit.toString());
     }
     
-    params.append('populate[]', 'featured_image');
-    params.append('populate[]', 'author');
-    params.append('sort[0]', 'publishedAt:desc');
+    params.append("populate[]", "featured_image");
+    params.append("populate[]", "author");
+    params.append("sort[0]", "publishedAt:desc");
     
     const response = await strapi.get(`/coffee-recipes?${params.toString()}`);
     return response.data as StrapiResponse<CoffeeRecipe>;
   } catch (error) {
-    console.error('Error fetching recipes:', error);
+    console.error("Error fetching recipes:", error);
     return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
   }
 }
@@ -239,21 +239,21 @@ export async function getRecipes(options: {
 export async function getRecipe(slug: string) {
   try {
     const params = new URLSearchParams();
-    params.append('filters[slug][$eq]', slug);
-    params.append('populate[]', 'featured_image');
-    params.append('populate[]', 'step_images');
-    params.append('populate[]', 'author');
+    params.append("filters[slug][$eq]", slug);
+    params.append("populate[]", "featured_image");
+    params.append("populate[]", "step_images");
+    params.append("populate[]", "author");
     
     const response = await strapi.get(`/coffee-recipes?${params.toString()}`);
     const data = response.data as StrapiResponse<CoffeeRecipe>;
     
     if (data.data.length === 0) {
-      throw new Error('Recipe not found');
+      throw new Error("Recipe not found");
     }
     
     return data.data[0];
   } catch (error) {
-    console.error('Error fetching recipe:', error);
+    console.error("Error fetching recipe:", error);
     throw error;
   }
 }
@@ -267,24 +267,24 @@ export async function getProducts(options: {
     const params = new URLSearchParams();
     
     if (options.featured) {
-      params.append('filters[featured][$eq]', 'true');
+      params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.productType && options.productType !== 'All Products') {
-      params.append('filters[product_type][$eq]', options.productType);
+    if (options.productType && options.productType !== "All Products") {
+      params.append("filters[product_type][$eq]", options.productType);
     }
     
     if (options.limit) {
-      params.append('pagination[limit]', options.limit.toString());
+      params.append("pagination[limit]", options.limit.toString());
     }
     
-    params.append('populate[]', 'images');
-    params.append('sort[0]', 'publishedAt:desc');
+    params.append("populate[]", "images");
+    params.append("sort[0]", "publishedAt:desc");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
     return response.data as StrapiResponse<CoffeeProduct>;
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error("Error fetching products:", error);
     return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
   }
 }
@@ -292,19 +292,19 @@ export async function getProducts(options: {
 export async function getProduct(slug: string) {
   try {
     const params = new URLSearchParams();
-    params.append('filters[slug][$eq]', slug);
-    params.append('populate[]', 'images');
+    params.append("filters[slug][$eq]", slug);
+    params.append("populate[]", "images");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
     const data = response.data as StrapiResponse<CoffeeProduct>;
     
     if (data.data.length === 0) {
-      throw new Error('Product not found');
+      throw new Error("Product not found");
     }
     
     return data.data[0];
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error("Error fetching product:", error);
     throw error;
   }
 }
@@ -312,22 +312,22 @@ export async function getProduct(slug: string) {
 export async function getAuthors() {
   try {
     const params = new URLSearchParams();
-    params.append('populate[]', 'avatar');
+    params.append("populate[]", "avatar");
     
     const response = await strapi.get(`/authors?${params.toString()}`);
     return response.data as StrapiResponse<Author>;
   } catch (error) {
-    console.error('Error fetching authors:', error);
+    console.error("Error fetching authors:", error);
     throw error;
   }
 }
 
 export async function getCategories() {
   try {
-    const response = await strapi.get('/categories');
+    const response = await strapi.get("/categories");
     return response.data as StrapiResponse<Category>;
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error("Error fetching categories:", error);
     return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
   }
 }
@@ -342,29 +342,29 @@ export async function getBrewingGuides(options: {
     const params = new URLSearchParams();
     
     if (options.featured) {
-      params.append('filters[featured][$eq]', 'true');
+      params.append("filters[featured][$eq]", "true");
     }
     
-    if (options.method && options.method !== 'All Methods') {
-      params.append('filters[method][$eq]', options.method);
+    if (options.method && options.method !== "All Methods") {
+      params.append("filters[method][$eq]", options.method);
     }
     
-    if (options.difficulty && options.difficulty !== 'All Levels') {
-      params.append('filters[difficulty_level][$eq]', options.difficulty);
+    if (options.difficulty && options.difficulty !== "All Levels") {
+      params.append("filters[difficulty_level][$eq]", options.difficulty);
     }
     
     if (options.limit) {
-      params.append('pagination[limit]', options.limit.toString());
+      params.append("pagination[limit]", options.limit.toString());
     }
     
-    params.append('populate[]', 'featured_image');
-    params.append('populate[]', 'author');
-    params.append('sort[0]', 'publishedAt:desc');
+    params.append("populate[]", "featured_image");
+    params.append("populate[]", "author");
+    params.append("sort[0]", "publishedAt:desc");
     
     const response = await strapi.get(`/brewing-guides?${params.toString()}`);
     return response.data as StrapiResponse<BrewingGuide>;
   } catch (error) {
-    console.error('Error fetching brewing guides:', error);
+    console.error("Error fetching brewing guides:", error);
     return { data: [], meta: { pagination: { page: 1, pageSize: 0, pageCount: 0, total: 0 } } };
   }
 }
@@ -372,51 +372,51 @@ export async function getBrewingGuides(options: {
 export async function getBrewingGuide(slug: string) {
   try {
     const params = new URLSearchParams();
-    params.append('filters[slug][$eq]', slug);
-    params.append('populate[]', 'featured_image');
-    params.append('populate[]', 'step_images');
-    params.append('populate[]', 'author');
+    params.append("filters[slug][$eq]", slug);
+    params.append("populate[]", "featured_image");
+    params.append("populate[]", "step_images");
+    params.append("populate[]", "author");
     
     const response = await strapi.get(`/brewing-guides?${params.toString()}`);
     const data = response.data as StrapiResponse<BrewingGuide>;
     
     if (data.data.length === 0) {
-      throw new Error('Brewing guide not found');
+      throw new Error("Brewing guide not found");
     }
     
     return data.data[0];
   } catch (error) {
-    console.error('Error fetching brewing guide:', error);
+    console.error("Error fetching brewing guide:", error);
     throw error;
   }
 }
 
 // Helper function to get full image URL
 export function getStrapiMedia(url: string | undefined): string {
-  if (!url) return '/placeholder-image.jpg';
+  if (!url) return "/placeholder-image.jpg";
   
-  if (url.startsWith('http')) {
+  if (url.startsWith("http")) {
     return url;
   }
   
-  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://y0o4w84ckoockck8o0ss8s48.tealogik.com';
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "https://y0o4w84ckoockck8o0ss8s48.tealogik.com";
   return `${strapiUrl}${url}`;
 }
 
 // Helper function to format date
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
   });
 }
 
 // Helper function to calculate reading time
 export function calculateReadingTime(content: string): string {
   const wordsPerMinute = 200;
-  const words = content.split(' ').length;
+  const words = content.split(" ").length;
   const minutes = Math.ceil(words / wordsPerMinute);
   return `${minutes} min read`;
 }

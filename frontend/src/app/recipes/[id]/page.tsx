@@ -23,16 +23,16 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
   let recipe: import("@/lib/api").CoffeeRecipe | null = null;
 
   try {
-    // Fetch the specific recipe by slug
     recipe = await getRecipe(id);
   } catch (error) {
-    console.error('Error fetching recipe:', error);
+    console.error("Error fetching recipe:", error);
     notFound();
   }
 
   if (!recipe) {
     notFound();
   }
+  
   return (
     <div className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -70,11 +70,11 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <ClockIcon className="mr-2 h-4 w-4" />
-                  <span>{recipe.total_time ? `${recipe.total_time} min` : 'Quick'}</span>
+                  <span>{recipe.total_time ? `${recipe.total_time} min` : "Quick"}</span>
                 </div>
                 <div className="flex items-center">
                   <UsersIcon className="mr-2 h-4 w-4" />
-                  <span>{recipe.servings} serving{recipe.servings > 1 ? 's' : ''}</span>
+                  <span>{recipe.servings} serving{recipe.servings > 1 ? "s" : ""}</span>
                 </div>
                 <div className="flex items-center">
                   <AcademicCapIcon className="mr-2 h-4 w-4" />
@@ -157,12 +157,22 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
               <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Ingredients</h3>
                 <ul className="space-y-2 text-sm">
-                  {recipe.ingredients.map((ingredient, index) => (
-                    <li key={index} className="flex gap-2">
-                      <CheckCircleIcon className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600">{ingredient}</span>
-                    </li>
-                  ))}
+                  {recipe.ingredients.map((ingredient, index) => {
+                    let displayText = "";
+                    if (typeof ingredient === "object" && ingredient !== null && "item" in ingredient) {
+                      const item = ingredient as {item: string; amount?: string};
+                      displayText = item.item + (item.amount ? ` - ${item.amount}` : "");
+                    } else {
+                      displayText = String(ingredient);
+                    }
+                    
+                    return (
+                      <li key={index} className="flex gap-2">
+                        <CheckCircleIcon className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-600">{displayText}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
@@ -172,12 +182,22 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
               <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Equipment Needed</h3>
                 <ul className="space-y-2 text-sm">
-                  {recipe.equipment_needed.map((item, index) => (
-                    <li key={index} className="flex gap-2">
-                      <CheckCircleIcon className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600">{item}</span>
-                    </li>
-                  ))}
+                  {recipe.equipment_needed.map((item, index) => {
+                    let displayText = "";
+                    if (typeof item === "object" && item !== null && "item" in item) {
+                      const equipment = item as {item: string; essential?: boolean};
+                      displayText = equipment.item + (equipment.essential === false ? " (optional)" : "");
+                    } else {
+                      displayText = String(item);
+                    }
+                    
+                    return (
+                      <li key={index} className="flex gap-2">
+                        <CheckCircleIcon className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-600">{displayText}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
