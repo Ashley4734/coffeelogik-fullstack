@@ -13,21 +13,51 @@ export default [
             'data:',
             'blob:',
             'market-assets.strapi.io',
-            'https://harrisreviews.com',
+            'https://coffeelogik.com',
+            'https://api.coffeelogik.com',
           ],
           'media-src': [
             "'self'",
             'data:',
             'blob:',
             'market-assets.strapi.io',
-            'https://harrisreviews.com',
+            'https://coffeelogik.com',
+            'https://api.coffeelogik.com',
           ],
           upgradeInsecureRequests: null,
         },
       },
     },
   },
-  'strapi::cors',
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      header: '*',
+      origin: ({ env }) => {
+        const origins = [
+          'https://coffeelogik.com',
+          'https://www.coffeelogik.com',
+        ];
+        
+        // Add development origins in non-production
+        if (env('NODE_ENV') !== 'production') {
+          origins.push('http://localhost:3000', 'http://localhost:3001');
+        }
+        
+        // Add custom CORS origins from environment
+        const customOrigins = env('CORS_ORIGIN');
+        if (customOrigins) {
+          origins.push(...customOrigins.split(','));
+        }
+        
+        return origins;
+      },
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      keepHeaderOnError: true,
+    },
+  },
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
