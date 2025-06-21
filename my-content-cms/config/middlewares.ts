@@ -32,21 +32,19 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      enabled: true,
-      header: '*',
-      origin: ({ env }) => {
+      origin: (ctx) => {
         const origins = [
           'https://coffeelogik.com',
           'https://www.coffeelogik.com',
         ];
         
         // Add development origins in non-production
-        if (env('NODE_ENV') !== 'production') {
+        if (process.env.NODE_ENV !== 'production') {
           origins.push('http://localhost:3000', 'http://localhost:3001');
         }
         
         // Add custom CORS origins from environment
-        const customOrigins = env('CORS_ORIGIN');
+        const customOrigins = process.env.CORS_ORIGIN;
         if (customOrigins) {
           origins.push(...customOrigins.split(','));
         }
