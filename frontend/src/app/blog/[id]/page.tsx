@@ -22,7 +22,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description: blogPost.meta_description || blogPost.excerpt || blogPost.content.substring(0, 160).replace(/<[^>]*>/g, ''),
       keywords: blogPost.categories?.map(cat => cat.name).join(', '),
       authors: blogPost.author ? [{ name: blogPost.author.name }] : undefined,
-      publishedTime: blogPost.publishedAt,
       alternates: {
         canonical: url,
       },

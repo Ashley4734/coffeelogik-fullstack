@@ -1,7 +1,7 @@
 export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
-import { StarIcon, ShoppingBagIcon, LinkIcon, AwardIcon, CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
+import { StarIcon, TrophyIcon, CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
 import { getProducts, getStrapiMedia } from "@/lib/api";
 import { Metadata } from "next";
@@ -80,7 +80,7 @@ export default async function ProductsPage() {
         {/* Header */}
         <div className="mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 mb-6">
-            <AwardIcon className="mr-2 h-4 w-4" />
+            <TrophyIcon className="mr-2 h-4 w-4" />
             Expert Reviews & Testing
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl font-playfair">
@@ -100,7 +100,7 @@ export default async function ProductsPage() {
               Updated Weekly
             </div>
             <div className="flex items-center">
-              <AwardIcon className="mr-2 h-4 w-4 text-blue-500" />
+              <TrophyIcon className="mr-2 h-4 w-4 text-blue-500" />
               Unbiased Reviews
             </div>
           </div>
@@ -138,7 +138,7 @@ export default async function ProductsPage() {
         {/* Featured Reviews - Editor's Choice */}
         <div className="mx-auto mt-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">Editor's Choice Reviews</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">Editor&apos;s Choice Reviews</h2>
             <p className="text-lg text-gray-600">Our top-rated products that passed rigorous testing</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-3">
@@ -147,8 +147,8 @@ export default async function ProductsPage() {
                 {/* Award Badge */}
                 <div className="absolute top-4 left-4 z-10">
                   <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
-                    <AwardIcon className="mr-1 h-3 w-3" />
-                    Editor's Choice
+                    <TrophyIcon className="mr-1 h-3 w-3" />
+                    Editor&apos;s Choice
                   </span>
                 </div>
                 

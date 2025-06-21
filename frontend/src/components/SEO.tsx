@@ -14,7 +14,7 @@ interface SEOProps {
     section?: string;
     tags?: string[];
   };
-  structuredData?: Record<string, any>;
+  structuredData?: Record<string, unknown>;
   noindex?: boolean;
 }
 

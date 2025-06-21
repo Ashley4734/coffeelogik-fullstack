@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ClockIcon, UserIcon, ShieldCheckIcon, AwardIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon, HeartIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon } from "@heroicons/react/24/solid";
+import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
@@ -161,7 +161,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 {/* Review Badge */}
                 <div className="mb-4">
                   <span className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800">
-                    <AwardIcon className="mr-2 h-4 w-4" />
+                    <TrophyIcon className="mr-2 h-4 w-4" />
                     Expert Review
                   </span>
                 </div>
@@ -370,7 +370,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 lg:p-12">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-6">
-                  <AwardIcon className="h-8 w-8 text-amber-600" />
+                  <TrophyIcon className="h-8 w-8 text-amber-600" />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
                   Our Final Verdict
