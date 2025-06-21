@@ -15,9 +15,52 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "CoffeeLogik - Your Ultimate Coffee Guide",
-  description: "Discover the best coffee recipes, product reviews, and brewing techniques. From bean to cup, we're your coffee companion.",
-  keywords: "coffee, recipes, brewing, reviews, barista, espresso, pour over",
+  title: "CoffeeLogik - Expert Coffee Brewing Guides & Reviews",
+  description: "Discover expert coffee brewing guides, detailed equipment reviews, and delicious recipes. Master the art of coffee with CoffeeLogik's comprehensive resources.",
+  keywords: "coffee brewing, coffee recipes, coffee equipment reviews, barista guides, espresso, pour over, french press, coffee techniques",
+  authors: [{ name: "CoffeeLogik Team" }],
+  creator: "CoffeeLogik",
+  publisher: "CoffeeLogik",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "CoffeeLogik - Expert Coffee Brewing Guides & Reviews",
+    description: "Discover expert coffee brewing guides, detailed equipment reviews, and delicious recipes. Master the art of coffee with CoffeeLogik's comprehensive resources.",
+    url: '/',
+    siteName: 'CoffeeLogik',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'CoffeeLogik - Coffee Brewing Guides',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "CoffeeLogik - Expert Coffee Brewing Guides & Reviews",
+    description: "Discover expert coffee brewing guides, detailed equipment reviews, and delicious recipes. Master the art of coffee with CoffeeLogik's comprehensive resources.",
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+  },
 };
 
 export default function RootLayout({

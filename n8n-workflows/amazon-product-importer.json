@@ -1,0 +1,310 @@
+{
+  "name": "Amazon Coffee Product Importer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "import-product",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "asin",
+              "name": "asin",
+              "value": "={{ $json.asin }}",
+              "type": "string"
+            },
+            {
+              "id": "marketplace",
+              "name": "marketplace", 
+              "value": "ATVPDKIKX0DER",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-asin",
+      "name": "Extract ASIN",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://advertising-api.amazon.com/v2/products",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "amazonApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Amazon-Advertising-API-ClientId",
+              "value": "{{ $env.AMAZON_CLIENT_ID }}"
+            },
+            {
+              "name": "Amazon-Advertising-API-Scope",
+              "value": "{{ $env.AMAZON_ADVERTISING_ACCOUNT_ID }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "asins",
+              "value": "=[\"{{ $json.asin }}\"]"
+            },
+            {
+              "name": "marketplace",
+              "value": "={{ $json.marketplace }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-amazon-data",
+      "name": "Fetch Amazon Product Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and clean Amazon product data\nconst amazonData = $input.first().json;\nconst product = amazonData.products && amazonData.products[0];\n\nif (!product) {\n  throw new Error('Product not found for ASIN: ' + $node[\"Extract ASIN\"].json.asin);\n}\n\n// Extract key product information\nconst productData = {\n  asin: product.asin,\n  title: product.title || 'Unknown Product',\n  brand: product.brand || 'Unknown Brand',\n  description: product.description || '',\n  price: product.price ? parseFloat(product.price.amount) : 0,\n  currency: product.price ? product.price.currency : 'USD',\n  images: product.images || [],\n  features: product.features || [],\n  category: product.category || 'Coffee Products',\n  availability: product.availability || 'Unknown',\n  rating: product.rating ? parseFloat(product.rating) : 0,\n  reviewCount: product.reviewCount ? parseInt(product.reviewCount) : 0,\n  dimensions: product.dimensions || {},\n  weight: product.weight || null\n};\n\n// Determine product type based on title and category\nlet productType = 'Coffee Beans';\nconst title = productData.title.toLowerCase();\n\nif (title.includes('machine') || title.includes('espresso')) {\n  productType = 'Espresso Machine';\n} else if (title.includes('grinder')) {\n  productType = 'Coffee Grinder';\n} else if (title.includes('dripper') || title.includes('v60') || title.includes('chemex') || title.includes('pour over')) {\n  productType = 'Brewing Equipment';\n} else if (title.includes('accessory') || title.includes('cup') || title.includes('mug')) {\n  productType = 'Accessories';\n} else if (title.includes('ground coffee')) {\n  productType = 'Ground Coffee';\n}\n\nproductData.productType = productType;\n\n// Extract origin and roast level for coffee beans\nif (productType === 'Coffee Beans' || productType === 'Ground Coffee') {\n  // Try to extract origin\n  const originMatches = title.match(/(ethiopian?|colombian?|jamaican?|guatemalan?|brazilian?|kenyan?|costa rican?|hawaiian?|yemen|peru|vietnam|honduras|nicaragua)/i);\n  productData.origin = originMatches ? originMatches[0] : null;\n  \n  // Try to extract roast level\n  const roastMatches = title.match(/(light|medium-light|medium|medium-dark|dark|extra dark)/i);\n  productData.roastLevel = roastMatches ? roastMatches[0] : 'Medium';\n}\n\nreturn [{ json: productData }];"
+      },
+      "id": "process-amazon-data",
+      "name": "Process Amazon Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are a coffee expert and content writer. Your task is to rewrite Amazon product descriptions to be more engaging and SEO-friendly for a coffee review website. You should also extract pros and cons, and for coffee products, identify flavor notes."
+            },
+            {
+              "role": "user", 
+              "content": "Product: {{ $json.title }}\nBrand: {{ $json.brand }}\nOriginal Description: {{ $json.description }}\nProduct Type: {{ $json.productType }}\nFeatures: {{ $json.features.join(', ') }}\n\nPlease provide:\n1. A rewritten description (2-3 paragraphs, engaging and informative)\n2. 5 pros (benefits and positive aspects)\n3. 3 cons (potential drawbacks or limitations)\n4. For coffee products only: Extract or suggest 3-5 flavor notes\n5. Generate a SEO-friendly slug based on the product name\n\nFormat your response as JSON:\n{\n  \"description\": \"rewritten description here\",\n  \"pros\": [\"pro 1\", \"pro 2\", \"pro 3\", \"pro 4\", \"pro 5\"],\n  \"cons\": [\"con 1\", \"con 2\", \"con 3\"],\n  \"flavorNotes\": [\"note 1\", \"note 2\", \"note 3\", \"note 4\", \"note 5\"],\n  \"slug\": \"seo-friendly-slug-here\"\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "generate-ai-content",
+      "name": "Generate AI Content",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine Amazon data with AI-generated content\nconst amazonData = $node[\"Process Amazon Data\"].json;\nconst aiContent = JSON.parse($input.first().json.content);\n\n// Create final product object for Strapi\nconst strapiProduct = {\n  name: amazonData.title,\n  slug: aiContent.slug,\n  brand: amazonData.brand,\n  product_type: amazonData.productType,\n  origin: amazonData.origin,\n  roast_level: amazonData.roastLevel,\n  flavor_notes: aiContent.flavorNotes || [],\n  description: aiContent.description,\n  price: amazonData.price,\n  rating: amazonData.rating,\n  pros: aiContent.pros,\n  cons: aiContent.cons,\n  affiliate_link: `https://amazon.com/dp/${amazonData.asin}?tag=coffeelogik-20`,\n  featured: amazonData.rating > 4.5,\n  // Store Amazon metadata for price monitoring\n  amazon_asin: amazonData.asin,\n  amazon_last_updated: new Date().toISOString(),\n  amazon_availability: amazonData.availability\n};\n\nreturn [{ json: strapiProduct }];"
+      },
+      "id": "prepare-strapi-data",
+      "name": "Prepare Strapi Data", 
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "{{ $env.STRAPI_URL }}/api/coffee-products",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.STRAPI_API_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-strapi-product",
+      "name": "Create Strapi Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Product imported successfully\",\n  \"product\": {\n    \"id\": {{ $json.data.id }},\n    \"name\": \"{{ $json.data.name }}\",\n    \"brand\": \"{{ $json.data.brand }}\",\n    \"price\": {{ $json.data.price }},\n    \"rating\": {{ $json.data.rating }},\n    \"asin\": \"{{ $node[\"Process Amazon Data\"].json.asin }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.error }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "check-for-errors",
+      "name": "Check for Errors",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"error\": \"{{ $json.error || 'Unknown error occurred' }}\",\n  \"asin\": \"{{ $node[\"Extract ASIN\"].json.asin }}\"\n}",
+        "responseCode": 400,
+        "options": {}
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook", 
+      "typeVersion": 1,
+      "position": [1120, 500]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract ASIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract ASIN": {
+      "main": [
+        [
+          {
+            "node": "Fetch Amazon Product Data",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Amazon Product Data": {
+      "main": [
+        [
+          {
+            "node": "Process Amazon Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check for Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Amazon Data": {
+      "main": [
+        [
+          {
+            "node": "Generate AI Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Content": {
+      "main": [
+        [
+          {
+            "node": "Prepare Strapi Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Strapi Data": {
+      "main": [
+        [
+          {
+            "node": "Create Strapi Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Strapi Product": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Errors": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["amazon", "coffee", "automation", "strapi"],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-20T16:00:00.000Z",
+  "versionId": "1"
+}

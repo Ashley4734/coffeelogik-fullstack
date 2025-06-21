@@ -3,6 +3,8 @@ import { ArrowLeftIcon, ClockIcon, UserIcon, AcademicCapIcon, BeakerIcon } from 
 import { getBrewingGuide, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
+import { Metadata } from "next";
+import { generateArticleStructuredData } from "@/components/SEO";
 
 // Helper function to convert Strapi rich text to markdown string
 interface RichTextChild {
@@ -43,6 +45,53 @@ function strapiRichTextToMarkdown(richText: string | RichTextBlock[]): string {
   }).filter(Boolean).join('\n\n');
 }
 
+// Generate metadata for each brewing guide
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const guide = await getBrewingGuide(id);
+    const imageUrl = guide.featured_image ? getStrapiMedia(guide.featured_image.url) : null;
+    const url = `/brewing-guides/${guide.slug || id}`;
+    
+    return {
+      title: `${guide.title} - ${guide.method} Brewing Guide`,
+      description: guide.description || `Master the ${guide.method} brewing method with our comprehensive guide. Perfect for ${guide.difficulty_level.toLowerCase()} coffee enthusiasts.`,
+      keywords: `${guide.method}, coffee brewing, ${guide.difficulty_level}, brewing guide, coffee technique, ${guide.title}`,
+      authors: guide.author ? [{ name: guide.author.name }] : undefined,
+      alternates: {
+        canonical: url,
+      },
+      openGraph: {
+        title: `${guide.title} - ${guide.method} Brewing Guide`,
+        description: guide.description || `Master the ${guide.method} brewing method with our comprehensive guide.`,
+        url: url,
+        type: 'article',
+        images: imageUrl ? [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: guide.title,
+          }
+        ] : undefined,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${guide.title} - ${guide.method} Brewing Guide`,
+        description: guide.description || `Master the ${guide.method} brewing method with our comprehensive guide.`,
+        images: imageUrl ? [imageUrl] : undefined,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata for brewing guide:', error);
+    return {
+      title: 'Brewing Guide - CoffeeLogik',
+      description: 'Learn professional coffee brewing techniques and methods.',
+    };
+  }
+}
+
 export default async function BrewingGuidePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
@@ -63,8 +112,25 @@ export default async function BrewingGuidePage({ params }: { params: Promise<{ i
     notFound();
   }
 
+  // Generate structured data for the brewing guide
+  const structuredData = generateArticleStructuredData({
+    title: guide.title,
+    description: guide.description || `A comprehensive guide to ${guide.method} brewing method`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com'}/brewing-guides/${guide.slug || id}`,
+    imageUrl: guide.featured_image ? getStrapiMedia(guide.featured_image.url) : undefined,
+    authorName: guide.author?.name,
+    categoryName: `${guide.method} Brewing`,
+  });
+
   return (
-    <div className="bg-white py-16 sm:py-24">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
+      <div className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-8">
@@ -273,6 +339,7 @@ export default async function BrewingGuidePage({ params }: { params: Promise<{ i
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

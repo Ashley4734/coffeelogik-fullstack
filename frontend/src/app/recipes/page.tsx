@@ -2,6 +2,21 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 import { getRecipes } from "@/lib/api";
 import RecipeContent from "@/components/RecipeContent";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Coffee Recipes - Step-by-Step Brewing Guides',
+  description: 'Master coffee brewing with our collection of detailed recipes for espresso, pour over, French press, and more. Perfect guides for beginners to experts.',
+  keywords: 'coffee recipes, brewing guides, espresso recipes, pour over, french press, cold brew, coffee instructions',
+  openGraph: {
+    title: 'Coffee Recipes - Step-by-Step Brewing Guides',
+    description: 'Master coffee brewing with our collection of detailed recipes for espresso, pour over, French press, and more.',
+    type: 'website',
+  },
+  alternates: {
+    canonical: '/recipes',
+  },
+};
 
 const brewMethods = [
   "All Methods",

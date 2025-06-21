@@ -1,0 +1,270 @@
+{
+  "name": "Amazon Coffee Product Importer (PA API)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "import-product-pa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "asin",
+              "name": "asin",
+              "value": "={{ $json.asin }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-asin",
+      "name": "Extract ASIN",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate AWS Signature V4 for PA API\nconst crypto = require('crypto');\n\nconst accessKey = $env.AMAZON_ACCESS_KEY_ID;\nconst secretKey = $env.AMAZON_SECRET_ACCESS_KEY;\nconst partnerTag = $env.AMAZON_PARTNER_TAG;\nconst partnerType = $env.AMAZON_PARTNER_TYPE || 'Associates';\nconst marketplace = 'www.amazon.com';\nconst region = 'us-east-1';\nconst service = 'ProductAdvertisingAPI';\n\n// Request details\nconst host = 'webservices.amazon.com';\nconst endpoint = '/paapi5/getitems';\nconst method = 'POST';\nconst contentType = 'application/json; charset=utf-8';\nconst target = 'com.amazon.paapi5.v1.ProductAdvertisingAPIv1.GetItems';\n\n// Payload\nconst payload = {\n  ItemIds: [$node[\"Extract ASIN\"].json.asin],\n  Resources: [\n    'Images.Primary.Large',\n    'ItemInfo.Title',\n    'ItemInfo.Features',\n    'ItemInfo.ProductInfo',\n    'ItemInfo.TechnicalInfo',\n    'ItemInfo.ManufactureInfo',\n    'Offers.Listings.Price',\n    'Offers.Listings.DeliveryInfo',\n    'CustomerReviews.StarRating',\n    'CustomerReviews.Count',\n    'BrowseNodeInfo.BrowseNodes'\n  ],\n  PartnerTag: partnerTag,\n  PartnerType: partnerType,\n  Marketplace: marketplace\n};\n\nconst payloadString = JSON.stringify(payload);\n\n// Create timestamp\nconst now = new Date();\nconst amzDate = now.toISOString().replace(/[:\\-]|\\..*/g, '');\nconst dateStamp = amzDate.substring(0, 8);\n\n// Create canonical request\nconst canonicalHeaders = [\n  `content-type:${contentType}`,\n  `host:${host}`,\n  `x-amz-date:${amzDate}`,\n  `x-amz-target:${target}`\n].join('\\n') + '\\n';\n\nconst signedHeaders = 'content-type;host;x-amz-date;x-amz-target';\n\nconst payloadHash = crypto.createHash('sha256').update(payloadString).digest('hex');\n\nconst canonicalRequest = [\n  method,\n  endpoint,\n  '', // query string\n  canonicalHeaders,\n  signedHeaders,\n  payloadHash\n].join('\\n');\n\n// Create string to sign\nconst algorithm = 'AWS4-HMAC-SHA256';\nconst credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;\nconst stringToSign = [\n  algorithm,\n  amzDate,\n  credentialScope,\n  crypto.createHash('sha256').update(canonicalRequest).digest('hex')\n].join('\\n');\n\n// Calculate signature\nfunction sign(key, msg) {\n  return crypto.createHmac('sha256', key).update(msg).digest();\n}\n\nconst kDate = sign('AWS4' + secretKey, dateStamp);\nconst kRegion = sign(kDate, region);\nconst kService = sign(kRegion, service);\nconst kSigning = sign(kService, 'aws4_request');\nconst signature = sign(kSigning, stringToSign).toString('hex');\n\n// Create authorization header\nconst authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;\n\nreturn [{\n  json: {\n    url: `https://${host}${endpoint}`,\n    headers: {\n      'Content-Type': contentType,\n      'Authorization': authorizationHeader,\n      'X-Amz-Date': amzDate,\n      'X-Amz-Target': target\n    },\n    payload: payloadString\n  }\n}];"
+      },
+      "id": "generate-aws-signature",
+      "name": "Generate AWS Signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "={{ $json.headers['Content-Type'] }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $json.headers['Authorization'] }}"
+            },
+            {
+              "name": "X-Amz-Date",
+              "value": "={{ $json.headers['X-Amz-Date'] }}"
+            },
+            {
+              "name": "X-Amz-Target",
+              "value": "={{ $json.headers['X-Amz-Target'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "body": "={{ $json.payload }}",
+        "options": {}
+      },
+      "id": "fetch-amazon-pa-data",
+      "name": "Fetch Amazon PA Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process PA API response\nconst response = $input.first().json;\nconst items = response.ItemsResult?.Items || [];\n\nif (items.length === 0) {\n  throw new Error('Product not found for ASIN: ' + $node[\"Extract ASIN\"].json.asin);\n}\n\nconst item = items[0];\nconst asin = item.ASIN;\nconst itemInfo = item.ItemInfo || {};\nconst offers = item.Offers?.Listings?.[0] || {};\nconst reviews = item.CustomerReviews || {};\nconst images = item.Images?.Primary || {};\n\n// Extract product data\nconst productData = {\n  asin: asin,\n  title: itemInfo.Title?.DisplayValue || 'Unknown Product',\n  brand: itemInfo.ByLineInfo?.Brand?.DisplayValue || itemInfo.ByLineInfo?.Manufacturer?.DisplayValue || 'Unknown Brand',\n  description: itemInfo.Features?.DisplayValues?.join(' ') || '',\n  price: offers.Price?.Amount || 0,\n  currency: offers.Price?.Currency || 'USD',\n  images: images.Large ? [images.Large.URL] : [],\n  features: itemInfo.Features?.DisplayValues || [],\n  availability: offers.DeliveryInfo?.IsAmazonFulfilled ? 'In Stock' : 'Unknown',\n  rating: reviews.StarRating?.Value || 0,\n  reviewCount: reviews.Count || 0,\n  productGroup: itemInfo.Classifications?.ProductGroup?.DisplayValue || 'Coffee Products'\n};\n\n// Determine product type\nlet productType = 'Coffee Beans';\nconst title = productData.title.toLowerCase();\n\nif (title.includes('machine') || title.includes('espresso')) {\n  productType = 'Espresso Machine';\n} else if (title.includes('grinder')) {\n  productType = 'Coffee Grinder';\n} else if (title.includes('dripper') || title.includes('v60') || title.includes('chemex') || title.includes('pour over')) {\n  productType = 'Brewing Equipment';\n} else if (title.includes('accessory') || title.includes('cup') || title.includes('mug')) {\n  productType = 'Accessories';\n} else if (title.includes('ground coffee')) {\n  productType = 'Ground Coffee';\n}\n\nproductData.productType = productType;\n\n// Extract origin and roast level for coffee\nif (productType === 'Coffee Beans' || productType === 'Ground Coffee') {\n  const originMatches = title.match(/(ethiopian?|colombian?|jamaican?|guatemalan?|brazilian?|kenyan?|costa rican?|hawaiian?|yemen|peru|vietnam|honduras|nicaragua)/i);\n  productData.origin = originMatches ? originMatches[0] : null;\n  \n  const roastMatches = title.match(/(light|medium-light|medium|medium-dark|dark|extra dark)/i);\n  productData.roastLevel = roastMatches ? roastMatches[0] : 'Medium';\n}\n\nreturn [{ json: productData }];"
+      },
+      "id": "process-pa-data",
+      "name": "Process PA Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are a coffee expert and content writer. Your task is to rewrite Amazon product descriptions to be more engaging and SEO-friendly for a coffee review website. You should also extract pros and cons, and for coffee products, identify flavor notes."
+            },
+            {
+              "role": "user",
+              "content": "Product: {{ $json.title }}\\nBrand: {{ $json.brand }}\\nOriginal Description: {{ $json.description }}\\nProduct Type: {{ $json.productType }}\\nFeatures: {{ $json.features.join(', ') }}\\n\\nPlease provide:\\n1. A rewritten description (2-3 paragraphs, engaging and informative)\\n2. 5 pros (benefits and positive aspects)\\n3. 3 cons (potential drawbacks or limitations)\\n4. For coffee products only: Extract or suggest 3-5 flavor notes\\n5. Generate a SEO-friendly slug based on the product name\\n\\nFormat your response as JSON:\\n{\\n  \\\"description\\\": \\\"rewritten description here\\\",\\n  \\\"pros\\\": [\\\"pro 1\\\", \\\"pro 2\\\", \\\"pro 3\\\", \\\"pro 4\\\", \\\"pro 5\\\"],\\n  \\\"cons\\\": [\\\"con 1\\\", \\\"con 2\\\", \\\"con 3\\\"],\\n  \\\"flavorNotes\\\": [\\\"note 1\\\", \\\"note 2\\\", \\\"note 3\\\", \\\"note 4\\\", \\\"note 5\\\"],\\n  \\\"slug\\\": \\\"seo-friendly-slug-here\\\"\\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "generate-ai-content-pa",
+      "name": "Generate AI Content",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine PA API data with AI-generated content\nconst amazonData = $node[\"Process PA Data\"].json;\nconst aiContent = JSON.parse($input.first().json.content);\n\n// Create final product object for Strapi\nconst strapiProduct = {\n  name: amazonData.title,\n  slug: aiContent.slug,\n  brand: amazonData.brand,\n  product_type: amazonData.productType,\n  origin: amazonData.origin,\n  roast_level: amazonData.roastLevel,\n  flavor_notes: aiContent.flavorNotes || [],\n  description: aiContent.description,\n  price: amazonData.price,\n  rating: amazonData.rating,\n  pros: aiContent.pros,\n  cons: aiContent.cons,\n  affiliate_link: `https://amazon.com/dp/${amazonData.asin}?tag=${$env.AMAZON_PARTNER_TAG}`,\n  featured: amazonData.rating > 4.5,\n  // Store Amazon metadata for price monitoring\n  amazon_asin: amazonData.asin,\n  amazon_last_updated: new Date().toISOString(),\n  amazon_availability: amazonData.availability\n};\n\nreturn [{ json: strapiProduct }];"
+      },
+      "id": "prepare-strapi-data-pa",
+      "name": "Prepare Strapi Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "{{ $env.STRAPI_URL }}/api/coffee-products",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.STRAPI_API_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-strapi-product-pa",
+      "name": "Create Strapi Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\\n  \\\"success\\\": true,\\n  \\\"message\\\": \\\"Product imported successfully via PA API\\\",\\n  \\\"product\\\": {\\n    \\\"id\\\": {{ $json.data.id }},\\n    \\\"name\\\": \\\"{{ $json.data.name }}\\\",\\n    \\\"brand\\\": \\\"{{ $json.data.brand }}\\\",\\n    \\\"price\\\": {{ $json.data.price }},\\n    \\\"rating\\\": {{ $json.data.rating }},\\n    \\\"asin\\\": \\\"{{ $node[\\\"Process PA Data\\\"].json.asin }}\\\"\\n  }\\n}",
+        "options": {}
+      },
+      "id": "success-response-pa",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract ASIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract ASIN": {
+      "main": [
+        [
+          {
+            "node": "Generate AWS Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AWS Signature": {
+      "main": [
+        [
+          {
+            "node": "Fetch Amazon PA Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Amazon PA Data": {
+      "main": [
+        [
+          {
+            "node": "Process PA Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process PA Data": {
+      "main": [
+        [
+          {
+            "node": "Generate AI Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Content": {
+      "main": [
+        [
+          {
+            "node": "Prepare Strapi Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Strapi Data": {
+      "main": [
+        [
+          {
+            "node": "Create Strapi Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Strapi Product": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["amazon", "pa-api", "coffee", "automation", "strapi"],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-20T16:00:00.000Z",
+  "versionId": "1"
+}

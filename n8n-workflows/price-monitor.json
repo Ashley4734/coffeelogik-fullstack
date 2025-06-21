@@ -1,0 +1,351 @@
+{
+  "name": "Amazon Price Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Daily Price Check",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "{{ $env.STRAPI_URL }}/api/coffee-products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filters[amazon_asin][$notNull]",
+              "value": "true"
+            },
+            {
+              "name": "pagination[limit]",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.STRAPI_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-products-with-asin",
+      "name": "Fetch Products with ASIN",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract product data for price monitoring\nconst response = $input.first().json;\nconst products = response.data || [];\n\nif (products.length === 0) {\n  return [{ json: { message: 'No products with ASIN found', count: 0 } }];\n}\n\n// Prepare products for price checking\nconst productsToCheck = products.map(product => ({\n  strapiId: product.id,\n  documentId: product.documentId,\n  name: product.name,\n  asin: product.amazon_asin,\n  currentPrice: product.price,\n  lastUpdated: product.amazon_last_updated,\n  brand: product.brand\n}));\n\nconsole.log(`Found ${productsToCheck.length} products to check`);\n\nreturn productsToCheck.map(product => ({ json: product }));"
+      },
+      "id": "prepare-price-check",
+      "name": "Prepare Price Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "batch-process",
+      "name": "Batch Process (5 at a time)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://advertising-api.amazon.com/v2/products",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "amazonApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Amazon-Advertising-API-ClientId",
+              "value": "{{ $env.AMAZON_CLIENT_ID }}"
+            },
+            {
+              "name": "Amazon-Advertising-API-Scope", 
+              "value": "{{ $env.AMAZON_ADVERTISING_ACCOUNT_ID }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "asins",
+              "value": "={{ $itemMatching(0).map(item => item.json.asin) }}"
+            },
+            {
+              "name": "marketplace",
+              "value": "ATVPDKIKX0DER"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "check-amazon-prices",
+      "name": "Check Amazon Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compare prices and identify updates needed\nconst amazonResponse = $input.first().json;\nconst currentBatch = $node[\"Batch Process (5 at a time)\"].json;\nconst products = amazonResponse.products || [];\n\nconst priceUpdates = [];\nconst PRICE_CHANGE_THRESHOLD = 0.05; // 5% change threshold\n\ncurrentBatch.forEach(item => {\n  const product = item.json;\n  const amazonProduct = products.find(p => p.asin === product.asin);\n  \n  if (amazonProduct && amazonProduct.price) {\n    const newPrice = parseFloat(amazonProduct.price.amount);\n    const currentPrice = parseFloat(product.currentPrice);\n    const priceChange = Math.abs(newPrice - currentPrice) / currentPrice;\n    \n    // Only update if price changed by more than threshold\n    if (priceChange > PRICE_CHANGE_THRESHOLD) {\n      priceUpdates.push({\n        strapiId: product.strapiId,\n        documentId: product.documentId,\n        name: product.name,\n        asin: product.asin,\n        oldPrice: currentPrice,\n        newPrice: newPrice,\n        priceChange: ((newPrice - currentPrice) / currentPrice * 100).toFixed(2),\n        availability: amazonProduct.availability,\n        lastUpdated: new Date().toISOString()\n      });\n    }\n  }\n});\n\nif (priceUpdates.length === 0) {\n  return [{ json: { message: 'No significant price changes in this batch', batchSize: currentBatch.length } }];\n}\n\nconsole.log(`Found ${priceUpdates.length} price updates in this batch`);\n\nreturn priceUpdates.map(update => ({ json: update }));"
+      },
+      "id": "compare-prices",
+      "name": "Compare Prices",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "{{ $env.STRAPI_URL }}/api/coffee-products/{{ $json.documentId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization", 
+              "value": "Bearer {{ $env.STRAPI_API_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "={\n  \"price\": {{ $json.newPrice }},\n  \"amazon_last_updated\": \"{{ $json.lastUpdated }}\",\n  \"amazon_availability\": \"{{ $json.availability }}\"\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-strapi-price",
+      "name": "Update Strapi Price",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log price update for monitoring\nconst updateResult = $input.first().json;\nconst priceUpdate = $node[\"Compare Prices\"].json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  product: priceUpdate.name,\n  asin: priceUpdate.asin,\n  oldPrice: priceUpdate.oldPrice,\n  newPrice: priceUpdate.newPrice,\n  priceChange: priceUpdate.priceChange + '%',\n  success: updateResult.data ? true : false,\n  strapiId: updateResult.data?.id || priceUpdate.strapiId\n};\n\nconsole.log('Price update logged:', JSON.stringify(logEntry, null, 2));\n\nreturn [{ json: logEntry }];"
+      },
+      "id": "log-price-update",
+      "name": "Log Price Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "rate-limit-delay",
+      "name": "Rate Limit Delay",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1340, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $node[\"Batch Process (5 at a time)\"].json.done }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-if-done",
+      "name": "Check if Done",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "{{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "✅ Daily price monitoring completed. Check logs for details."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "completion-notification",
+      "name": "Completion Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2220, 300]
+    }
+  ],
+  "connections": {
+    "Daily Price Check": {
+      "main": [
+        [
+          {
+            "node": "Fetch Products with ASIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Products with ASIN": {
+      "main": [
+        [
+          {
+            "node": "Prepare Price Check", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Price Check": {
+      "main": [
+        [
+          {
+            "node": "Batch Process (5 at a time)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Process (5 at a time)": {
+      "main": [
+        [
+          {
+            "node": "Check Amazon Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Amazon Prices": {
+      "main": [
+        [
+          {
+            "node": "Compare Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare Prices": {
+      "main": [
+        [
+          {
+            "node": "Update Strapi Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Strapi Price": {
+      "main": [
+        [
+          {
+            "node": "Log Price Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Price Update": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Delay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Delay": {
+      "main": [
+        [
+          {
+            "node": "Check if Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Done": {
+      "main": [
+        [
+          {
+            "node": "Completion Notification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Batch Process (5 at a time)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["amazon", "price-monitoring", "automation", "strapi"],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-20T16:00:00.000Z",
+  "versionId": "1"
+}

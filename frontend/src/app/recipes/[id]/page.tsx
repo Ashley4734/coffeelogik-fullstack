@@ -3,6 +3,8 @@ import { ArrowLeftIcon, ClockIcon, UsersIcon, AcademicCapIcon, CheckCircleIcon }
 import { getRecipe, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
+import { Metadata } from "next";
+import { generateRecipeStructuredData } from "@/components/SEO";
 
 function getDifficultyColor(difficulty: string) {
   switch (difficulty) {
@@ -14,6 +16,53 @@ function getDifficultyColor(difficulty: string) {
       return "bg-red-50 text-red-700 ring-red-600/20";
     default:
       return "bg-gray-50 text-gray-700 ring-gray-600/20";
+  }
+}
+
+// Generate metadata for each recipe
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const recipe = await getRecipe(id);
+    const imageUrl = recipe.featured_image ? getStrapiMedia(recipe.featured_image.url) : null;
+    const url = `/recipes/${recipe.slug || id}`;
+    
+    return {
+      title: `${recipe.name} - Coffee Recipe`,
+      description: recipe.description || `Learn how to make ${recipe.name} with our detailed ${recipe.brew_method} recipe guide. Perfect for ${recipe.difficulty_level.toLowerCase()} coffee enthusiasts.`,
+      keywords: `${recipe.name}, ${recipe.brew_method}, coffee recipe, ${recipe.difficulty_level}, brewing guide`,
+      authors: recipe.author ? [{ name: recipe.author.name }] : undefined,
+      alternates: {
+        canonical: url,
+      },
+      openGraph: {
+        title: `${recipe.name} - Coffee Recipe`,
+        description: recipe.description || `Learn how to make ${recipe.name} with our detailed ${recipe.brew_method} recipe guide.`,
+        url: url,
+        type: 'article',
+        images: imageUrl ? [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: recipe.name,
+          }
+        ] : undefined,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${recipe.name} - Coffee Recipe`,
+        description: recipe.description || `Learn how to make ${recipe.name} with our detailed ${recipe.brew_method} recipe guide.`,
+        images: imageUrl ? [imageUrl] : undefined,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata for recipe:', error);
+    return {
+      title: 'Coffee Recipe - CoffeeLogik',
+      description: 'Discover detailed coffee brewing recipes and techniques.',
+    };
   }
 }
 
@@ -33,8 +82,37 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
     notFound();
   }
   
+  // Generate structured data for the recipe
+  const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(ing => {
+    if (typeof ing === "object" && ing !== null && "item" in ing) {
+      const item = ing as {item: string; amount?: string};
+      return item.item + (item.amount ? ` - ${item.amount}` : "");
+    }
+    return String(ing);
+  }) : [];
+  
+  const structuredData = generateRecipeStructuredData({
+    name: recipe.name,
+    description: recipe.description || `A delicious ${recipe.brew_method} coffee recipe`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com'}/recipes/${recipe.slug || id}`,
+    imageUrl: recipe.featured_image ? getStrapiMedia(recipe.featured_image.url) : undefined,
+    prepTime: recipe.prep_time,
+    totalTime: recipe.total_time,
+    servings: recipe.servings,
+    ingredients,
+    instructions: recipe.instructions,
+    authorName: recipe.author?.name,
+  });
+  
   return (
-    <div className="bg-white py-16 sm:py-24">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
+      <div className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-8">
@@ -204,6 +282,7 @@ export default async function RecipePage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

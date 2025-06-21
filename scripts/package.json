@@ -1,0 +1,20 @@
+{
+  "name": "coffeelogik-image-generator",
+  "version": "1.0.0",
+  "description": "Generate images for coffee brewing guides using Replicate API",
+  "main": "generate-images.js",
+  "scripts": {
+    "generate": "node generate-images.js",
+    "generate-featured": "node generate-featured-only.js",
+    "generate-steps": "node generate-steps-only.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.5.0",
+    "form-data": "^4.0.3",
+    "replicate": "^0.34.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

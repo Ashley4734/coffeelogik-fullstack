@@ -5,6 +5,61 @@ import { notFound } from "next/navigation";
 import { marked } from "marked";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 import { hasAmazonLinks } from "@/lib/amazon";
+import { Metadata } from "next";
+import { generateArticleStructuredData } from "@/components/SEO";
+
+// Generate metadata for each blog post
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const blogPost = await getBlogPost(id);
+    const imageUrl = blogPost.featured_image ? getStrapiMedia(blogPost.featured_image.url) : null;
+    const url = `/blog/${blogPost.slug || id}`;
+    
+    return {
+      title: blogPost.meta_title || blogPost.title,
+      description: blogPost.meta_description || blogPost.excerpt || blogPost.content.substring(0, 160).replace(/<[^>]*>/g, ''),
+      keywords: blogPost.categories?.map(cat => cat.name).join(', '),
+      authors: blogPost.author ? [{ name: blogPost.author.name }] : undefined,
+      publishedTime: blogPost.publishedAt,
+      alternates: {
+        canonical: url,
+      },
+      openGraph: {
+        title: blogPost.title,
+        description: blogPost.excerpt || blogPost.content.substring(0, 160).replace(/<[^>]*>/g, ''),
+        url: url,
+        type: 'article',
+        publishedTime: blogPost.publishedAt,
+        modifiedTime: blogPost.updatedAt,
+        authors: blogPost.author ? [blogPost.author.name] : undefined,
+        section: blogPost.categories?.[0]?.name,
+        tags: blogPost.categories?.map(cat => cat.name),
+        images: imageUrl ? [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: blogPost.featured_image?.alternativeText || blogPost.title,
+          }
+        ] : undefined,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: blogPost.title,
+        description: blogPost.excerpt || blogPost.content.substring(0, 160).replace(/<[^>]*>/g, ''),
+        images: imageUrl ? [imageUrl] : undefined,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata for blog post:', error);
+    return {
+      title: 'Blog Post - CoffeeLogik',
+      description: 'Discover expert coffee insights and brewing tips.',
+    };
+  }
+}
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,8 +90,28 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
   
   // Check if the post content contains Amazon links
   const showAmazonDisclaimer = hasAmazonLinks(postData.content);
+  
+  // Generate structured data for the article
+  const structuredData = generateArticleStructuredData({
+    title: postData.title,
+    description: postData.excerpt || postData.content.substring(0, 160).replace(/<[^>]*>/g, ''),
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com'}/blog/${postData.slug || id}`,
+    imageUrl: postData.featured_image ? getStrapiMedia(postData.featured_image.url) : undefined,
+    publishedDate: postData.publishedAt,
+    modifiedDate: postData.updatedAt,
+    authorName: postData.author?.name,
+    categoryName: postData.categories?.[0]?.name,
+  });
+  
   return (
-    <div className="bg-white py-16 sm:py-24">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
+      <div className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-8">
@@ -176,6 +251,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

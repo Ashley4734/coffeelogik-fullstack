@@ -3,6 +3,21 @@ export const revalidate = 60; // Revalidate every 60 seconds
 import Link from "next/link";
 import { ClockIcon, UserIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
 import { getBrewingGuides, getStrapiMedia } from "@/lib/api";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Coffee Brewing Guides - Master Every Method',
+  description: 'Learn professional coffee brewing techniques with our comprehensive guides. From pour over to espresso, master every brewing method with expert instruction.',
+  keywords: 'coffee brewing guides, brewing methods, pour over guide, espresso guide, french press guide, coffee techniques',
+  openGraph: {
+    title: 'Coffee Brewing Guides - Master Every Method',
+    description: 'Learn professional coffee brewing techniques with our comprehensive guides.',
+    type: 'website',
+  },
+  alternates: {
+    canonical: '/brewing-guides',
+  },
+};
 
 const methods = [
   "All Methods",
