@@ -381,12 +381,15 @@ export async function getBrewingGuide(slug: string) {
     const data = response.data as StrapiResponse<BrewingGuide>;
     
     if (data.data.length === 0) {
-      throw new Error("Brewing guide not found");
+      throw new Error(`Brewing guide not found: ${slug}`);
     }
     
     return data.data[0];
   } catch (error) {
-    console.error("Error fetching brewing guide:", error);
+    // Only log errors in development to reduce console spam
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Error fetching brewing guide "${slug}":`, error);
+    }
     throw error;
   }
 }
