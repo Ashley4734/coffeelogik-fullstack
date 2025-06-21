@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Remove standalone output for development
   // output: 'standalone', // Only use this for Docker production builds
+  eslint: {
+    // Disable the no-img-element rule during builds
+    ignoreDuringBuilds: false,
+    dirs: ['pages', 'app', 'components', 'lib', 'src'],
+  },
   images: {
     remotePatterns: [
       {
