@@ -2,6 +2,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
 import { getBlogPosts, getRecipes, getStrapiMedia, calculateReadingTime } from "@/lib/api";
+import ApiDiagnostic from "@/components/ApiDiagnostic";
 
 export default async function Home() {
   // Fetch featured content from Strapi
@@ -22,6 +23,9 @@ export default async function Home() {
   }
   return (
     <div className="bg-white">
+      {/* API Diagnostic - Remove after fixing */}
+      <ApiDiagnostic />
+      
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
