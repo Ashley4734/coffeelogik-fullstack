@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'y0o4w84ckoockck8o0ss8s48.tealogik.com',
+        hostname: 'api.coffeelogik.com',
         pathname: '/uploads/**',
       },
       {
