@@ -51,7 +51,7 @@ export default async function BrewingGuidePage({ params }: { params: Promise<{ i
   try {
     // Fetch the specific brewing guide by slug
     guide = await getBrewingGuide(id);
-  } catch (error) {
+  } catch {
     // Log error but don't spam console with repeated messages
     if (process.env.NODE_ENV === 'development') {
       console.error(`Brewing guide not found for slug: ${id}`);
