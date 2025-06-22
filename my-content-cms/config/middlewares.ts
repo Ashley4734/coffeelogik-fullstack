@@ -15,6 +15,7 @@ export default [
             'market-assets.strapi.io',
             'https://coffeelogik.com',
             'https://api.coffeelogik.com',
+            'https://harrisreviews.com',
           ],
           'media-src': [
             "'self'",
@@ -23,6 +24,7 @@ export default [
             'market-assets.strapi.io',
             'https://coffeelogik.com',
             'https://api.coffeelogik.com',
+            'https://harrisreviews.com',
           ],
           upgradeInsecureRequests: null,
         },
