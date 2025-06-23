@@ -9,8 +9,6 @@ const footerNavigation = {
   ],
   company: [
     { name: 'Authors', href: '/authors' },
-    { name: 'All Guides', href: '/brewing-guides' },
-    { name: 'Coffee Tips', href: '/blog' },
     { name: 'Equipment Reviews', href: '/products' },
   ],
   social: [
@@ -120,7 +118,7 @@ export default function Footer() {
         <div className="mt-16 border-t border-amber-200 pt-8 sm:mt-20 lg:mt-24">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs leading-5 text-gray-500">
-              &copy; 2024 Coffee Logik. All rights reserved.
+              &copy; {new Date().getFullYear()} Coffee Logik. All rights reserved.
             </p>
             <div className="mt-4 flex space-x-6 sm:mt-0">
               <Link href="/privacy" className="text-xs leading-5 text-gray-500 hover:text-gray-600">
