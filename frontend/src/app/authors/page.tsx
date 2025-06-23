@@ -119,9 +119,9 @@ export default async function AuthorsPage() {
               Are you a coffee expert? We&apos;re always looking for passionate writers to share their knowledge with our community.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button className="rounded-md bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
+              <Link href="/apply-to-write" className="rounded-md bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 text-center">
                 Apply to Write
-              </button>
+              </Link>
               <Link href="/blog" className="rounded-md border border-amber-600 px-6 py-3 text-sm font-semibold text-amber-600 hover:bg-amber-50">
                 Read Our Articles
               </Link>
