@@ -151,7 +151,7 @@ Date: ${new Date().toLocaleDateString()}
                 </div>
                 <div className="flex items-start">
                   <UserIcon className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">If selected, we&apos;ll schedule a brief interview call</span>
+                  <span className="text-gray-700">If selected, we&apos;ll reach out via email</span>
                 </div>
               </div>
             </div>
