@@ -1,4 +1,4 @@
-import { getStrapiMedia } from '@/lib/api';
+// Removed unused import: getStrapiMedia
 
 interface SEOProps {
   title?: string;
@@ -26,19 +26,12 @@ const defaultSEO = {
 
 // This component is deprecated in favor of Next.js 13+ metadata API
 // It's kept for backward compatibility but should not be used in new code
-export default function SEO({
-  title,
-  description = defaultSEO.description,
-  canonical,
-  ogImage,
-  ogType = 'website',
-  article,
-  structuredData,
-  noindex = false,
-}: SEOProps) {
+export default function SEO(_props: SEOProps) {
   // In Next.js 13+ App Router, SEO should be handled via metadata API in page components
   // This component is deprecated and should not be used
-  console.warn('SEO component is deprecated. Use Next.js metadata API instead.');
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('SEO component is deprecated. Use Next.js metadata API instead.');
+  }
   
   // Return null to avoid rendering anything that could conflict with Server Components
   return null;
