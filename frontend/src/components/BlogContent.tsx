@@ -72,6 +72,8 @@ export default function BlogContent({ initialPosts, categories, initialLimit = 5
       }
     } catch (error) {
       console.error('Error loading more posts:', error);
+      // Show user-friendly error message
+      alert('Unable to load more posts. Please try again later.');
     } finally {
       setIsLoadingMore(false);
     }

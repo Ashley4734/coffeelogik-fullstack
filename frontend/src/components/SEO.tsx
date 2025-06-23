@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import { getStrapiMedia } from '@/lib/api';
 
 interface SEOProps {
@@ -25,6 +24,8 @@ const defaultSEO = {
   domain: 'https://coffeelogik.com',
 };
 
+// This component is deprecated in favor of Next.js 13+ metadata API
+// It's kept for backward compatibility but should not be used in new code
 export default function SEO({
   title,
   description = defaultSEO.description,
@@ -35,73 +36,12 @@ export default function SEO({
   structuredData,
   noindex = false,
 }: SEOProps) {
-  const fullTitle = title ? `${title} | ${defaultSEO.siteName}` : defaultSEO.title;
-  const fullCanonical = canonical ? `${defaultSEO.domain}${canonical}` : undefined;
-  const fullOgImage = ogImage ? getStrapiMedia(ogImage) : `${defaultSEO.domain}/og-image.jpg`;
-
-  return (
-    <Head>
-      {/* Basic Meta Tags */}
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-      {canonical && <link rel="canonical" href={fullCanonical} />}
-      {noindex && <meta name="robots" content="noindex,nofollow" />}
-      
-      {/* Viewport and Mobile */}
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#d97706" />
-      
-      {/* Open Graph Tags */}
-      <meta property="og:site_name" content={defaultSEO.siteName} />
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
-      <meta property="og:type" content={ogType} />
-      <meta property="og:image" content={fullOgImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      {canonical && <meta property="og:url" content={fullCanonical} />}
-      
-      {/* Article specific Open Graph */}
-      {article && ogType === 'article' && (
-        <>
-          {article.publishedTime && (
-            <meta property="article:published_time" content={article.publishedTime} />
-          )}
-          {article.modifiedTime && (
-            <meta property="article:modified_time" content={article.modifiedTime} />
-          )}
-          {article.author && (
-            <meta property="article:author" content={article.author} />
-          )}
-          {article.section && (
-            <meta property="article:section" content={article.section} />
-          )}
-          {article.tags && article.tags.map((tag, index) => (
-            <meta key={index} property="article:tag" content={tag} />
-          ))}
-        </>
-      )}
-      
-      {/* Twitter Card Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={fullOgImage} />
-      
-      {/* Additional Meta Tags */}
-      <meta name="author" content="CoffeeLogik" />
-      <meta name="language" content="en" />
-      <meta name="revisit-after" content="7 days" />
-      
-      {/* Structured Data */}
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      )}
-    </Head>
-  );
+  // In Next.js 13+ App Router, SEO should be handled via metadata API in page components
+  // This component is deprecated and should not be used
+  console.warn('SEO component is deprecated. Use Next.js metadata API instead.');
+  
+  // Return null to avoid rendering anything that could conflict with Server Components
+  return null;
 }
 
 // Helper function to generate structured data for articles

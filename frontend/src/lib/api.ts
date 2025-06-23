@@ -189,12 +189,15 @@ export async function getBlogPost(slug: string) {
     const data = response.data as StrapiResponse<BlogPost>;
     
     if (data.data.length === 0) {
-      throw new Error("Blog post not found");
+      throw new Error(`Blog post not found: ${slug}`);
     }
     
     return data.data[0];
   } catch (error) {
-    console.error("Error fetching blog post:", error);
+    // Only log errors in development to reduce console spam in production
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Error fetching blog post "${slug}":`, error);
+    }
     throw error;
   }
 }
