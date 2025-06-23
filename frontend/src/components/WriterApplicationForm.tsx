@@ -294,21 +294,21 @@ Date: ${new Date().toLocaleDateString()}
                       name="expertise"
                       value={formData.expertise}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.expertise ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                     >
-                      <option value="">Select your primary expertise</option>
-                      <option value="Brewing Methods">Brewing Methods</option>
-                      <option value="Coffee Origins & Sourcing">Coffee Origins & Sourcing</option>
-                      <option value="Equipment & Gear">Equipment & Gear</option>
-                      <option value="Roasting">Roasting</option>
-                      <option value="Barista Skills">Barista Skills</option>
-                      <option value="Coffee Business">Coffee Business</option>
-                      <option value="Coffee Science">Coffee Science</option>
-                      <option value="Specialty Coffee">Specialty Coffee</option>
-                      <option value="Coffee Culture & History">Coffee Culture & History</option>
-                      <option value="Other">Other</option>
+                      <option value="" className="text-gray-900">Select your primary expertise</option>
+                      <option value="Brewing Methods" className="text-gray-900">Brewing Methods</option>
+                      <option value="Coffee Origins & Sourcing" className="text-gray-900">Coffee Origins & Sourcing</option>
+                      <option value="Equipment & Gear" className="text-gray-900">Equipment & Gear</option>
+                      <option value="Roasting" className="text-gray-900">Roasting</option>
+                      <option value="Barista Skills" className="text-gray-900">Barista Skills</option>
+                      <option value="Coffee Business" className="text-gray-900">Coffee Business</option>
+                      <option value="Coffee Science" className="text-gray-900">Coffee Science</option>
+                      <option value="Specialty Coffee" className="text-gray-900">Specialty Coffee</option>
+                      <option value="Coffee Culture & History" className="text-gray-900">Coffee Culture & History</option>
+                      <option value="Other" className="text-gray-900">Other</option>
                     </select>
                     {errors.expertise && <p className="mt-1 text-sm text-red-600">{errors.expertise}</p>}
                   </div>
@@ -400,13 +400,13 @@ Date: ${new Date().toLocaleDateString()}
                       name="availability"
                       value={formData.availability}
                       onChange={handleInputChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
                     >
-                      <option value="">Select your availability</option>
-                      <option value="1-2 articles per month">1-2 articles per month</option>
-                      <option value="3-4 articles per month">3-4 articles per month</option>
-                      <option value="5+ articles per month">5+ articles per month</option>
-                      <option value="As needed/project basis">As needed/project basis</option>
+                      <option value="" className="text-gray-900">Select your availability</option>
+                      <option value="1-2 articles per month" className="text-gray-900">1-2 articles per month</option>
+                      <option value="3-4 articles per month" className="text-gray-900">3-4 articles per month</option>
+                      <option value="5+ articles per month" className="text-gray-900">5+ articles per month</option>
+                      <option value="As needed/project basis" className="text-gray-900">As needed/project basis</option>
                     </select>
                   </div>
                   <div>
