@@ -117,7 +117,7 @@ export default async function ProductsPage() {
                   <TrophyIcon className="h-6 w-6 text-amber-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{products.filter(product => product.featured).length}</div>
-                <div className="text-sm text-gray-600">Editor's Choice</div>
+                <div className="text-sm text-gray-600">Editor&apos;s Choice</div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
