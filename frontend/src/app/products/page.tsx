@@ -32,9 +32,9 @@ const categories = [
 const sortOptions = [
   "Featured",
   "Highest Rated",
-  "Price: Low to High",
-  "Price: High to Low",
-  "Most Reviews"
+  "Most Reviews",
+  "Newest First",
+  "Oldest First"
 ];
 
 function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: number }) {
@@ -234,18 +234,21 @@ export default async function ProductsPage() {
                   )}
                   
                   <div className="flex items-center justify-between">
-                    {product.price && (
-                      <div>
-                        <span className="text-xs text-gray-500">Best Price</span>
-                        <div className="text-lg font-bold text-gray-900">${product.price}</div>
-                      </div>
-                    )}
                     <Link 
                       href={`/products/${product.slug}`}
                       className="inline-flex items-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 transition-colors"
                     >
                       Read Review
                     </Link>
+                    {product.affiliate_link && (
+                      <Link 
+                        href={product.affiliate_link} 
+                        target="_blank" 
+                        className="inline-flex items-center rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
+                      >
+                        View on Amazon
+                      </Link>
+                    )}
                   </div>
                 </div>
               </article>
@@ -305,20 +308,12 @@ export default async function ProductsPage() {
                   
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
                   
-                  <div className="flex items-center justify-between mb-4">
-                    {product.rating && (
-                      <div className="flex items-center gap-2">
-                        <StarRating rating={product.rating} />
-                        <span className="text-sm font-medium text-gray-900">{product.rating}</span>
-                      </div>
-                    )}
-                    {product.price && (
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500">Best Price</div>
-                        <div className="text-lg font-bold text-gray-900">${product.price}</div>
-                      </div>
-                    )}
-                  </div>
+                  {product.rating && (
+                    <div className="flex items-center gap-2 mb-4">
+                      <StarRating rating={product.rating} />
+                      <span className="text-sm font-medium text-gray-900">{product.rating}</span>
+                    </div>
+                  )}
                   
                   <div className="flex gap-2">
                     <Link 
@@ -333,7 +328,7 @@ export default async function ProductsPage() {
                         target="_blank" 
                         className="rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
                       >
-                        Buy
+                        View on Amazon
                       </Link>
                     )}
                   </div>

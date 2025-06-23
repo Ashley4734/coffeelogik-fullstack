@@ -205,14 +205,8 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   </p>
                 </div>
 
-                {/* Price and Buy Button */}
+                {/* Buy Button */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                  {product.price && (
-                    <div className="text-center mb-4">
-                      <div className="text-3xl font-bold text-gray-900 mb-2">${product.price}</div>
-                      <div className="text-sm text-gray-600">Best price found online</div>
-                    </div>
-                  )}
                   
                   {product.affiliate_link ? (
                     <Link
@@ -222,7 +216,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       className="block w-full text-center rounded-lg bg-amber-600 px-6 py-4 text-lg font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-colors mb-3"
                     >
                       <ShoppingBagIcon className="inline mr-2 h-5 w-5" />
-                      Buy Now
+                      View on Amazon
                     </Link>
                   ) : (
                     <button
@@ -275,12 +269,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     <div className="flex justify-between py-2 border-b border-gray-200">
                       <span className="font-medium text-gray-900">Roast Level:</span>
                       <span className="text-gray-600">{product.roast_level}</span>
-                    </div>
-                  )}
-                  {product.price && (
-                    <div className="flex justify-between py-2 border-b border-gray-200">
-                      <span className="font-medium text-gray-900">Price:</span>
-                      <span className="text-gray-600">${product.price}</span>
                     </div>
                   )}
                   <div className="flex justify-between py-2">
@@ -398,7 +386,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       className="inline-flex items-center rounded-xl bg-amber-600 px-8 py-4 text-lg font-semibold text-white shadow-lg hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all transform hover:scale-105"
                     >
                       <ShoppingBagIcon className="mr-3 h-6 w-6" />
-                      Buy Now - Best Price
+                      View on Amazon
                     </Link>
                   )}
                 </div>
