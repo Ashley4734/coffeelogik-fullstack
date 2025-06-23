@@ -26,7 +26,7 @@ const defaultSEO = {
 
 // This component is deprecated in favor of Next.js 13+ metadata API
 // It's kept for backward compatibility but should not be used in new code
-export default function SEO(_props: SEOProps) {
+export default function SEO() {
   // In Next.js 13+ App Router, SEO should be handled via metadata API in page components
   // This component is deprecated and should not be used
   if (process.env.NODE_ENV === 'development') {
