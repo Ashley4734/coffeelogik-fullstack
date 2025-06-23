@@ -1,21 +1,5 @@
 // Removed unused import: getStrapiMedia
-
-interface SEOProps {
-  title?: string;
-  description?: string;
-  canonical?: string;
-  ogImage?: string;
-  ogType?: 'website' | 'article' | 'product';
-  article?: {
-    publishedTime?: string;
-    modifiedTime?: string;
-    author?: string;
-    section?: string;
-    tags?: string[];
-  };
-  structuredData?: Record<string, unknown>;
-  noindex?: boolean;
-}
+// Removed unused interface: SEOProps (deprecated component)
 
 const defaultSEO = {
   title: 'CoffeeLogik - Expert Coffee Brewing Guides & Reviews',
