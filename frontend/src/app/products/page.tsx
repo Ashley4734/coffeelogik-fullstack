@@ -225,8 +225,7 @@ export default async function ProductsPage() {
                   </div>
                   
                   <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 mb-3 leading-tight">
-                    <Link href={`/products/${product.slug}`}>
-                      <span className="absolute inset-0" />
+                    <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
                       {product.name} Review
                     </Link>
                   </h3>
@@ -249,7 +248,8 @@ export default async function ProductsPage() {
                     {product.affiliate_link && (
                       <Link 
                         href={product.affiliate_link} 
-                        target="_blank" 
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
                       >
                         View on Amazon
@@ -306,8 +306,7 @@ export default async function ProductsPage() {
                   </div>
                   
                   <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-600 mb-2 leading-tight">
-                    <Link href={`/products/${product.slug}`}>
-                      <span className="absolute inset-0" />
+                    <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
                       {product.name} Review
                     </Link>
                   </h3>
@@ -331,7 +330,8 @@ export default async function ProductsPage() {
                     {product.affiliate_link && (
                       <Link 
                         href={product.affiliate_link} 
-                        target="_blank" 
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
                       >
                         View on Amazon
