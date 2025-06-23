@@ -22,6 +22,7 @@ export default async function BlogPage() {
   // Fetch blog posts and categories from Strapi
   let blogPosts: import("@/lib/api").BlogPost[] = [];
   let categories: import("@/lib/api").Category[] = [];
+  let totalPosts = 0;
 
   try {
     const [postsResponse, categoriesResponse] = await Promise.all([
@@ -30,6 +31,7 @@ export default async function BlogPage() {
     ]);
     
     blogPosts = Array.isArray(postsResponse?.data) ? postsResponse.data : [];
+    totalPosts = postsResponse?.meta?.pagination?.total || blogPosts.length;
     const strapiCategories = Array.isArray(categoriesResponse?.data) ? categoriesResponse.data : [];
     categories = [{ id: 0, name: "All", slug: "all" } as import("@/lib/api").Category, ...strapiCategories];
   } catch (error) {
@@ -39,7 +41,7 @@ export default async function BlogPage() {
   }
   return (
     <div className="bg-white">
-      <BlogContent initialPosts={blogPosts} categories={categories} />
+      <BlogContent initialPosts={blogPosts} categories={categories} initialLimit={50} totalPosts={totalPosts} />
     </div>
   );
 }

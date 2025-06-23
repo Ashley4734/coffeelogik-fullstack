@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from "next/link";
 import { FireIcon, ClockIcon, ChartBarIcon } from "@heroicons/react/24/outline";
-import { getStrapiMedia, calculateReadingTime, formatDate } from "@/lib/api";
+import { getStrapiMedia, calculateReadingTime, formatDate, getBlogPosts } from "@/lib/api";
 import BlogSearch from './BlogSearch';
 
 interface BlogPost {
@@ -32,11 +32,16 @@ interface Category {
 interface BlogContentProps {
   initialPosts: BlogPost[];
   categories: Category[];
+  initialLimit?: number;
+  totalPosts?: number;
 }
 
-export default function BlogContent({ initialPosts, categories }: BlogContentProps) {
+export default function BlogContent({ initialPosts, categories, initialLimit = 50, totalPosts }: BlogContentProps) {
   const [filteredPosts, setFilteredPosts] = useState(initialPosts);
   const [searchActive, setSearchActive] = useState(false);
+  const [currentLimit, setCurrentLimit] = useState(initialLimit);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [allPosts, setAllPosts] = useState(initialPosts);
 
   // Group categories by type for better organization
   const mainCategories = categories.filter(cat => 
@@ -44,13 +49,35 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
   ).slice(0, 5);
   
   const featuredPosts = filteredPosts.filter(post => post.featured).slice(0, 2);
-  const totalPosts = initialPosts.length;
+  const currentTotalPosts = totalPosts || allPosts.length;
   const filteredCount = filteredPosts.length;
 
   const handleFilteredPosts = (posts: BlogPost[]) => {
     setFilteredPosts(posts);
-    setSearchActive(posts.length !== initialPosts.length || posts !== initialPosts);
+    setSearchActive(posts.length !== allPosts.length || posts !== allPosts);
   };
+
+  const loadMore = async () => {
+    if (isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const newLimit = currentLimit + 12;
+      const response = await getBlogPosts({ limit: newLimit });
+      
+      if (response?.data) {
+        setAllPosts(response.data);
+        setFilteredPosts(response.data);
+        setCurrentLimit(newLimit);
+      }
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const hasMorePosts = currentTotalPosts > allPosts.length;
 
   return (
     <>
@@ -63,7 +90,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
               <div className="flex items-center space-x-4 bg-white/70 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm">
                 <FireIcon className="h-5 w-5 text-amber-600" />
                 <span className="text-sm font-medium text-amber-700">
-                  {searchActive ? `${filteredCount} of ${totalPosts}` : `${totalPosts}`} Articles {searchActive && 'Found'}
+                  {searchActive ? `${filteredCount} of ${currentTotalPosts}` : `${currentTotalPosts}`} Articles {searchActive && 'Found'}
                 </span>
               </div>
             </div>
@@ -75,7 +102,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
             </p>
             
             {/* Search Bar */}
-            <BlogSearch posts={initialPosts} onFilteredPosts={handleFilteredPosts} />
+            <BlogSearch posts={allPosts} onFilteredPosts={handleFilteredPosts} />
           </div>
         </div>
       </div>
@@ -90,7 +117,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
                   <ClockIcon className="h-6 w-6 text-blue-600" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{searchActive ? filteredCount : totalPosts}</div>
+                <div className="text-2xl font-bold text-gray-900">{searchActive ? filteredCount : currentTotalPosts}</div>
                 <div className="text-sm text-gray-600">{searchActive ? 'Filtered' : 'Total'} Articles</div>
               </div>
               <div className="text-center">
@@ -143,7 +170,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
                 Showing {filteredCount} result{filteredCount !== 1 ? 's' : ''} 
               </span>
               <button 
-                onClick={() => handleFilteredPosts(initialPosts)}
+                onClick={() => handleFilteredPosts(allPosts)}
                 className="ml-3 text-amber-600 hover:text-amber-700 text-sm font-medium"
               >
                 Clear search
@@ -310,7 +337,7 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles found</h3>
               <p className="text-gray-600 mb-4">Try adjusting your search terms or browse all articles.</p>
               <button
-                onClick={() => handleFilteredPosts(initialPosts)}
+                onClick={() => handleFilteredPosts(allPosts)}
                 className="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500"
               >
                 View All Articles
@@ -320,10 +347,14 @@ export default function BlogContent({ initialPosts, categories }: BlogContentPro
         </div>
 
         {/* Load More */}
-        {filteredPosts.length > 0 && !searchActive && (
+        {filteredPosts.length > 0 && !searchActive && hasMorePosts && (
           <div className="mt-16 text-center">
-            <button className="rounded-md bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-colors">
-              Load More Articles
+            <button 
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="rounded-md bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load More Articles'}
             </button>
           </div>
         )}
