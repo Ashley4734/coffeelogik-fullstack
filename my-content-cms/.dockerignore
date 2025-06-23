@@ -47,3 +47,28 @@ temp
 # Build artifacts
 *.tgz
 *.tar.gz
+
+# Additional optimization
+.next
+.vercel
+.nuxt
+.output
+.vite
+.turbo
+.webpack
+.parcel-cache
+.cache-loader
+
+# Database
+*.sqlite
+*.db
+
+# Strapi specific
+.strapi-updater.json
+.strapi
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Development files
+tsconfig.tsbuildinfo
+.eslintcache
