@@ -119,7 +119,7 @@ export default function Header() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onFocus={() => searchTerm.length >= 2 && setShowResults(true)}
-                  className="rounded-full border border-gray-300 px-4 py-2 pr-10 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 w-64"
+                  className="rounded-full border border-gray-300 px-4 py-2 pr-10 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 w-64"
                 />
                 <button
                   type="submit"

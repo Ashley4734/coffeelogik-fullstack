@@ -184,10 +184,10 @@ export default function BrewingGuidesContent({ initialGuides }: BrewingGuidesCon
                   <select 
                     value={activeFilters.method}
                     onChange={(e) => handleMethodChange(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     {methods.map((method) => (
-                      <option key={method} value={method}>
+                      <option key={method} value={method} className="text-gray-900">
                         {method}
                       </option>
                     ))}
@@ -200,10 +200,10 @@ export default function BrewingGuidesContent({ initialGuides }: BrewingGuidesCon
                   <select 
                     value={activeFilters.difficulty}
                     onChange={(e) => handleDifficultyChange(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     {difficultyLevels.map((level) => (
-                      <option key={level} value={level}>
+                      <option key={level} value={level} className="text-gray-900">
                         {level}
                       </option>
                     ))}
@@ -216,10 +216,10 @@ export default function BrewingGuidesContent({ initialGuides }: BrewingGuidesCon
                   <select 
                     value={activeFilters.sort}
                     onChange={(e) => handleSortChange(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     {sortOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <option key={option.value} value={option.value} className="text-gray-900">
                         {option.label}
                       </option>
                     ))}

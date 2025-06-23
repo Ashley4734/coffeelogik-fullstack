@@ -369,7 +369,7 @@ export default async function ProductsPage() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               <button className="rounded-lg bg-amber-600 px-8 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 transition-colors">
                 Get Reviews
