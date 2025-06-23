@@ -2,7 +2,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
 import { StarIcon, TrophyIcon, CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
+import { StarIcon as StarOutlineIcon, ShieldCheckIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 import { getProducts, getStrapiMedia } from "@/lib/api";
 import { Metadata } from "next";
 
@@ -75,62 +75,105 @@ export default async function ProductsPage() {
     // Fallback to empty array if Strapi is not available
   }
   return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Header */}
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 mb-6">
-            <TrophyIcon className="mr-2 h-4 w-4" />
-            Expert Reviews & Testing
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl font-playfair">
-            Coffee Product Reviews
-          </h1>
-          <p className="mt-6 text-xl leading-8 text-gray-600">
-            In-depth, unbiased reviews of coffee equipment, beans, and accessories. 
-            Our experts test everything so you can make informed decisions.
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center">
-              <CheckCircleIcon className="mr-2 h-4 w-4 text-green-500" />
-              Expert Tested
+    <div className="bg-white">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center space-x-4 bg-white/70 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm">
+                <ShieldCheckIcon className="h-5 w-5 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">
+                  {products.length} Expert Reviews
+                </span>
+              </div>
             </div>
-            <div className="flex items-center">
-              <ClockIcon className="mr-2 h-4 w-4 text-amber-500" />
-              Updated Weekly
-            </div>
-            <div className="flex items-center">
-              <TrophyIcon className="mr-2 h-4 w-4 text-blue-500" />
-              Unbiased Reviews
-            </div>
+            <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl font-playfair mb-6">
+              Product <span className="text-blue-600">Reviews</span>
+            </h1>
+            <p className="text-xl leading-8 text-gray-700 mb-8">
+              In-depth, unbiased reviews of coffee equipment, beans, and accessories. Our experts test everything so you can make informed decisions.
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Filters and Sorting */}
-        <div className="mx-auto mt-16 max-w-4xl">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {/* Category Filter */}
-            <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Category</label>
-              <select className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Quick Stats & Filter Card */}
+        <div className="-mt-12 relative z-10">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 mx-auto max-w-4xl p-8">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
+                  <ShieldCheckIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{products.length}</div>
+                <div className="text-sm text-gray-600">Total Reviews</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mx-auto mb-3">
+                  <TrophyIcon className="h-6 w-6 text-amber-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{products.filter(product => product.featured).length}</div>
+                <div className="text-sm text-gray-600">Editor's Choice</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
+                  <ChartBarIcon className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{[...new Set(products.map(p => p.product_type))].length}</div>
+                <div className="text-sm text-gray-600">Product Categories</div>
+              </div>
             </div>
             
-            {/* Sort */}
-            <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Sort by</label>
-              <select className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                {sortOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+            {/* Quality Badges */}
+            <div className="text-center mb-8">
+              <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
+                  <CheckCircleIcon className="mr-2 h-4 w-4" />
+                  Expert Tested
+                </div>
+                <div className="flex items-center bg-amber-50 text-amber-700 px-4 py-2 rounded-full text-sm font-medium">
+                  <ClockIcon className="mr-2 h-4 w-4" />
+                  Updated Weekly
+                </div>
+                <div className="flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+                  <TrophyIcon className="mr-2 h-4 w-4" />
+                  Unbiased Reviews
+                </div>
+              </div>
+            </div>
+
+            {/* Filters and Sorting */}
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter & Sort Reviews</h3>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 max-w-lg mx-auto">
+                {/* Category Filter */}
+                <div>
+                  <label className="text-sm font-medium text-gray-900 mb-2 block">Category</label>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Sort */}
+                <div>
+                  <label className="text-sm font-medium text-gray-900 mb-2 block">Sort by</label>
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    {sortOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
