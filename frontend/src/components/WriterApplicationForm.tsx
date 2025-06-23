@@ -226,7 +226,7 @@ Date: ${new Date().toLocaleDateString()}
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                       placeholder="Your full name"
@@ -243,7 +243,7 @@ Date: ${new Date().toLocaleDateString()}
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                       placeholder="your.email@example.com"
@@ -260,7 +260,7 @@ Date: ${new Date().toLocaleDateString()}
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
                       placeholder="(555) 123-4567"
                     />
                   </div>
@@ -274,7 +274,7 @@ Date: ${new Date().toLocaleDateString()}
                       name="socialMedia"
                       value={formData.socialMedia}
                       onChange={handleInputChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
                       placeholder="https://twitter.com/yourusername"
                     />
                   </div>
@@ -322,7 +322,7 @@ Date: ${new Date().toLocaleDateString()}
                       rows={4}
                       value={formData.bio}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.bio ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                       placeholder="Tell us about your coffee background, certifications, and what makes you passionate about coffee..."
@@ -346,7 +346,7 @@ Date: ${new Date().toLocaleDateString()}
                       rows={4}
                       value={formData.experience}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.experience ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                       placeholder="Describe your writing experience, publications, blogs, or any content creation work..."
@@ -363,7 +363,7 @@ Date: ${new Date().toLocaleDateString()}
                       name="portfolio"
                       value={formData.portfolio}
                       onChange={handleInputChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
                       placeholder="https://yourportfolio.com or Google Drive link"
                     />
                   </div>
@@ -377,7 +377,7 @@ Date: ${new Date().toLocaleDateString()}
                       rows={6}
                       value={formData.writingSample}
                       onChange={handleInputChange}
-                      className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                      className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                         errors.writingSample ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-pink-500'
                       }`}
                       placeholder="Please provide a coffee-related writing sample (300-500 words). This could be about brewing techniques, coffee reviews, equipment guides, etc."
@@ -419,7 +419,7 @@ Date: ${new Date().toLocaleDateString()}
                       rows={3}
                       value={formData.additionalInfo}
                       onChange={handleInputChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500"
                       placeholder="Anything else you'd like us to know about your interest in writing for Coffee Logik?"
                     />
                   </div>
