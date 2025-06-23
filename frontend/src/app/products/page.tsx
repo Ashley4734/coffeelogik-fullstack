@@ -154,9 +154,9 @@ export default async function ProductsPage() {
                 {/* Category Filter */}
                 <div>
                   <label className="text-sm font-medium text-gray-900 mb-2 block">Category</label>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     {categories.map((category) => (
-                      <option key={category} value={category}>
+                      <option key={category} value={category} className="text-gray-900">
                         {category}
                       </option>
                     ))}
@@ -166,9 +166,9 @@ export default async function ProductsPage() {
                 {/* Sort */}
                 <div>
                   <label className="text-sm font-medium text-gray-900 mb-2 block">Sort by</label>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     {sortOptions.map((option) => (
-                      <option key={option} value={option}>
+                      <option key={option} value={option} className="text-gray-900">
                         {option}
                       </option>
                     ))}
