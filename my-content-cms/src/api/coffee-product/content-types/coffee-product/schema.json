@@ -15,7 +15,7 @@
     "name": {
       "type": "string",
       "required": true,
-      "maxLength": 255
+      "maxLength": 500
     },
     "slug": {
       "type": "uid",
@@ -67,7 +67,7 @@
       "allowedTypes": ["images"]
     },
     "affiliate_link": {
-      "type": "string"
+      "type": "text"
     },
     "featured": {
       "type": "boolean",
