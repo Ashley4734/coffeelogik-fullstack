@@ -180,7 +180,9 @@ export default async function ProductsPage() {
         </div>
 
         {/* Amazon Disclaimer */}
-        <AmazonDisclaimer />
+        <div className="mt-12">
+          <AmazonDisclaimer />
+        </div>
 
         {/* Featured Reviews - Editor's Choice */}
         <div className="mx-auto mt-20">
