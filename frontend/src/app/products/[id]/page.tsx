@@ -7,6 +7,7 @@ import { marked } from "marked";
 import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
+import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -282,6 +283,9 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </div>
             </div>
           </div>
+
+          {/* Amazon Disclaimer */}
+          <AmazonDisclaimer />
 
           {/* Flavor Profile */}
           {product.flavor_notes && Array.isArray(product.flavor_notes) && product.flavor_notes.length > 0 && (

@@ -5,6 +5,7 @@ import { StarIcon, TrophyIcon, CheckCircleIcon, ClockIcon } from "@heroicons/rea
 import { StarIcon as StarOutlineIcon, ShieldCheckIcon, ChartBarIcon } from "@heroicons/react/24/outline";
 import { getProducts, getStrapiMedia } from "@/lib/api";
 import { Metadata } from "next";
+import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
 export const metadata: Metadata = {
   title: 'Coffee Product Reviews - Expert Testing & Recommendations',
@@ -177,6 +178,9 @@ export default async function ProductsPage() {
             </div>
           </div>
         </div>
+
+        {/* Amazon Disclaimer */}
+        <AmazonDisclaimer />
 
         {/* Featured Reviews - Editor's Choice */}
         <div className="mx-auto mt-20">
