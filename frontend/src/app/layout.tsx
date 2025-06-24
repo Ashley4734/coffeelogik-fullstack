@@ -91,6 +91,7 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        {/* Debug: GA ID = {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'NOT_SET'} */}
         <ErrorBoundary>
           <Header />
           <main className="min-h-screen">
