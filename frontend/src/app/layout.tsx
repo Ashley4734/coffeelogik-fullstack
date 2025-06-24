@@ -91,8 +91,6 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        {/* Debug: GA ID = {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'NOT_SET'} */}
-        <div style={{display: 'none'}} id="ga-debug">GA_ID: {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'NOT_SET'}</div>
         <ErrorBoundary>
           <Header />
           <main className="min-h-screen">
