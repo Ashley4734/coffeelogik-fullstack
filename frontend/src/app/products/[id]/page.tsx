@@ -38,7 +38,7 @@ function getQuickVerdictText(markdown: string, maxLength: number = 150): string 
   
   // Simple markdown-to-text conversion without using marked()
   // This handles basic markdown syntax for the quick verdict
-  let text = markdown
+  const text = markdown
     // Remove headers
     .replace(/#{1,6}\s*/g, '')
     // Remove bold/italic
