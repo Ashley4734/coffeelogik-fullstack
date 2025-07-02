@@ -1,0 +1,43 @@
+{
+  "collectionName": "components_product_hardware_specifications",
+  "info": {
+    "displayName": "Hardware Specifications",
+    "icon": "cogs",
+    "description": "Holds technical specifications for hardware like grinders and coffee makers."
+  },
+  "options": {},
+  "attributes": {
+    "materials": {
+      "type": "json"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "string"
+    },
+    "power": {
+      "type": "string"
+    },
+    "capacity": {
+      "type": "string"
+    },
+    "grinder_type": {
+      "type": "enumeration",
+      "enum": [
+        "Burr",
+        "Blade"
+      ]
+    },
+    "burr_type": {
+      "type": "enumeration",
+      "enum": [
+        "Conical",
+        "Flat"
+      ]
+    },
+    "grind_settings": {
+      "type": "string"
+    }
+  }
+}
