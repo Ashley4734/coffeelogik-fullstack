@@ -32,6 +32,31 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+// Helper function to extract plain text from markdown and limit characters
+function getQuickVerdictText(markdown: string, maxLength: number = 150): string {
+  if (!markdown) return '';
+  
+  // Convert markdown to HTML first
+  const html = marked(markdown);
+  
+  // Strip HTML tags to get plain text
+  const plainText = html.replace(/<[^>]*>/g, '');
+  
+  // Clean up extra whitespace and newlines
+  const cleanText = plainText.replace(/\s+/g, ' ').trim();
+  
+  // Truncate to maxLength
+  if (cleanText.length <= maxLength) return cleanText;
+  
+  // Find the last complete sentence or word within the limit
+  const truncated = cleanText.substring(0, maxLength);
+  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  
+  return lastSpaceIndex > maxLength * 0.8 
+    ? truncated.substring(0, lastSpaceIndex) + '...'
+    : truncated + '...';
+}
+
 // Generate metadata for each product review
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -200,7 +225,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
                     {product.description ? 
-                      product.description.substring(0, 150).replace(/<[^>]*>/g, '') + '...' :
+                      getQuickVerdictText(product.description, 150) :
                       `The ${product.name} by ${product.brand} offers excellent value in the ${product.product_type.toLowerCase()} category.`
                     }
                   </p>
