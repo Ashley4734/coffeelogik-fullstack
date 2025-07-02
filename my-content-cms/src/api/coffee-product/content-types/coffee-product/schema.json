@@ -28,9 +28,9 @@
       "maxLength": 100
     },
     "product_type": {
-  "type": "enumeration",
-  "enum": ["Accessories", "AeroPress", "Brewing Equipment", "Carafes", "Coffee Beans", "Coffee Grinder", "Coffee Maker", "Coffee Pods", "Coffee Scales", "Cold Brew Concentrate", "Cold Brew Maker", "Drip Coffee Maker", "Espresso Machine", "Filters", "French Press", "Ground Coffee", "Instant Coffee", "Kettles", "Milk Frothers", "Moka Pot", "Mugs & Cups", "Pour-Over Dripper", "Syrups & Sauces", "Tampers & Levelers", "Travel Mugs"]
-},
+      "type": "enumeration",
+      "enum": ["Accessories", "AeroPress", "Brewing Equipment", "Carafes", "Coffee Beans", "Coffee Grinder", "Coffee Maker", "Coffee Pods", "Coffee Scales", "Cold Brew Concentrate", "Cold Brew Maker", "Drip Coffee Maker", "Espresso Machine", "Filters", "French Press", "Ground Coffee", "Instant Coffee", "Kettles", "Milk Frothers", "Moka Pot", "Mugs & Cups", "Pour-Over Dripper", "Syrups & Sauces", "Tampers & Levelers", "Travel Mugs"]
+    },
     "origin": {
       "type": "string",
       "maxLength": 100
@@ -72,6 +72,11 @@
     "featured": {
       "type": "boolean",
       "default": false
+    },
+    "specifications": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.hardware-specifications"
     }
   }
 }
