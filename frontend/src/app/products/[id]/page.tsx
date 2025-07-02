@@ -36,20 +36,29 @@ function StarRating({ rating }: { rating: number }) {
 function getQuickVerdictText(markdown: string, maxLength: number = 150): string {
   if (!markdown) return '';
   
-  // Convert markdown to HTML first
-  const html = marked(markdown);
-  
-  // Strip HTML tags to get plain text
-  const plainText = html.replace(/<[^>]*>/g, '');
-  
-  // Clean up extra whitespace and newlines
-  const cleanText = plainText.replace(/\s+/g, ' ').trim();
+  // Simple markdown-to-text conversion without using marked()
+  // This handles basic markdown syntax for the quick verdict
+  let text = markdown
+    // Remove headers
+    .replace(/#{1,6}\s*/g, '')
+    // Remove bold/italic
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    // Remove links
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    // Remove other markdown syntax
+    .replace(/`([^`]+)`/g, '$1')
+    // Clean up extra whitespace and newlines
+    .replace(/\s+/g, ' ')
+    .trim();
   
   // Truncate to maxLength
-  if (cleanText.length <= maxLength) return cleanText;
+  if (text.length <= maxLength) return text;
   
   // Find the last complete sentence or word within the limit
-  const truncated = cleanText.substring(0, maxLength);
+  const truncated = text.substring(0, maxLength);
   const lastSpaceIndex = truncated.lastIndexOf(' ');
   
   return lastSpaceIndex > maxLength * 0.8 
