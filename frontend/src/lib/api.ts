@@ -52,6 +52,16 @@ export interface BlogPost {
   updatedAt: string;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  color?: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Author {
   id: number;
   name: string;
