@@ -1,14 +1,14 @@
 // frontend/src/app/sitemap-authors.xml/route.ts
-import { getAuthors } from '@/lib/api';
+import { getAuthors, Author } from '@/lib/api';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
   
   try {
     const authorsResponse = await getAuthors();
-    const authors = authorsResponse?.data || [];
+    const authors: Author[] = authorsResponse?.data || [];
 
-    const urls = authors.map((author: any) => `
+    const urls = authors.map((author: Author) => `
   <url>
     <loc>${baseUrl}/authors/${author.slug}</loc>
     <lastmod>${new Date(author.updatedAt || author.createdAt).toISOString()}</lastmod>
@@ -24,7 +24,7 @@ ${urls.join('')}
     return new Response(sitemap, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=7200, s-maxage=14400', // 2-4 hour cache
+        'Cache-Control': 'public, max-age=7200, s-maxage=14400',
       },
     });
   } catch (error) {
