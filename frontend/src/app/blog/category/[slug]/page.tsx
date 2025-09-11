@@ -194,7 +194,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             <span className="text-6xl mb-4 block">📝</span>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No articles yet</h3>
             <p className="text-gray-600 mb-6">
-              We haven't published any articles in the {category.name} category yet.
+              We haven&apos;t published any articles in the {category.name} category yet.
             </p>
             <Link
               href="/blog"
