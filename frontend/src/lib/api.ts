@@ -63,14 +63,8 @@ export interface Author {
   email: string;
   social_links?: Record<string, string>;
   expertise?: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  color?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CoffeeRecipe {
@@ -96,6 +90,8 @@ export interface CoffeeRecipe {
   equipment_needed?: Array<{item: string; essential?: boolean}> | string[];
   featured: boolean;
   author?: Author | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CoffeeProduct {
@@ -117,6 +113,8 @@ export interface CoffeeProduct {
   }>;
   affiliate_link?: string;
   featured: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BrewingGuide {
@@ -142,6 +140,8 @@ export interface BrewingGuide {
   }>;
   featured: boolean;
   author?: Author | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // API functions
