@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef } from 'react';
 import { Scale, Clock, TestTube, Share, Bookmark, BarChart, Check, ChevronRight } from 'lucide-react';
 
