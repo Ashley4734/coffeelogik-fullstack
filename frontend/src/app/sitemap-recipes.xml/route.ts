@@ -1,14 +1,14 @@
 // frontend/src/app/sitemap-recipes.xml/route.ts
-import { getRecipes } from '@/lib/api';
+import { getRecipes, CoffeeRecipe } from '@/lib/api';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
   
   try {
     const recipesResponse = await getRecipes({ limit: 1000 });
-    const recipes = recipesResponse?.data || [];
+    const recipes: CoffeeRecipe[] = recipesResponse?.data || [];
 
-    const urls = recipes.map((recipe: any) => `
+    const urls = recipes.map((recipe: CoffeeRecipe) => `
   <url>
     <loc>${baseUrl}/recipes/${recipe.slug || recipe.id}</loc>
     <lastmod>${new Date(recipe.updatedAt || recipe.createdAt).toISOString()}</lastmod>
@@ -24,7 +24,7 @@ ${urls.join('')}
     return new Response(sitemap, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600, s-maxage=7200', // 1-2 hour cache
+        'Cache-Control': 'public, max-age=3600, s-maxage=7200',
       },
     });
   } catch (error) {
