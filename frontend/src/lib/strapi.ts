@@ -5,7 +5,7 @@ const apiToken = process.env.STRAPI_API_TOKEN;
 
 const strapi = axios.create({
   baseURL: `${strapiUrl}/api`,
-  timeout: 10000, // 10 second timeout
+  timeout: 15000, // 15 second timeout
   headers: {
     'Content-Type': 'application/json',
     ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
