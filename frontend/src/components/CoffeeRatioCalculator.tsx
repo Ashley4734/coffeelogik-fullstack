@@ -1,129 +1,184 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { 
-  ScaleIcon, 
-  ClockIcon, 
-  BeakerIcon, 
-  ShareIcon, 
-  BookmarkIcon, 
-  ChartBarIcon, 
-  CheckIcon, 
-  ChevronRightIcon 
+import React, { useState, useRef, RefObject } from 'react';
+import {
+  ScaleIcon,
+  ClockIcon,
+  BeakerIcon,
+  ShareIcon,
+  BookmarkIcon,
+  ChartBarIcon,
+  CheckIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-export default function CoffeeRatioCalculator() {
-  // State variables
-  const [brewMethod, setBrewMethod] = useState('');
-  const [servings, setServings] = useState(2);
-  const [strength, setStrength] = useState('');
-  const [units, setUnits] = useState('');
-  const [customRatio, setCustomRatio] = useState('');
-  const [showAdvanced, setShowAdvanced] = useState(false);
+/** Strong typings for keys used throughout */
+type Strength = 'weak' | 'medium' | 'strong';
+type MethodKey =
+  | 'pour-over'
+  | 'french-press'
+  | 'espresso'
+  | 'aeropress'
+  | 'chemex'
+  | 'cold-brew'
+  | 'moka-pot'
+  | 'v60';
+type Units = 'metric' | 'imperial';
 
-  // Refs for scrolling - defined first
-  const servingsRef = useRef<HTMLDivElement>(null);
-  const strengthRef = useRef<HTMLDivElement>(null);
-  const unitsRef = useRef<HTMLDivElement>(null);
-  const resultsRef = useRef<HTMLDivElement>(null);
+type RatioMeta = {
+  name: string;
+  icon: string;
+  time: string;
+  description: string;
+  /** numeric brewing ratios (water : coffee) */
+  values: Record<Strength, number>;
+};
 
-  // Coffee ratios by brewing method and strength
-  const ratios = {
-    'pour-over': { 
-      weak: 16, medium: 15, strong: 13,
-      name: 'Pour Over', icon: '☕', time: '3-4 min',
-      description: 'Clean, bright flavors with good clarity'
-    },
-    'french-press': { 
-      weak: 18, medium: 15, strong: 12,
-      name: 'French Press', icon: '🫖', time: '4-5 min',
-      description: 'Full-bodied with rich, heavy mouthfeel'
-    },
-    'espresso': { 
-      weak: 3, medium: 2.2, strong: 1.8,
-      name: 'Espresso', icon: '☕', time: '25-30 sec',
-      description: 'Concentrated, intense flavor with crema'
-    },
-    'aeropress': { 
-      weak: 17, medium: 14, strong: 11,
-      name: 'AeroPress', icon: '🔄', time: '2-3 min',
-      description: 'Smooth, clean with low acidity'
-    },
-    'chemex': { 
-      weak: 17, medium: 15, strong: 13,
-      name: 'Chemex', icon: '⏳', time: '4-5 min',
-      description: 'Clean, crisp with paper filter clarity'
-    },
-    'cold-brew': { 
-      weak: 8, medium: 6, strong: 4,
-      name: 'Cold Brew', icon: '🧊', time: '12-24 hrs',
-      description: 'Smooth, sweet, low acidity concentrate'
-    },
-    'moka-pot': { 
-      weak: 12, medium: 10, strong: 8,
-      name: 'Moka Pot', icon: '⚡', time: '5-6 min',
-      description: 'Strong, espresso-like with rich body'
-    },
-    'v60': { 
-      weak: 17, medium: 15, strong: 13,
-      name: 'V60', icon: '🌪️', time: '2.5-3.5 min',
-      description: 'Bright, clean with excellent flavor clarity'
-    }
-  };
+/** Coffee ratios by brewing method and strength (all numbers) */
+const RATIOS: Record<MethodKey, RatioMeta> = {
+  'pour-over': {
+    values: { weak: 16, medium: 15, strong: 13 },
+    name: 'Pour Over',
+    icon: '☕',
+    time: '3-4 min',
+    description: 'Clean, bright flavors with good clarity'
+  },
+  'french-press': {
+    values: { weak: 18, medium: 15, strong: 12 },
+    name: 'French Press',
+    icon: '🫖',
+    time: '4-5 min',
+    description: 'Full-bodied with rich, heavy mouthfeel'
+  },
+  espresso: {
+    values: { weak: 3, medium: 2.2, strong: 1.8 },
+    name: 'Espresso',
+    icon: '☕',
+    time: '25-30 sec',
+    description: 'Concentrated, intense flavor with crema'
+  },
+  aeropress: {
+    values: { weak: 17, medium: 14, strong: 11 },
+    name: 'AeroPress',
+    icon: '🔄',
+    time: '2-3 min',
+    description: 'Smooth, clean with low acidity'
+  },
+  chemex: {
+    values: { weak: 17, medium: 15, strong: 13 },
+    name: 'Chemex',
+    icon: '⏳',
+    time: '4-5 min',
+    description: 'Clean, crisp with paper filter clarity'
+  },
+  'cold-brew': {
+    values: { weak: 8, medium: 6, strong: 4 },
+    name: 'Cold Brew',
+    icon: '🧊',
+    time: '12-24 hrs',
+    description: 'Smooth, sweet, low acidity concentrate'
+  },
+  'moka-pot': {
+    values: { weak: 12, medium: 10, strong: 8 },
+    name: 'Moka Pot',
+    icon: '⚡',
+    time: '5-6 min',
+    description: 'Strong, espresso-like with rich body'
+  },
+  v60: {
+    values: { weak: 17, medium: 15, strong: 13 },
+    name: 'V60',
+    icon: '🌪️',
+    time: '2.5-3.5 min',
+    description: 'Bright, clean with excellent flavor clarity'
+  }
+};
 
-  // Safe scroll function
-const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
-  const el = ref?.current;
+/** Safe scroll (accepts nullables) */
+const scrollToRef = <T extends HTMLElement>(ref: RefObject<T | null | undefined>) => {
+  const el = ref?.current ?? null;
   if (!el) return;
   window.setTimeout(() => {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 200);
 };
 
+/** Coerce custom ratio text to a valid positive number or NaN */
+const coerceRatio = (input: string) => {
+  const n = Number(input);
+  return Number.isFinite(n) && n > 0 ? n : NaN;
+};
+
+export default function CoffeeRatioCalculator() {
+  // State variables
+  const [brewMethod, setBrewMethod] = useState<MethodKey | ''>('');
+  const [servings, setServings] = useState<number>(2);
+  const [strength, setStrength] = useState<Strength | ''>('');
+  const [units, setUnits] = useState<Units | ''>('');
+  const [customRatio, setCustomRatio] = useState<string>('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Refs for scrolling - defined first
+  const servingsRef = useRef<HTMLDivElement | null>(null);
+  const strengthRef = useRef<HTMLDivElement | null>(null);
+  const unitsRef = useRef<HTMLDivElement | null>(null);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
+
   // Handler functions - defined after refs
-  const handleMethodChange = (method: string) => {
+  const handleMethodChange = (method: MethodKey) => {
     setBrewMethod(method);
     scrollToRef(servingsRef);
   };
 
   const handleServingsChange = (newServings: number) => {
-    setServings(newServings);
+    setServings(Math.max(1, Math.floor(Number(newServings) || 1)));
   };
 
-  const handleStrengthChange = (newStrength: string) => {
+  const handleStrengthChange = (newStrength: Strength) => {
     setStrength(newStrength);
     scrollToRef(unitsRef);
   };
 
-  const handleUnitsChange = (newUnits: string) => {
+  const handleUnitsChange = (newUnits: Units) => {
     setUnits(newUnits);
     scrollToRef(resultsRef);
   };
 
-  // Calculations
+  // Calculations (all numeric & guarded)
   const calculate = () => {
     if (!brewMethod || !strength || !units) {
-      return { water: 0, coffee: 0, ratio: 0 };
+      return { water: 0, coffee: 0, ratio: 0 as number };
     }
-    
+
+    // base water per serving (ml). Espresso uses 30 ml singles; others ~240 ml mugs
     const baseWater = brewMethod === 'espresso' ? 30 : 240;
     const waterAmount = baseWater * servings;
-    const ratio = customRatio ? parseFloat(customRatio) : ratios[brewMethod as keyof typeof ratios][strength as keyof typeof ratios[keyof typeof ratios]];
-    const coffeeAmount = waterAmount / ratio;
-    
+
+    const custom = customRatio.trim() ? coerceRatio(customRatio.trim()) : NaN;
+    const auto =
+      brewMethod && strength ? RATIOS[brewMethod]?.values[strength] : undefined;
+
+    // pick the first valid positive number
+    const ratio = Number.isFinite(custom) && custom > 0 ? (custom as number)
+      : typeof auto === 'number' && auto > 0
+      ? auto
+      : NaN;
+
+    const coffeeAmount = Number.isFinite(ratio) && ratio > 0 ? waterAmount / ratio : 0;
+
     return {
       water: waterAmount,
       coffee: Math.round(coffeeAmount * 10) / 10,
-      ratio: ratio
+      ratio: Number.isFinite(ratio) ? (ratio as number) : 0
     };
   };
 
-  const convertUnits = (amount: number, type: string) => {
+  const convertUnits = (amount: number, type: 'water' | 'coffee') => {
     if (units === 'imperial') {
       if (type === 'water') {
         return {
           primary: `${Math.round(amount * 0.033814 * 10) / 10} fl oz`,
-          secondary: `${Math.round(amount / 236.588 * 10) / 10} cups`
+          secondary: `${Math.round((amount / 236.588) * 10) / 10} cups`
         };
       } else {
         return {
@@ -134,7 +189,10 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
     }
     return {
       primary: type === 'water' ? `${amount} ml` : `${amount} g`,
-      secondary: type === 'water' ? `${Math.round(amount / 1000 * 100) / 100} L` : `${Math.round(amount / 28.35 * 10) / 10} oz`
+      secondary:
+        type === 'water'
+          ? `${Math.round((amount / 1000) * 100) / 100} L`
+          : `${Math.round((amount / 28.35) * 10) / 10} oz`
     };
   };
 
@@ -143,24 +201,34 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
   const coffeeDisplay = convertUnits(result.coffee, 'coffee');
 
   const shareRecipe = () => {
-    const text = `Perfect ${ratios[brewMethod as keyof typeof ratios].name} recipe: ${result.coffee}g coffee + ${result.water}ml water = ${servings} perfect cup${servings > 1 ? 's' : ''}! ☕`;
+    const methodName = brewMethod ? RATIOS[brewMethod].name : 'coffee';
+    const text = `Perfect ${methodName} recipe: ${result.coffee}g coffee + ${result.water}ml water = ${servings} perfect cup${servings > 1 ? 's' : ''}! ☕`;
     if (navigator.share) {
-      navigator.share({
-        title: 'Coffee Recipe',
-        text: text,
-        url: window.location.href
-      });
+      navigator
+        .share({
+          title: 'Coffee Recipe',
+          text,
+          url: window.location.href
+        })
+        .catch(() => {
+          /* ignore cancel */
+        });
     } else {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Recipe copied to clipboard!');
-      }).catch(() => {
-        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik's Ratio Calculator!`);
-      });
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          alert('Recipe copied to clipboard!');
+        })
+        .catch(() => {
+          alert(
+            `Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik\u2019s Ratio Calculator!`
+          );
+        });
     }
   };
 
-  const ProTips = ({ method }: { method: string }) => {
-    const tips: { [key: string]: string[] } = {
+  const ProTips = ({ method }: { method: MethodKey | '' }) => {
+    const tips: Record<MethodKey, string[]> = {
       'pour-over': [
         'Use a gooseneck kettle for precise pouring',
         'Bloom coffee for 30 seconds before continuing',
@@ -171,22 +239,22 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
         'Stir after 1 minute of steeping',
         'Press slowly to avoid bitter flavors'
       ],
-      'espresso': [
+      espresso: [
         'Aim for 25-30 second extraction time',
         'Water temperature: 200-205°F (93-96°C)',
         'Tamp with 30 lbs of pressure'
       ],
-      'aeropress': [
+      aeropress: [
         'Use medium-fine grind size',
         'Water temperature: 195-205°F (90-96°C)',
         'Pre-wet filter to remove papery taste'
       ],
-      'chemex': [
+      chemex: [
         'Use medium-fine grind size',
         'Water temperature: 195-205°F (90-96°C)',
         'Pre-wet filter to remove papery taste'
       ],
-      'v60': [
+      v60: [
         'Use medium-fine grind size',
         'Water temperature: 195-205°F (90-96°C)',
         'Pre-wet filter to remove papery taste'
@@ -203,9 +271,12 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
       ]
     };
 
+    const list: string[] =
+      (method && tips[method as MethodKey]) || tips['pour-over'];
+
     return (
       <ul className="space-y-2 text-sm text-gray-600">
-        {(tips[method] || tips['pour-over']).map((tip, index) => (
+        {list.map((tip, index) => (
           <li key={index} className="flex items-start">
             <CheckIcon className="mr-2 h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
             {tip}
@@ -244,42 +315,55 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
         {/* Main Calculator */}
         <div className="-mt-8 relative z-10">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-            
             {/* Progress Indicator */}
             <div className="mb-8">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Let&rsquo;s make perfect coffee</h2>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
-                    brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
-                  }`}>
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
+                      brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
+                    }`}
+                  >
                     {brewMethod ? <CheckIcon className="w-4 h-4" /> : '1'}
                   </div>
-                  <span className={`text-sm ${brewMethod ? 'text-green-600' : 'text-amber-600 font-semibold'}`}>
+                  <span
+                    className={`text-sm ${brewMethod ? 'text-green-600' : 'text-amber-600 font-semibold'}`}
+                  >
                     Choose Method
                   </span>
                 </div>
                 <div className={`flex-1 h-0.5 ${brewMethod ? 'bg-green-500' : 'bg-gray-200'}`}></div>
-                
+
                 <div className="flex items-center">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
-                    strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
-                  }`}>
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
+                      strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
+                    }`}
+                  >
                     {strength ? <CheckIcon className="w-4 h-4" /> : '2'}
                   </div>
-                  <span className={`text-sm ${strength ? 'text-green-600' : brewMethod ? 'text-amber-600 font-semibold' : 'text-gray-500'}`}>
+                  <span
+                    className={`text-sm ${
+                      strength ? 'text-green-600' : brewMethod ? 'text-amber-600 font-semibold' : 'text-gray-500'
+                    }`}
+                  >
                     Pick Strength
                   </span>
                 </div>
                 <div className={`flex-1 h-0.5 ${strength ? 'bg-green-500' : 'bg-gray-200'}`}></div>
-                
+
                 <div className="flex items-center">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
-                    units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
-                  }`}>
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
+                      units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
+                    }`}
+                  >
                     {units ? <CheckIcon className="w-4 h-4" /> : '3'}
                   </div>
-                  <span className={`text-sm ${units ? 'text-green-600' : strength ? 'text-amber-600 font-semibold' : 'text-gray-500'}`}>
+                  <span
+                    className={`text-sm ${units ? 'text-green-600' : strength ? 'text-amber-600 font-semibold' : 'text-gray-500'}`}
+                  >
                     Choose Units
                   </span>
                 </div>
@@ -289,44 +373,51 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
               {/* Controls */}
               <div className="space-y-8">
-                
                 {/* Step 1: Brewing Method */}
                 <div>
                   <div className="flex items-center mb-4">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
-                      brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
+                        brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
+                      }`}
+                    >
                       {brewMethod ? <CheckIcon className="w-4 h-4" /> : '1'}
                     </div>
-                    <label className="text-base sm:text-lg font-semibold text-gray-900">Choose Brewing Method</label>
+                    <label className="text-base sm:text-lg font-semibold text-gray-900">
+                      Choose Brewing Method
+                    </label>
                     {brewMethod && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    {Object.entries(ratios).map(([key, method]) => (
+                    {Object.entries(RATIOS).map(([key, method]) => (
                       <button
                         key={key}
-                        onClick={() => handleMethodChange(key)}
+                        onClick={() => handleMethodChange(key as MethodKey)}
                         className={`group relative p-4 sm:p-5 rounded-xl border-2 transition-all duration-300 text-left overflow-hidden min-h-[80px] sm:min-h-[90px] ${
                           brewMethod === key
                             ? 'border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 text-amber-900 shadow-lg transform scale-105'
                             : 'border-gray-200 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-amber-300 hover:shadow-md hover:transform hover:scale-102'
                         }`}
                       >
-                        <div className={`absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full transform translate-x-4 sm:translate-x-6 -translate-y-4 sm:-translate-y-6 transition-all duration-300 ${
-                          brewMethod === key 
-                            ? 'bg-gradient-to-br from-amber-200 to-orange-200 opacity-60' 
-                            : 'bg-gradient-to-br from-gray-100 to-gray-200 opacity-40 group-hover:opacity-60'
-                        }`}></div>
-                        
+                        <div
+                          className={`absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full transform translate-x-4 sm:translate-x-6 -translate-y-4 sm:-translate-y-6 transition-all duration-300 ${
+                            brewMethod === key
+                              ? 'bg-gradient-to-br from-amber-200 to-orange-200 opacity-60'
+                              : 'bg-gradient-to-br from-gray-100 to-gray-200 opacity-40 group-hover:opacity-60'
+                          }`}
+                        ></div>
+
                         <div className="relative z-10">
                           <div className="font-semibold text-base sm:text-lg mb-2 leading-tight">
                             {method.name}
                           </div>
-                          <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            brewMethod === key
-                              ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                              : 'bg-gray-100 text-gray-600 border border-gray-200 group-hover:bg-amber-50 group-hover:text-amber-600'
-                          }`}>
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              brewMethod === key
+                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                                : 'bg-gray-100 text-gray-600 border border-gray-200 group-hover:bg-amber-50 group-hover:text-amber-600'
+                            }`}
+                          >
                             <ClockIcon className="w-3 h-3 mr-1" />
                             {method.time}
                           </div>
@@ -334,7 +425,7 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                             {method.description}
                           </div>
                         </div>
-                        
+
                         {brewMethod === key && (
                           <div className="absolute top-3 right-3 w-3 h-3 bg-amber-500 rounded-full shadow-sm"></div>
                         )}
@@ -350,7 +441,9 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                       <CheckIcon className="w-4 h-4" />
                     </div>
                     <label className="text-base font-semibold text-gray-700">Number of Servings</label>
-                    <span className="ml-2 text-sm text-gray-500">(Optional - adjust if needed, then continue below)</span>
+                    <span className="ml-2 text-sm text-gray-500">
+                      (Optional - adjust if needed, then continue below)
+                    </span>
                   </div>
                   <div className="flex items-center justify-center space-x-6">
                     <button
@@ -374,21 +467,28 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                 </div>
 
                 {/* Step 2: Strength */}
-                <div ref={strengthRef} className={`transition-all duration-500 ${brewMethod ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                <div
+                  ref={strengthRef}
+                  className={`transition-all duration-500 ${brewMethod ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}
+                >
                   <div className="flex items-center mb-4">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
-                      strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
+                        strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
+                      }`}
+                    >
                       {strength ? <CheckIcon className="w-4 h-4" /> : '2'}
                     </div>
                     <label className="text-base sm:text-lg font-semibold text-gray-900">Coffee Strength</label>
                     {brewMethod && !strength && (
-                      <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">← Choose one</span>
+                      <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
+                        ← Choose one
+                      </span>
                     )}
                     {strength && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    {['weak', 'medium', 'strong'].map((level) => (
+                    {(['weak', 'medium', 'strong'] as Strength[]).map((level) => (
                       <button
                         key={level}
                         onClick={() => handleStrengthChange(level)}
@@ -408,23 +508,30 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                 </div>
 
                 {/* Step 3: Units */}
-                <div ref={unitsRef} className={`transition-all duration-500 ${strength ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                <div
+                  ref={unitsRef}
+                  className={`transition-all duration-500 ${strength ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}
+                >
                   <div className="flex items-center mb-4">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
-                      units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
+                        units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
+                      }`}
+                    >
                       {units ? <CheckIcon className="w-4 h-4" /> : '3'}
                     </div>
                     <label className="text-base sm:text-lg font-semibold text-gray-900">Measurement Units</label>
                     {strength && !units && (
-                      <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">← Choose one</span>
+                      <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
+                        ← Choose one
+                      </span>
                     )}
                     {units && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
-                      { key: 'metric', label: 'Metric (g/ml)', desc: 'Grams & milliliters' },
-                      { key: 'imperial', label: 'Imperial (oz/cups)', desc: 'Ounces & cups' }
+                      { key: 'metric' as Units, label: 'Metric (g/ml)', desc: 'Grams & milliliters' },
+                      { key: 'imperial' as Units, label: 'Imperial (oz/cups)', desc: 'Ounces & cups' }
                     ].map((unit) => (
                       <button
                         key={unit.key}
@@ -458,16 +565,21 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
 
                     {showAdvanced && (
                       <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <label className="text-sm font-medium text-gray-900 mb-2 block">Custom Ratio (1:{customRatio || 'auto'})</label>
+                        <label className="text-sm font-medium text-gray-900 mb-2 block">
+                          Custom Ratio (1:{customRatio || 'auto'})
+                        </label>
                         <input
                           type="number"
                           step="0.1"
+                          min="0"
                           value={customRatio}
                           onChange={(e) => setCustomRatio(e.target.value)}
                           placeholder={`${result.ratio} (current)`}
                           className="w-full px-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent text-base"
                         />
-                        <p className="text-xs text-gray-600 mt-1">Override automatic ratio calculation</p>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Override automatic ratio calculation
+                        </p>
                       </div>
                     )}
                   </div>
@@ -483,16 +595,24 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
                           <CheckIcon className="w-5 h-5 text-white" />
                         </div>
-                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Perfect Recipe</h3>
+                        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                          Perfect Recipe
+                        </h3>
                       </div>
-                      <p className="text-gray-600 text-sm sm:text-base">For {servings} {strength} {ratios[brewMethod as keyof typeof ratios].name.toLowerCase()} cup{servings > 1 ? 's' : ''}</p>
+                      <p className="text-gray-600 text-sm sm:text-base">
+                        For {servings} {strength}{' '}
+                        {brewMethod ? RATIOS[brewMethod].name.toLowerCase() : 'coffee'} cup
+                        {servings > 1 ? 's' : ''}
+                      </p>
                     </div>
 
                     <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                       {/* Coffee Amount */}
                       <div className="bg-white rounded-xl p-4 sm:p-6 text-center transform transition-all duration-300 hover:scale-105">
                         <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">☕</div>
-                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-amber-600 mb-1">{coffeeDisplay.primary}</div>
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-amber-600 mb-1">
+                          {coffeeDisplay.primary}
+                        </div>
                         <div className="text-xs sm:text-sm text-gray-600 mb-2">{coffeeDisplay.secondary}</div>
                         <div className="text-sm font-medium text-gray-900">Coffee</div>
                       </div>
@@ -500,18 +620,24 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                       {/* Water Amount */}
                       <div className="bg-white rounded-xl p-4 sm:p-6 text-center transform transition-all duration-300 hover:scale-105">
                         <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">💧</div>
-                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1">{waterDisplay.primary}</div>
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1">
+                          {waterDisplay.primary}
+                        </div>
                         <div className="text-xs sm:text-sm text-gray-600 mb-2">{waterDisplay.secondary}</div>
                         <div className="text-sm font-medium text-gray-900">Water</div>
                       </div>
 
                       {/* Ratio Info */}
                       <div className="bg-white rounded-xl p-4 text-center">
-                        <div className="text-base sm:text-lg font-bold text-gray-900 mb-1">Ratio: 1:{result.ratio}</div>
-                        <div className="text-xs sm:text-sm text-gray-600 mb-2">{ratios[brewMethod as keyof typeof ratios].description}</div>
+                        <div className="text-base sm:text-lg font-bold text-gray-900 mb-1">
+                          Ratio: 1:{result.ratio}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-600 mb-2">
+                          {brewMethod ? RATIOS[brewMethod].description : ''}
+                        </div>
                         <div className="flex items-center justify-center text-xs text-gray-500">
                           <ClockIcon className="mr-1 h-3 w-3" />
-                          {ratios[brewMethod as keyof typeof ratios].time}
+                          {brewMethod ? RATIOS[brewMethod].time : ''}
                         </div>
                       </div>
                     </div>
@@ -546,7 +672,7 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                   <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center text-sm sm:text-base">
                       <BeakerIcon className="mr-2 h-4 sm:h-5 w-4 sm:w-5 text-amber-600" />
-                      Pro Tips for {ratios[brewMethod as keyof typeof ratios].name}
+                      Pro Tips for {RATIOS[brewMethod].name}
                     </h4>
                     <ProTips method={brewMethod} />
                   </div>
@@ -569,21 +695,27 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
                 <ScaleIcon className="h-8 w-8 text-amber-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Consistency</h3>
-              <p className="text-gray-600 text-sm">Using precise ratios ensures your coffee tastes the same every time you brew.</p>
+              <p className="text-gray-600 text-sm">
+                Using precise ratios ensures your coffee tastes the same every time you brew.
+              </p>
             </div>
             <div className="text-center">
               <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <BeakerIcon className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Extraction</h3>
-              <p className="text-gray-600 text-sm">Proper ratios optimize extraction, balancing sweetness, acidity, and bitterness.</p>
+              <p className="text-gray-600 text-sm">
+                Proper ratios optimize extraction, balancing sweetness, acidity, and bitterness.
+              </p>
             </div>
             <div className="text-center">
               <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <ChartBarIcon className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Customization</h3>
-              <p className="text-gray-600 text-sm">Adjust ratios to match your taste preferences and bean characteristics.</p>
+              <p className="text-gray-600 text-sm">
+                Adjust ratios to match your taste preferences and bean characteristics.
+              </p>
             </div>
           </div>
 
@@ -593,15 +725,23 @@ const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
             <div className="space-y-6">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">What&rsquo;s the golden ratio for coffee?</h4>
-                <p className="text-gray-600 text-sm">The &quot;golden ratio&quot; is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
+                <p className="text-gray-600 text-sm">
+                  The &quot;golden ratio&quot; is generally 1:15 to 1:17 (coffee to water), but this varies by brewing
+                  method and personal preference.
+                </p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Should I weigh coffee and water?</h4>
-                <p className="text-gray-600 text-sm">Yes! Weighing is much more accurate than volume measurements and leads to more consistent results.</p>
+                <p className="text-gray-600 text-sm">
+                  Yes! Weighing is much more accurate than volume measurements and leads to more consistent results.
+                </p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">How do I adjust for different bean types?</h4>
-                <p className="text-gray-600 text-sm">Darker roasts may need slightly less coffee (higher ratio number), while lighter roasts often benefit from more coffee (lower ratio number).</p>
+                <p className="text-gray-600 text-sm">
+                  Darker roasts may need slightly less coffee (higher ratio number), while lighter roasts often benefit
+                  from more coffee (lower ratio number).
+                </p>
               </div>
             </div>
           </div>
