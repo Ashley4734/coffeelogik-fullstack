@@ -72,16 +72,13 @@ export default function CoffeeRatioCalculator() {
   };
 
   // Safe scroll function
-  const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
-    if (ref && ref.current) {
-      setTimeout(() => {
-        ref.current!.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start'
-        });
-      }, 200);
-    }
-  };
+const scrollToRef = <T extends HTMLElement>(ref: React.RefObject<T | null>) => {
+  const el = ref?.current;
+  if (!el) return;
+  window.setTimeout(() => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
+};
 
   // Handler functions - defined after refs
   const handleMethodChange = (method: string) => {
