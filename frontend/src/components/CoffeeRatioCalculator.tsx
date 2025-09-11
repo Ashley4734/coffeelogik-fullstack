@@ -157,7 +157,7 @@ export default function CoffeeRatioCalculator() {
       navigator.clipboard.writeText(text).then(() => {
         alert('Recipe copied to clipboard!');
       }).catch(() => {
-        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik's Ratio Calculator!`);
+        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik&apos;s Ratio Calculator!`);
       });
     }
   };
@@ -250,7 +250,7 @@ export default function CoffeeRatioCalculator() {
             
             {/* Progress Indicator */}
             <div className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Let's make perfect coffee</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Let&apos;s make perfect coffee</h2>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
@@ -595,8 +595,8 @@ export default function CoffeeRatioCalculator() {
             <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h3>
             <div className="space-y-6">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">What's the golden ratio for coffee?</h4>
-                <p className="text-gray-600 text-sm">The "golden ratio" is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
+                <h4 className="font-semibold text-gray-900 mb-2">What&apos;s the golden ratio for coffee?</h4>
+                <p className="text-gray-600 text-sm">The &quot;golden ratio&quot; is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Should I weigh coffee and water?</h4>
