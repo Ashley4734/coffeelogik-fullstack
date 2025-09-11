@@ -596,7 +596,7 @@ export default function CoffeeRatioCalculator() {
             <div className="space-y-6">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">What&rsquo;s the golden ratio for coffee?</h4>
-                <p className="text-gray-600 text-sm">The "golden ratio" is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
+                <p className="text-gray-600 text-sm">The &quot;golden ratio&quot; is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Should I weigh coffee and water?</h4>
