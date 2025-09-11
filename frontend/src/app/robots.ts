@@ -15,7 +15,6 @@ export default function robots(): MetadataRoute.Robots {
           '/private/',
           '*.json',
           '/search?*',
-          '/thank-you/', // If you have form thank you pages
           '/404/',
           '/500/',
         ],
@@ -40,8 +39,9 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: [
-      `${baseUrl}/sitemap-index.xml`, // Primary (advanced)
-      `${baseUrl}/sitemap.xml`,       // Fallback (simple)
+      `${baseUrl}/sitemap-index.xml`, 
+      `${baseUrl}/sitemap.xml`,       
     ],
     host: baseUrl,
+  }; 
 }
