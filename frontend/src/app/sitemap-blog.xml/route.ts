@@ -13,7 +13,13 @@ export async function GET() {
     const blogPosts: BlogPost[] = blogResponse.status === 'fulfilled' ? blogResponse.value?.data || [] : [];
     const categories: Category[] = categoriesResponse.status === 'fulfilled' ? categoriesResponse.value?.data || [] : [];
 
-    const urls = [];
+    const urls: Array<{
+      url: string;
+      lastModified: Date;
+      changeFrequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+      priority: number;
+    }> = [];
+      
 
     // Add blog posts
     blogPosts.forEach((post: BlogPost) => {
