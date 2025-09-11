@@ -1,14 +1,14 @@
 // frontend/src/app/sitemap-products.xml/route.ts
-import { getProducts } from '@/lib/api';
+import { getProducts, CoffeeProduct } from '@/lib/api';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
   
   try {
     const productsResponse = await getProducts({ limit: 1000 });
-    const products = productsResponse?.data || [];
+    const products: CoffeeProduct[] = productsResponse?.data || [];
 
-    const urls = products.map((product: any) => `
+    const urls = products.map((product: CoffeeProduct) => `
   <url>
     <loc>${baseUrl}/products/${product.slug || product.id}</loc>
     <lastmod>${new Date(product.updatedAt || product.createdAt).toISOString()}</lastmod>
@@ -24,7 +24,7 @@ ${urls.join('')}
     return new Response(sitemap, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=1800, s-maxage=3600', // 30 min - 1 hour cache
+        'Cache-Control': 'public, max-age=1800, s-maxage=3600',
       },
     });
   } catch (error) {
