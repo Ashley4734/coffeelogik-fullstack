@@ -1,10 +1,11 @@
+// frontend/src/app/sitemap.ts - Fixed with proper types
 import { MetadataRoute } from 'next';
-import { getBlogPosts, getRecipes, getBrewingGuides, getProducts, getAuthors, getCategories } from '@/lib/api';
+import { getBlogPosts, getRecipes, getBrewingGuides, getProducts, getAuthors, getCategories, BlogPost, CoffeeRecipe, BrewingGuide, CoffeeProduct, Author, Category } from '@/lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
   
-  // Static pages with proper priorities and frequencies
+  // Static pages with optimized priorities
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -54,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.6,
     },
-    // Legal pages
+    // Legal pages - lower priority
     {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
@@ -76,31 +77,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    // Fetch dynamic content with better error handling
+    // Use Promise.allSettled for better error handling
     const [blogResponse, recipesResponse, guidesResponse, productsResponse, authorsResponse, categoriesResponse] = await Promise.allSettled([
-      getBlogPosts({ limit: 1000 }),
-      getRecipes({ limit: 1000 }),
-      getBrewingGuides({ limit: 1000 }),
-      getProducts({ limit: 1000 }),
+      getBlogPosts({ limit: 500 }), // Reduced limit for fallback
+      getRecipes({ limit: 200 }),
+      getBrewingGuides({ limit: 200 }),
+      getProducts({ limit: 200 }),
       getAuthors(),
       getCategories(),
     ]);
 
-    // Helper function to safely extract data from settled promises
-    const extractData = (result: PromiseSettledResult<any>) => 
+    // Helper function to safely extract data
+    const extractData = <T>(result: PromiseSettledResult<{ data: T[] }>): T[] => 
       result.status === 'fulfilled' ? result.value?.data || [] : [];
 
-    const blogPosts = extractData(blogResponse);
-    const recipes = extractData(recipesResponse);
-    const guides = extractData(guidesResponse);
-    const products = extractData(productsResponse);
-    const authors = extractData(authorsResponse);
-    const categories = extractData(categoriesResponse);
+    const blogPosts: BlogPost[] = extractData(blogResponse);
+    const recipes: CoffeeRecipe[] = extractData(recipesResponse);
+    const guides: BrewingGuide[] = extractData(guidesResponse);
+    const products: CoffeeProduct[] = extractData(productsResponse);
+    const authors: Author[] = extractData(authorsResponse);
+    const categories: Category[] = extractData(categoriesResponse);
 
     // Blog posts with smart prioritization
-    const blogPages: MetadataRoute.Sitemap = blogPosts.map((post: any) => {
-      // Determine priority based on recency and featured status
-      const isRecent = new Date(post.publishedAt || post.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days
+    const blogPages: MetadataRoute.Sitemap = blogPosts.map((post: BlogPost) => {
+      const isRecent = new Date(post.publishedAt || post.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       let priority = 0.6;
       
       if (post.featured) priority = 0.8;
@@ -114,8 +114,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       };
     });
 
-    // Recipes with prioritization
-    const recipePages: MetadataRoute.Sitemap = recipes.map((recipe: any) => ({
+    // Recipes
+    const recipePages: MetadataRoute.Sitemap = recipes.map((recipe: CoffeeRecipe) => ({
       url: `${baseUrl}/recipes/${recipe.slug || recipe.id}`,
       lastModified: new Date(recipe.updatedAt || recipe.createdAt),
       changeFrequency: 'monthly' as const,
@@ -123,7 +123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Brewing guides
-    const guidePages: MetadataRoute.Sitemap = guides.map((guide: any) => ({
+    const guidePages: MetadataRoute.Sitemap = guides.map((guide: BrewingGuide) => ({
       url: `${baseUrl}/brewing-guides/${guide.slug || guide.id}`,
       lastModified: new Date(guide.updatedAt || guide.createdAt),
       changeFrequency: 'monthly' as const,
@@ -131,7 +131,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Products
-    const productPages: MetadataRoute.Sitemap = products.map((product: any) => ({
+    const productPages: MetadataRoute.Sitemap = products.map((product: CoffeeProduct) => ({
       url: `${baseUrl}/products/${product.slug || product.id}`,
       lastModified: new Date(product.updatedAt || product.createdAt),
       changeFrequency: 'weekly' as const,
@@ -139,22 +139,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Author pages
-    const authorPages: MetadataRoute.Sitemap = authors.map((author: any) => ({
+    const authorPages: MetadataRoute.Sitemap = authors.map((author: Author) => ({
       url: `${baseUrl}/authors/${author.slug}`,
       lastModified: new Date(author.updatedAt || author.createdAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     }));
 
-    // Category pages (if you decide to create them)
-    const categoryPages: MetadataRoute.Sitemap = categories.map((category: any) => ({
+    // Category pages (optional - implement if you create category landing pages)
+    const categoryPages: MetadataRoute.Sitemap = categories.map((category: Category) => ({
       url: `${baseUrl}/blog/category/${category.slug}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.5,
     }));
 
-    // Combine all pages and sort by priority
+    // Combine all pages
     const allPages = [
       ...staticPages,
       ...blogPages,
@@ -163,19 +163,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...productPages,
       ...authorPages,
       ...categoryPages,
-    ].sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    ];
+
+    // Sort by priority (highest first) for better crawling
+    const sortedPages = allPages.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
     // Ensure we don't exceed sitemap limits (50,000 URLs)
-    if (allPages.length > 50000) {
-      console.warn(`Sitemap contains ${allPages.length} URLs, which exceeds the 50,000 limit. Consider creating sitemap index files.`);
-      return allPages.slice(0, 50000);
+    if (sortedPages.length > 50000) {
+      console.warn(`Sitemap contains ${sortedPages.length} URLs, exceeding 50,000 limit. Truncating to 50,000.`);
+      return sortedPages.slice(0, 50000);
     }
 
-    return allPages;
+    return sortedPages;
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    console.error('Error generating fallback sitemap:', error);
     
-    // Return at least static pages if dynamic content fails
+    // Return at least static pages if everything fails
     return staticPages;
   }
 }
