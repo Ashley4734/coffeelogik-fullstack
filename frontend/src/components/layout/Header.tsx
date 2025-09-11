@@ -11,6 +11,7 @@ const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Blog', href: '/blog' },
   { name: 'Recipes', href: '/recipes' },
+  { name: 'Calculator', href: '/calculator' }, // Add this line
   { name: 'Brewing Guides', href: '/brewing-guides' },
   { name: 'Products', href: '/products' },
 ];
