@@ -704,9 +704,26 @@ export default function CoffeeRatioCalculator() {
                         <ShareIcon className="mr-2 h-4 w-4" />
                         Share Recipe
                       </button>
-                      <button className="bg-white border-2 border-amber-600 text-amber-600 px-4 py-3 sm:py-4 rounded-lg font-semibold hover:bg-amber-50 transition-colors flex items-center justify-center">
-                        <BookmarkIcon className="mr-2 h-4 w-4" />
-                        Save
+                      <button
+                        onClick={saveRecipe}
+                        disabled={!(brewMethod && strength && units)}
+                        className={`bg-white border-2 ${
+                          justSaved ? 'border-green-600 text-green-700' : 'border-amber-600 text-amber-600'
+                        } px-4 py-3 sm:py-4 rounded-lg font-semibold transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed`}
+                        title={justSaved ? 'Saved!' : 'Save this recipe to your browser'}
+                        aria-live="polite"
+                      >
+                        {justSaved ? (
+                          <>
+                            <CheckIcon className="mr-2 h-4 w-4" />
+                            Saved
+                          </>
+                        ) : (
+                          <>
+                            <BookmarkIcon className="mr-2 h-4 w-4" />
+                            Save
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
