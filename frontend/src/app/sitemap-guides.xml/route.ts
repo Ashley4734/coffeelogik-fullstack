@@ -1,14 +1,14 @@
 // frontend/src/app/sitemap-guides.xml/route.ts
-import { getBrewingGuides } from '@/lib/api';
+import { getBrewingGuides, BrewingGuide } from '@/lib/api';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
   
   try {
     const guidesResponse = await getBrewingGuides({ limit: 1000 });
-    const guides = guidesResponse?.data || [];
+    const guides: BrewingGuide[] = guidesResponse?.data || [];
 
-    const urls = guides.map((guide: any) => `
+    const urls = guides.map((guide: BrewingGuide) => `
   <url>
     <loc>${baseUrl}/brewing-guides/${guide.slug || guide.id}</loc>
     <lastmod>${new Date(guide.updatedAt || guide.createdAt).toISOString()}</lastmod>
@@ -24,7 +24,7 @@ ${urls.join('')}
     return new Response(sitemap, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600, s-maxage=7200', // 1-2 hour cache
+        'Cache-Control': 'public, max-age=3600, s-maxage=7200',
       },
     });
   } catch (error) {
