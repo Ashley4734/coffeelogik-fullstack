@@ -1,19 +1,31 @@
-// frontend/src/app/sitemap-debug.xml/route.ts - Temporary debug route
+// frontend/src/app/sitemap-debug.xml/route.ts
 import { NextResponse } from 'next/server';
+
+type DebugInfo = {
+  timestamp: string;
+  env: {
+    NODE_ENV?: string;
+    STRAPI_URL?: string;
+    HAS_API_TOKEN: boolean;
+    BASE_URL: string;
+  };
+  apiTest: string;
+  error: string | null;
+};
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com';
-  
-  let debugInfo = {
+
+  const debugInfo: DebugInfo = {
     timestamp: new Date().toISOString(),
     env: {
       NODE_ENV: process.env.NODE_ENV,
       STRAPI_URL: process.env.NEXT_PUBLIC_STRAPI_URL,
       HAS_API_TOKEN: !!process.env.STRAPI_API_TOKEN,
-      BASE_URL: baseUrl
+      BASE_URL: baseUrl,
     },
     apiTest: 'not_tested',
-    error: null as string | null
+    error: null,
   };
 
   try {
@@ -21,12 +33,15 @@ export async function GET() {
     const strapi = (await import('@/lib/strapi')).default;
     const response = await strapi.get('/blog-posts?pagination[limit]=1');
     debugInfo.apiTest = `success - ${response.data?.data?.length || 0} posts found`;
-  } catch (error: any) {
+  } catch (err: unknown) {
     debugInfo.apiTest = 'failed';
-    debugInfo.error = error.message;
+    if (err instanceof Error) {
+      debugInfo.error = err.message;
+    } else {
+      debugInfo.error = String(err);
+    }
   }
 
-  // Return debug info as XML comments + minimal sitemap
   const debugSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- DEBUG INFO:
 ${JSON.stringify(debugInfo, null, 2)}
@@ -50,7 +65,7 @@ ${JSON.stringify(debugInfo, null, 2)}
     status: 200,
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'no-cache', // Don't cache debug info
+      'Cache-Control': 'no-cache',
     },
   });
 }
