@@ -118,6 +118,59 @@ export default function CoffeeRatioCalculator() {
   const [customRatio, setCustomRatio] = useState<string>('');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  const [justSaved, setJustSaved] = useState(false);
+
+  type SavedRecipe = {
+    id: string;              // stable id for dedupe
+    method: MethodKey;
+    methodName: string;
+    strength: Strength;
+    servings: number;
+    units: Units;
+    ratio: number;
+    water: number;           // ml
+    coffee: number;          // g
+    savedAt: number;         // epoch ms
+  };
+  
+  const buildRecipe = (): SavedRecipe | null => {
+    if (!brewMethod || !strength || !units) return null;
+    const r = calculate();
+    return {
+      id: `${brewMethod}-${strength}-${servings}-${units}`,
+      method: brewMethod,
+      methodName: RATIOS[brewMethod].name,
+      strength,
+      servings,
+      units,
+      ratio: r.ratio,
+      water: r.water,
+      coffee: r.coffee,
+      savedAt: Date.now(),
+    };
+  };
+  
+  const saveRecipe = () => {
+    const recipe = buildRecipe();
+    if (!recipe) return;
+  
+    try {
+      const key = 'coffee-recipes';
+      const existingRaw = localStorage.getItem(key);
+      const existing: SavedRecipe[] = existingRaw ? JSON.parse(existingRaw) : [];
+  
+      // de-dupe by id; newest wins
+      const filtered = existing.filter(r => r.id !== recipe.id);
+      const updated = [recipe, ...filtered].slice(0, 50); // keep last 50
+      localStorage.setItem(key, JSON.stringify(updated));
+  
+      setJustSaved(true);
+      window.setTimeout(() => setJustSaved(false), 1600);
+    } catch {
+      alert('Could not save recipe (storage not available).');
+    }
+  };  
+
   // Refs for scrolling - defined first
   const servingsRef = useRef<HTMLDivElement | null>(null);
   const strengthRef = useRef<HTMLDivElement | null>(null);
