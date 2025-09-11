@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Scale, Clock, TestTube, Share, Bookmark, BarChart, Check, ChevronRight } from 'lucide-react';
+import { 
+  ScaleIcon, 
+  ClockIcon, 
+  BeakerIcon, 
+  ShareIcon, 
+  BookmarkIcon, 
+  ChartBarIcon, 
+  CheckIcon, 
+  ChevronRightIcon 
+} from '@heroicons/react/24/outline';
 
 export default function CoffeeRatioCalculator() {
   // State variables
@@ -138,7 +147,19 @@ export default function CoffeeRatioCalculator() {
 
   const shareRecipe = () => {
     const text = `Perfect ${ratios[brewMethod].name} recipe: ${result.coffee}g coffee + ${result.water}ml water = ${servings} perfect cup${servings > 1 ? 's' : ''}! ☕`;
-    alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik's Ratio Calculator!`);
+    if (navigator.share) {
+      navigator.share({
+        title: 'Coffee Recipe',
+        text: text,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Recipe copied to clipboard!');
+      }).catch(() => {
+        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik's Ratio Calculator!`);
+      });
+    }
   };
 
   const ProTips = ({ method }) => {
@@ -189,7 +210,7 @@ export default function CoffeeRatioCalculator() {
       <ul className="space-y-2 text-sm text-gray-600">
         {(tips[method] || tips['pour-over']).map((tip, index) => (
           <li key={index} className="flex items-start">
-            <Check className="mr-2 h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+            <CheckIcon className="mr-2 h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
             {tip}
           </li>
         ))}
@@ -206,13 +227,13 @@ export default function CoffeeRatioCalculator() {
           <div className="mx-auto max-w-4xl text-center">
             <div className="flex justify-center mb-6">
               <div className="flex items-center space-x-4 bg-white/70 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm">
-                <Scale className="h-5 w-5 text-amber-600" />
+                <ScaleIcon className="h-5 w-5 text-amber-600" />
                 <span className="text-sm font-medium text-amber-700">
                   Perfect Ratios Every Time
                 </span>
               </div>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-4" style={{fontFamily: 'Georgia, serif'}}>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-4 font-playfair">
               Coffee <span className="text-amber-600">Ratio Calculator</span>
             </h1>
             <p className="text-lg leading-8 text-gray-700 mb-6">
@@ -235,7 +256,7 @@ export default function CoffeeRatioCalculator() {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
                     brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
                   }`}>
-                    {brewMethod ? <Check className="w-4 h-4" /> : '1'}
+                    {brewMethod ? <CheckIcon className="w-4 h-4" /> : '1'}
                   </div>
                   <span className={`text-sm ${brewMethod ? 'text-green-600' : 'text-amber-600 font-semibold'}`}>
                     Choose Method
@@ -247,7 +268,7 @@ export default function CoffeeRatioCalculator() {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
                     strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
                   }`}>
-                    {strength ? <Check className="w-4 h-4" /> : '2'}
+                    {strength ? <CheckIcon className="w-4 h-4" /> : '2'}
                   </div>
                   <span className={`text-sm ${strength ? 'text-green-600' : brewMethod ? 'text-amber-600 font-semibold' : 'text-gray-500'}`}>
                     Pick Strength
@@ -259,7 +280,7 @@ export default function CoffeeRatioCalculator() {
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
                     units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
                   }`}>
-                    {units ? <Check className="w-4 h-4" /> : '3'}
+                    {units ? <CheckIcon className="w-4 h-4" /> : '3'}
                   </div>
                   <span className={`text-sm ${units ? 'text-green-600' : strength ? 'text-amber-600 font-semibold' : 'text-gray-500'}`}>
                     Choose Units
@@ -278,10 +299,10 @@ export default function CoffeeRatioCalculator() {
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
                       brewMethod ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
                     }`}>
-                      {brewMethod ? <Check className="w-4 h-4" /> : '1'}
+                      {brewMethod ? <CheckIcon className="w-4 h-4" /> : '1'}
                     </div>
                     <label className="text-base sm:text-lg font-semibold text-gray-900">Choose Brewing Method</label>
-                    {brewMethod && <ChevronRight className="w-5 h-5 text-green-500 ml-2" />}
+                    {brewMethod && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {Object.entries(ratios).map(([key, method]) => (
@@ -309,7 +330,7 @@ export default function CoffeeRatioCalculator() {
                               ? 'bg-amber-100 text-amber-700 border border-amber-200'
                               : 'bg-gray-100 text-gray-600 border border-gray-200 group-hover:bg-amber-50 group-hover:text-amber-600'
                           }`}>
-                            <Clock className="w-3 h-3 mr-1" />
+                            <ClockIcon className="w-3 h-3 mr-1" />
                             {method.time}
                           </div>
                           <div className="text-xs text-gray-500 mt-2 line-clamp-2 hidden sm:block">
@@ -329,7 +350,7 @@ export default function CoffeeRatioCalculator() {
                 <div ref={servingsRef} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center mb-3">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold bg-green-500 text-white">
-                      <Check className="w-4 h-4" />
+                      <CheckIcon className="w-4 h-4" />
                     </div>
                     <label className="text-base font-semibold text-gray-700">Number of Servings</label>
                     <span className="ml-2 text-sm text-gray-500">(Optional - adjust if needed, then continue below)</span>
@@ -361,13 +382,13 @@ export default function CoffeeRatioCalculator() {
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
                       strength ? 'bg-green-500 text-white' : brewMethod ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
                     }`}>
-                      {strength ? <Check className="w-4 h-4" /> : '2'}
+                      {strength ? <CheckIcon className="w-4 h-4" /> : '2'}
                     </div>
                     <label className="text-base sm:text-lg font-semibold text-gray-900">Coffee Strength</label>
                     {brewMethod && !strength && (
                       <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">← Choose one</span>
                     )}
-                    {strength && <ChevronRight className="w-5 h-5 text-green-500 ml-2" />}
+                    {strength && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {['weak', 'medium', 'strong'].map((level) => (
@@ -395,13 +416,13 @@ export default function CoffeeRatioCalculator() {
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${
                       units ? 'bg-green-500 text-white' : strength ? 'bg-amber-500 text-white' : 'bg-gray-300 text-gray-500'
                     }`}>
-                      {units ? <Check className="w-4 h-4" /> : '3'}
+                      {units ? <CheckIcon className="w-4 h-4" /> : '3'}
                     </div>
                     <label className="text-base sm:text-lg font-semibold text-gray-900">Measurement Units</label>
                     {strength && !units && (
                       <span className="ml-2 text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded-full">← Choose one</span>
                     )}
-                    {units && <ChevronRight className="w-5 h-5 text-green-500 ml-2" />}
+                    {units && <ChevronRightIcon className="w-5 h-5 text-green-500 ml-2" />}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
@@ -434,7 +455,7 @@ export default function CoffeeRatioCalculator() {
                       onClick={() => setShowAdvanced(!showAdvanced)}
                       className="text-amber-600 hover:text-amber-700 font-medium text-sm flex items-center"
                     >
-                      <BarChart className="mr-2 h-4 w-4" />
+                      <ChartBarIcon className="mr-2 h-4 w-4" />
                       {showAdvanced ? 'Hide' : 'Show'} Advanced Options
                     </button>
 
@@ -463,7 +484,7 @@ export default function CoffeeRatioCalculator() {
                     <div className="text-center mb-4 sm:mb-6">
                       <div className="flex items-center justify-center mb-2">
                         <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                          <Check className="w-5 h-5 text-white" />
+                          <CheckIcon className="w-5 h-5 text-white" />
                         </div>
                         <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Perfect Recipe</h3>
                       </div>
@@ -492,7 +513,7 @@ export default function CoffeeRatioCalculator() {
                         <div className="text-base sm:text-lg font-bold text-gray-900 mb-1">Ratio: 1:{result.ratio}</div>
                         <div className="text-xs sm:text-sm text-gray-600 mb-2">{ratios[brewMethod].description}</div>
                         <div className="flex items-center justify-center text-xs text-gray-500">
-                          <Clock className="mr-1 h-3 w-3" />
+                          <ClockIcon className="mr-1 h-3 w-3" />
                           {ratios[brewMethod].time}
                         </div>
                       </div>
@@ -504,11 +525,11 @@ export default function CoffeeRatioCalculator() {
                         onClick={shareRecipe}
                         className="flex-1 bg-amber-600 text-white px-4 py-3 sm:py-4 rounded-lg font-semibold hover:bg-amber-700 transition-colors flex items-center justify-center text-sm sm:text-base"
                       >
-                        <Share className="mr-2 h-4 w-4" />
+                        <ShareIcon className="mr-2 h-4 w-4" />
                         Share Recipe
                       </button>
                       <button className="bg-white border-2 border-amber-600 text-amber-600 px-4 py-3 sm:py-4 rounded-lg font-semibold hover:bg-amber-50 transition-colors flex items-center justify-center">
-                        <Bookmark className="mr-2 h-4 w-4" />
+                        <BookmarkIcon className="mr-2 h-4 w-4" />
                         Save
                       </button>
                     </div>
@@ -516,7 +537,7 @@ export default function CoffeeRatioCalculator() {
                 ) : (
                   <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 sm:p-6 lg:p-8 text-center">
                     <div className="text-gray-400 mb-4">
-                      <Scale className="w-16 h-16 mx-auto opacity-50" />
+                      <ScaleIcon className="w-16 h-16 mx-auto opacity-50" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-500 mb-2">Your Perfect Recipe Awaits</h3>
                     <p className="text-gray-400 text-sm">Complete the steps above to see your coffee ratio</p>
@@ -527,7 +548,7 @@ export default function CoffeeRatioCalculator() {
                 {brewMethod && (
                   <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center text-sm sm:text-base">
-                      <TestTube className="mr-2 h-4 sm:h-5 w-4 sm:w-5 text-amber-600" />
+                      <BeakerIcon className="mr-2 h-4 sm:h-5 w-4 sm:w-5 text-amber-600" />
                       Pro Tips for {ratios[brewMethod].name}
                     </h4>
                     <ProTips method={brewMethod} />
@@ -548,21 +569,21 @@ export default function CoffeeRatioCalculator() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
               <div className="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Scale className="h-8 w-8 text-amber-600" />
+                <ScaleIcon className="h-8 w-8 text-amber-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Consistency</h3>
               <p className="text-gray-600 text-sm">Using precise ratios ensures your coffee tastes the same every time you brew.</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <TestTube className="h-8 w-8 text-blue-600" />
+                <BeakerIcon className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Extraction</h3>
               <p className="text-gray-600 text-sm">Proper ratios optimize extraction, balancing sweetness, acidity, and bitterness.</p>
             </div>
             <div className="text-center">
               <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <BarChart className="h-8 w-8 text-green-600" />
+                <ChartBarIcon className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Customization</h3>
               <p className="text-gray-600 text-sm">Adjust ratios to match your taste preferences and bean characteristics.</p>
