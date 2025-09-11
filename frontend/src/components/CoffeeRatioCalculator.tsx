@@ -22,10 +22,10 @@ export default function CoffeeRatioCalculator() {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Refs for scrolling - defined first
-  const servingsRef = useRef(null);
-  const strengthRef = useRef(null);
-  const unitsRef = useRef(null);
-  const resultsRef = useRef(null);
+  const servingsRef = useRef<HTMLDivElement>(null);
+  const strengthRef = useRef<HTMLDivElement>(null);
+  const unitsRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Coffee ratios by brewing method and strength
   const ratios = {
@@ -84,21 +84,21 @@ export default function CoffeeRatioCalculator() {
   };
 
   // Handler functions - defined after refs
-  const handleMethodChange = (method) => {
+  const handleMethodChange = (method: string) => {
     setBrewMethod(method);
     scrollToRef(servingsRef);
   };
 
-  const handleServingsChange = (newServings) => {
+  const handleServingsChange = (newServings: number) => {
     setServings(newServings);
   };
 
-  const handleStrengthChange = (newStrength) => {
+  const handleStrengthChange = (newStrength: string) => {
     setStrength(newStrength);
     scrollToRef(unitsRef);
   };
 
-  const handleUnitsChange = (newUnits) => {
+  const handleUnitsChange = (newUnits: string) => {
     setUnits(newUnits);
     scrollToRef(resultsRef);
   };
@@ -111,7 +111,7 @@ export default function CoffeeRatioCalculator() {
     
     const baseWater = brewMethod === 'espresso' ? 30 : 240;
     const waterAmount = baseWater * servings;
-    const ratio = customRatio ? parseFloat(customRatio) : ratios[brewMethod][strength];
+    const ratio = customRatio ? parseFloat(customRatio) : ratios[brewMethod as keyof typeof ratios][strength as keyof typeof ratios[keyof typeof ratios]];
     const coffeeAmount = waterAmount / ratio;
     
     return {
@@ -121,7 +121,7 @@ export default function CoffeeRatioCalculator() {
     };
   };
 
-  const convertUnits = (amount, type) => {
+  const convertUnits = (amount: number, type: string) => {
     if (units === 'imperial') {
       if (type === 'water') {
         return {
@@ -146,7 +146,7 @@ export default function CoffeeRatioCalculator() {
   const coffeeDisplay = convertUnits(result.coffee, 'coffee');
 
   const shareRecipe = () => {
-    const text = `Perfect ${ratios[brewMethod].name} recipe: ${result.coffee}g coffee + ${result.water}ml water = ${servings} perfect cup${servings > 1 ? 's' : ''}! ☕`;
+    const text = `Perfect ${ratios[brewMethod as keyof typeof ratios].name} recipe: ${result.coffee}g coffee + ${result.water}ml water = ${servings} perfect cup${servings > 1 ? 's' : ''}! ☕`;
     if (navigator.share) {
       navigator.share({
         title: 'Coffee Recipe',
@@ -157,13 +157,13 @@ export default function CoffeeRatioCalculator() {
       navigator.clipboard.writeText(text).then(() => {
         alert('Recipe copied to clipboard!');
       }).catch(() => {
-        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik&apos;s Ratio Calculator!`);
+        alert(`Recipe to share:\n\n${text}\n\nCalculated using CoffeeLogik's Ratio Calculator!`);
       });
     }
   };
 
-  const ProTips = ({ method }) => {
-    const tips = {
+  const ProTips = ({ method }: { method: string }) => {
+    const tips: { [key: string]: string[] } = {
       'pour-over': [
         'Use a gooseneck kettle for precise pouring',
         'Bloom coffee for 30 seconds before continuing',
@@ -250,7 +250,7 @@ export default function CoffeeRatioCalculator() {
             
             {/* Progress Indicator */}
             <div className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Let&apos;s make perfect coffee</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Let's make perfect coffee</h2>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 text-sm font-bold ${
@@ -488,7 +488,7 @@ export default function CoffeeRatioCalculator() {
                         </div>
                         <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Perfect Recipe</h3>
                       </div>
-                      <p className="text-gray-600 text-sm sm:text-base">For {servings} {strength} {ratios[brewMethod].name.toLowerCase()} cup{servings > 1 ? 's' : ''}</p>
+                      <p className="text-gray-600 text-sm sm:text-base">For {servings} {strength} {ratios[brewMethod as keyof typeof ratios].name.toLowerCase()} cup{servings > 1 ? 's' : ''}</p>
                     </div>
 
                     <div className="space-y-3 sm:space-y-4 lg:space-y-6">
@@ -511,10 +511,10 @@ export default function CoffeeRatioCalculator() {
                       {/* Ratio Info */}
                       <div className="bg-white rounded-xl p-4 text-center">
                         <div className="text-base sm:text-lg font-bold text-gray-900 mb-1">Ratio: 1:{result.ratio}</div>
-                        <div className="text-xs sm:text-sm text-gray-600 mb-2">{ratios[brewMethod].description}</div>
+                        <div className="text-xs sm:text-sm text-gray-600 mb-2">{ratios[brewMethod as keyof typeof ratios].description}</div>
                         <div className="flex items-center justify-center text-xs text-gray-500">
                           <ClockIcon className="mr-1 h-3 w-3" />
-                          {ratios[brewMethod].time}
+                          {ratios[brewMethod as keyof typeof ratios].time}
                         </div>
                       </div>
                     </div>
@@ -549,7 +549,7 @@ export default function CoffeeRatioCalculator() {
                   <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center text-sm sm:text-base">
                       <BeakerIcon className="mr-2 h-4 sm:h-5 w-4 sm:w-5 text-amber-600" />
-                      Pro Tips for {ratios[brewMethod].name}
+                      Pro Tips for {ratios[brewMethod as keyof typeof ratios].name}
                     </h4>
                     <ProTips method={brewMethod} />
                   </div>
@@ -595,8 +595,8 @@ export default function CoffeeRatioCalculator() {
             <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h3>
             <div className="space-y-6">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">What&apos;s the golden ratio for coffee?</h4>
-                <p className="text-gray-600 text-sm">The &quot;golden ratio&quot; is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
+                <h4 className="font-semibold text-gray-900 mb-2">What's the golden ratio for coffee?</h4>
+                <p className="text-gray-600 text-sm">The "golden ratio" is generally 1:15 to 1:17 (coffee to water), but this varies by brewing method and personal preference.</p>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Should I weigh coffee and water?</h4>
