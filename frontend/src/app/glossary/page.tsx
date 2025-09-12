@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+//import Link from 'next/link';
 import { MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 
 // Note: This is now a client component, so metadata should be moved to a separate file
