@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { getBlogPosts, getRecipes, getStrapiMedia, calculateReadingTime, formatDate } from '@/lib/api';
+import { getBlogPosts, getRecipes, getStrapiMedia, formatDate } from '@/lib/api';
 import type { BlogPost, CoffeeRecipe } from '@/lib/api';
 
 interface SearchResult {
