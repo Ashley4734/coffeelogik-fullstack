@@ -7,7 +7,6 @@ import {
   UserGroupIcon,
   ClockIcon,
   CheckCircleIcon,
-  CoffeeIcon as CupIcon,
   GlobeAltIcon,
   AcademicCapIcon
 } from '@heroicons/react/24/outline';
@@ -48,7 +47,7 @@ const values = [
   {
     icon: GlobeAltIcon,
     title: 'Community Focused',
-    description: 'We\'re building a community where coffee lovers can learn, share experiences, and grow their brewing skills together.',
+    description: 'We&apos;re building a community where coffee lovers can learn, share experiences, and grow their brewing skills together.',
     color: 'text-purple-600 bg-purple-100'
   }
 ];
@@ -103,8 +102,8 @@ export default function AboutPage() {
               About <span className="text-amber-600">Coffee Logik</span>
             </h1>
             <p className="text-xl leading-8 text-gray-700 mb-8">
-              We're passionate coffee enthusiasts on a mission to help you brew better coffee. 
-              From beginner-friendly guides to expert techniques, we're here to elevate your coffee journey.
+              We&apos;re passionate coffee enthusiasts on a mission to help you brew better coffee. 
+              From beginner-friendly guides to expert techniques, we&apos;re here to elevate your coffee journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/blog" className="rounded-md bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
@@ -151,7 +150,7 @@ export default function AboutPage() {
               </div>
               <div className="prose prose-amber prose-lg max-w-none">
                 <p className="text-lg leading-relaxed text-gray-700">
-                  Coffee Logik was born from a simple observation: great coffee shouldn't be complicated or intimidating. 
+                  Coffee Logik was born from a simple observation: great coffee shouldn&apos;t be complicated or intimidating. 
                   Too many coffee enthusiasts felt overwhelmed by conflicting advice, expensive equipment recommendations, 
                   and complex brewing methods.
                 </p>
@@ -161,7 +160,7 @@ export default function AboutPage() {
                   regardless of experience level or budget.
                 </p>
                 <p className="text-lg leading-relaxed text-gray-700">
-                  Today, we're proud to be a trusted resource for thousands of coffee lovers who rely on our honest reviews, 
+                  Today, we&apos;re proud to be a trusted resource for thousands of coffee lovers who rely on our honest reviews, 
                   detailed guides, and tested recipes to enhance their daily coffee experience.
                 </p>
               </div>
@@ -289,7 +288,7 @@ export default function AboutPage() {
               Join Our Coffee Community
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Whether you're just starting your coffee journey or you're a seasoned enthusiast, 
+              Whether you&apos;re just starting your coffee journey or you&apos;re a seasoned enthusiast, 
               we have something to help you brew better coffee every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
