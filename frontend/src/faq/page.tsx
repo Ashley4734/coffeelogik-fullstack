@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-//import { Metadata } from 'next';
+import { Metadata } from 'next';
 import { 
   QuestionMarkCircleIcon, 
   ChevronDownIcon, 
@@ -19,7 +19,7 @@ import {
 // Note: Since this is a client component, metadata would need to be handled differently
 // For now, I'll include it as a comment for when converted to server component
 
-/*
+
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions - Coffee Logik',
   description: 'Find answers to common questions about coffee brewing, equipment, recipes, and more. Get expert answers from the Coffee Logik team.',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     canonical: '/faq',
   },
 };
-*/
+
 
 interface FAQItem {
   id: string;
