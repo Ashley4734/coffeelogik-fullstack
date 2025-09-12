@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { getBlogPosts, getRecipes, getStrapiMedia, formatDate } from '@/lib/api';
-import type { BlogPost, CoffeeRecipe } from '@/lib/api';
+// Remove unused imports - they're already imported in api.ts
+// import type { BlogPost, CoffeeRecipe } from '@/lib/api';
 
 interface SearchResult {
   type: 'blog' | 'recipe';
@@ -221,7 +222,7 @@ export default function SearchResults() {
       ) : !query ? (
         <div className="text-center py-12">
           <span className="text-6xl mb-4 block">🔍</span>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Start your search</h3>
+          <h3 className="text-lg font-semibual text-gray-900 mb-2">Start your search</h3>
           <p className="text-gray-600">
             Enter a search term above to find articles, recipes, and guides.
           </p>
