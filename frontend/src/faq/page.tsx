@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Metadata } from 'next';
+//import { Metadata } from 'next';
 import { 
   QuestionMarkCircleIcon, 
   ChevronDownIcon, 
