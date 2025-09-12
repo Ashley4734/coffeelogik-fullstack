@@ -1,4 +1,3 @@
-// frontend/src/app/glossary/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -246,4 +245,115 @@ export default function GlossaryPage() {
             {/* Category Filter */}
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-900 mb-3">Filter by Category</h3>
-              <div className="flex flex
+              <div className="flex flex-wrap gap-2">
+                {categories.map(category => (
+                  <button
+                    key={category.key}
+                    onClick={() => setSelectedCategory(category.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category.key
+                        ? category.color
+                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Letter Filter */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Filter by First Letter</h3>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedLetter('all')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    selectedLetter === 'all'
+                      ? 'bg-indigo-100 text-indigo-700'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  All
+                </button>
+                {availableLetters.map(letter => (
+                  <button
+                    key={letter}
+                    onClick={() => setSelectedLetter(letter)}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      selectedLetter === letter
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {letter.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-8">
+          <p className="text-gray-600">
+            Showing {sortedTerms.length} of {glossaryTerms.length} terms
+          </p>
+        </div>
+
+        {/* Terms List */}
+        <div className="space-y-6">
+          {sortedTerms.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No terms found matching your criteria.</p>
+            </div>
+          ) : (
+            sortedTerms.map(term => (
+              <div key={term.term} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">{term.term}</h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(term.category)}`}>
+                    {categories.find(c => c.key === term.category)?.label}
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  {term.definition}
+                </p>
+
+                {term.relatedTerms && term.relatedTerms.length > 0 && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Related Terms:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {term.relatedTerms.map(relatedTerm => (
+                        <span
+                          key={relatedTerm}
+                          className="px-2 py-1 bg-gray-50 text-gray-600 text-sm rounded hover:bg-gray-100 cursor-pointer"
+                          onClick={() => setSearchTerm(relatedTerm)}
+                        >
+                          {relatedTerm}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Back to Top */}
+        {sortedTerms.length > 10 && (
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Back to Top
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
