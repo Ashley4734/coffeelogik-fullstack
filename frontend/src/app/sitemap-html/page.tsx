@@ -328,7 +328,7 @@ export default function SitemapPage() {
         <div className="mt-16">
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Can't Find What You're Looking For?
+              Cannot Find What You Are Looking For?
             </h3>
             <p className="text-gray-600 mb-6">
               Use our search feature to find specific coffee content, or contact us for help.
