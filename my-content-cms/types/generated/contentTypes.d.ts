@@ -443,6 +443,7 @@ export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
   };
   options: {
     draftAndPublish: true;
+    timestamps: true;
   };
   attributes: {
     author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
@@ -474,7 +475,6 @@ export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 60;
       }>;
-    published_at: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     reading_time: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
@@ -604,7 +604,7 @@ export interface ApiCoffeeProductCoffeeProduct
     draftAndPublish: true;
   };
   attributes: {
-    affiliate_link: Schema.Attribute.String;
+    affiliate_link: Schema.Attribute.Text;
     brand: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -627,7 +627,7 @@ export interface ApiCoffeeProductCoffeeProduct
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
-        maxLength: 255;
+        maxLength: 500;
       }>;
     origin: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
@@ -642,12 +642,31 @@ export interface ApiCoffeeProductCoffeeProduct
       >;
     product_type: Schema.Attribute.Enumeration<
       [
-        'Coffee Beans',
-        'Ground Coffee',
-        'Espresso Machine',
-        'Coffee Grinder',
-        'Brewing Equipment',
         'Accessories',
+        'AeroPress',
+        'Brewing Equipment',
+        'Carafes',
+        'Coffee Beans',
+        'Coffee Grinder',
+        'Coffee Maker',
+        'Coffee Pods',
+        'Coffee Scales',
+        'Cold Brew Concentrate',
+        'Cold Brew Maker',
+        'Drip Coffee Maker',
+        'Espresso Machine',
+        'Filters',
+        'French Press',
+        'Ground Coffee',
+        'Instant Coffee',
+        'Kettles',
+        'Milk Frothers',
+        'Moka Pot',
+        'Mugs & Cups',
+        'Pour-Over Dripper',
+        'Syrups & Sauces',
+        'Tampers & Levelers',
+        'Travel Mugs',
       ]
     >;
     pros: Schema.Attribute.JSON;
@@ -664,6 +683,10 @@ export interface ApiCoffeeProductCoffeeProduct
       ['Light', 'Medium-Light', 'Medium', 'Medium-Dark', 'Dark', 'Extra Dark']
     >;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    specifications: Schema.Attribute.Component<
+      'product.hardware-specifications',
+      false
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
