@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, ClockIcon, FireIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon, HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon } from "@heroicons/react/24/solid";
+import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
@@ -8,6 +8,7 @@ import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
+
 
 function StarRating({ rating, size = "default", showNumber = false }: { 
   rating: number; 
@@ -45,9 +46,9 @@ function StarRating({ rating, size = "default", showNumber = false }: {
   );
 }
 
-// Updated helper function to use quick_verdict field
-function getQuickVerdictText(product: any): string {
-  // Use the quick_verdict field if available
+// Updated helper function with proper typing
+function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
+  // Use quick_verdict if available
   if (product.quick_verdict) {
     return product.quick_verdict;
   }
