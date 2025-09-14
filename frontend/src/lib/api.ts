@@ -110,6 +110,7 @@ export interface CoffeeProduct {
   slug: string;
   brand: string;
   product_type: string;
+  quick_verdict?: string;
   origin?: string;
   roast_level?: string;
   flavor_notes?: string[];
