@@ -45,29 +45,34 @@ function StarRating({ rating, size = "default", showNumber = false }: {
   );
 }
 
-// Helper function to extract plain text from markdown
-function getQuickVerdictText(markdown: string, maxLength: number = 150): string {
-  if (!markdown) return '';
+// Updated helper function to use quick_verdict field
+function getQuickVerdictText(product: any): string {
+  // Use the quick_verdict field if available
+  if (product.quick_verdict) {
+    return product.quick_verdict;
+  }
 
-  const text = markdown
-    .replace(/#{1,6}\s*/g, '')
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/__(.*?)__/g, '$1')
-    .replace(/_(.*?)_/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/`([^`]+)`/g, '$1')
-    .replace(/\s+/g, ' ')
-    .trim();
+  // Fallback to description excerpt if quick_verdict is not available
+  if (product.description) {
+    const text = product.description
+      .replace(/#{1,6}\s*/g, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/__(.*?)__/g, '$1')
+      .replace(/_(.*?)_/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-  if (text.length <= maxLength) return text;
+    if (text.length <= 200) return text;
+    const truncated = text.substring(0, 200);
+    const lastSpaceIndex = truncated.lastIndexOf(' ');
+    return lastSpaceIndex > 160 ? truncated.substring(0, lastSpaceIndex) + '...' : truncated + '...';
+  }
 
-  const truncated = text.substring(0, maxLength);
-  const lastSpaceIndex = truncated.lastIndexOf(' ');
-
-  return lastSpaceIndex > maxLength * 0.8
-    ? truncated.substring(0, lastSpaceIndex) + '...'
-    : truncated + '...';
+  // Final fallback
+  return `The ${product.name} by ${product.brand} offers excellent value in the ${product.product_type?.toLowerCase() || 'coffee equipment'} category.`;
 }
 
 // Rating badge component
@@ -109,17 +114,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const imageUrl = product.images?.[0] ? getStrapiMedia(product.images[0].url) : null;
     const url = `/products/${product.slug || id}`;
 
+    // Use quick_verdict for description if available
+    const description = product.quick_verdict
+      ? product.quick_verdict.substring(0, 160).replace(/<[^>]*>/g, '')
+      : product.description
+        ? product.description.substring(0, 160).replace(/<[^>]*>/g, '')
+        : `Comprehensive review of ${product.name} by ${product.brand}. Read our expert analysis, pros and cons, and buying recommendations.`;
+
     return {
-      title: `${product.name} Review - ${product.brand} | CoffeeLogik`,
-      description: product.description ?
-        product.description.substring(0, 160).replace(/<[^>]*>/g, '') :
-        `Comprehensive review of ${product.name} by ${product.brand}. Read our expert analysis, pros and cons, and buying recommendations.`,
+      title: `${product.name} | CoffeeLogik`,
+      description: description,
       keywords: `${product.name}, ${product.brand}, coffee review, ${product.product_type}, coffee equipment review`,
       openGraph: {
-        title: `${product.name} Review - ${product.brand}`,
-        description: product.description ?
-          product.description.substring(0, 160).replace(/<[^>]*>/g, '') :
-          `Expert review of ${product.name} by ${product.brand}`,
+        title: product.name,
+        description: description,
         url: url,
         type: 'article',
         images: imageUrl ? [
@@ -162,8 +170,12 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
   // Generate structured data for the product review
   const structuredData = generateArticleStructuredData({
-    title: `${product.name} Review`,
-    description: product.description ? product.description.substring(0, 160).replace(/<[^>]*>/g, '') : `Expert review of ${product.name}`,
+    title: product.name,
+    description: product.quick_verdict
+      ? product.quick_verdict.substring(0, 160).replace(/<[^>]*>/g, '')
+      : product.description
+        ? product.description.substring(0, 160).replace(/<[^>]*>/g, '')
+        : `Expert review of ${product.name}`,
     url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://coffeelogik.com'}/products/${product.slug || id}`,
     imageUrl: product.images?.[0] ? getStrapiMedia(product.images[0].url) : undefined,
     authorName: "CoffeeLogik Review Team",
@@ -263,9 +275,9 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   </div>
                 </div>
 
-                {/* Product Title */}
+                {/* Product Title - Use the SEO-friendly name from AI */}
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 font-playfair mb-8 leading-tight">
-                  {product.name} Review
+                  {product.name}
                 </h1>
 
                 {/* Enhanced Review Score Card */}
@@ -292,18 +304,19 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   </div>
                 )}
 
-                {/* Enhanced Quick Verdict */}
+                {/* Enhanced Quick Verdict - Now uses quick_verdict field */}
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6 sm:p-8 mb-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <FireIcon className="mr-3 h-6 w-6 text-amber-600" />
                     Quick Verdict
                   </h3>
-                  <p className="text-gray-700 leading-relaxed text-lg">
-                    {product.description ?
-                      getQuickVerdictText(product.description, 200) :
-                      `The ${product.name} by ${product.brand} offers excellent value in the ${product.product_type.toLowerCase()} category.`
-                    }
-                  </p>
+                  <div className="text-gray-700 leading-relaxed text-lg">
+                    {product.quick_verdict ? (
+                      <div dangerouslySetInnerHTML={{ __html: marked(product.quick_verdict) }} />
+                    ) : (
+                      <p>{getQuickVerdictText(product)}</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Enhanced CTA Section */}
