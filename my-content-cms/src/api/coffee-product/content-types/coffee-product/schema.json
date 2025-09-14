@@ -27,6 +27,9 @@
       "required": true,
       "maxLength": 100
     },
+    "quick_verdict": {
+      "type": "richtext"
+    },
     "product_type": {
       "type": "enumeration",
       "enum": ["Accessories", "AeroPress", "Brewing Equipment", "Carafes", "Coffee Beans", "Coffee Grinder", "Coffee Maker", "Coffee Pods", "Coffee Scales", "Cold Brew Concentrate", "Cold Brew Maker", "Drip Coffee Maker", "Espresso Machine", "Filters", "French Press", "Ground Coffee", "Instant Coffee", "Kettles", "Milk Frothers", "Moka Pot", "Mugs & Cups", "Pour-Over Dripper", "Syrups & Sauces", "Tampers & Levelers", "Travel Mugs"]
