@@ -671,6 +671,7 @@ export interface ApiCoffeeProductCoffeeProduct
     >;
     pros: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    quick_verdict: Schema.Attribute.RichText;
     rating: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<
         {
