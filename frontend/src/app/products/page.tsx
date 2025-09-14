@@ -64,8 +64,8 @@ function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: num
   );
 }
 
-// Helper function to get preview text - prioritizes quick_verdict
-function getPreviewText(product: any): string {
+// Helper function to get preview text - prioritizes quick_verdict with proper typing
+function getPreviewText(product: import("@/lib/api").CoffeeProduct): string {
   // Use quick_verdict if available
   if (product.quick_verdict) {
     const text = product.quick_verdict
@@ -89,6 +89,7 @@ function getPreviewText(product: any): string {
 
   return `Expert review of ${product.name} by ${product.brand}`;
 }
+
 
 export default async function ProductsPage() {
   // Fetch products from Strapi
