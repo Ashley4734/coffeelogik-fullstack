@@ -385,18 +385,8 @@ export async function getProduct(slug: string) {
   try {
     const params = new URLSearchParams();
     params.append("filters[slug][$eq]", slug);
-    params.append("populate[]", "images");
-    // Populate all specifications components deeply
-    params.append("populate[specifications][populate][0]", "dimensions");
-    params.append("populate[specifications][populate][1]", "weight");
-    params.append("populate[specifications][populate][2]", "power");
-    params.append("populate[specifications][populate][3]", "capacity");
-    params.append("populate[specifications][populate][4]", "operating_temperature");
-    params.append("populate[specifications][populate][5]", "noise_level");
-    params.append("populate[specifications][populate][6]", "grinder_specifications.bean_hopper_capacity");
-    params.append("populate[specifications][populate][7]", "brewing_specifications.brew_temperature");
-    params.append("populate[specifications][populate][8]", "brewing_specifications.water_reservoir_capacity");
-    params.append("populate[specifications][populate][9]", "espresso_specifications.pump_pressure");
+    // Use the universal populate approach to get everything including nested components
+    params.append("populate", "*");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
     const data = response.data as StrapiResponse<CoffeeProduct>;
@@ -404,6 +394,13 @@ export async function getProduct(slug: string) {
     if (data.data.length === 0) {
       throw new Error("Product not found");
     }
+    
+    return data.data[0];
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    throw error;
+  }
+}
     
     return data.data[0];
   } catch (error) {
