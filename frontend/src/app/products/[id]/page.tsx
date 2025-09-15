@@ -322,7 +322,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                 {/* Enhanced CTA Section */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6 sm:p-8">
-                  {/* Price Display */}
+                  {/* Remove the entire Price Display section - delete these lines:
                   {product.price && (
                     <div className="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
                       <div className="text-center">
@@ -333,6 +333,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       </div>
                     </div>
                   )}
+                  */}
 
                   {/* Main CTA Button */}
                   {product.affiliate_link ? (
