@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_product_temperature_range",
+  "info": {
+    "displayName": "Temperature Range",
+    "icon": "thermometer"
+  },
+  "attributes": {
+    "min_temperature": {
+      "type": "decimal"
+    },
+    "max_temperature": {
+      "type": "decimal"
+    },
+    "unit": {
+      "type": "enumeration",
+      "enum": ["F", "C"]
+    }
+  }
+}

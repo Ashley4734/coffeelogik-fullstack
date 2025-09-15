@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_product_espresso_specs",
+  "info": {
+    "displayName": "Espresso Specifications",
+    "icon": "coffee-to-go"
+  },
+  "attributes": {
+    "pump_pressure": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.measurement"
+    },
+    "boiler_type": {
+      "type": "enumeration",
+      "enum": ["Single", "Dual", "Heat Exchanger"]
+    },
+    "portafilter_size": {
+      "type": "decimal"
+    },
+    "steam_wand": {
+      "type": "boolean"
+    },
+    "pre_infusion": {
+      "type": "boolean"
+    },
+    "pid_control": {
+      "type": "boolean"
+    }
+  }
+}

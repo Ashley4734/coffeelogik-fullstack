@@ -3,41 +3,66 @@
   "info": {
     "displayName": "Hardware Specifications",
     "icon": "cogs",
-    "description": "Holds technical specifications for hardware like grinders and coffee makers."
+    "description": "Technical specifications for coffee equipment and accessories"
   },
   "options": {},
   "attributes": {
     "materials": {
-      "type": "json"
+      "type": "json",
+      "description": "Array of materials used in construction"
     },
     "dimensions": {
-      "type": "string"
+      "type": "component",
+      "repeatable": false,
+      "component": "product.dimensions"
     },
     "weight": {
-      "type": "string"
+      "type": "component", 
+      "repeatable": false,
+      "component": "product.measurement"
     },
     "power": {
-      "type": "string"
+      "type": "component",
+      "repeatable": false, 
+      "component": "product.measurement"
     },
     "capacity": {
-      "type": "string"
+      "type": "component",
+      "repeatable": false,
+      "component": "product.measurement" 
     },
-    "grinder_type": {
-      "type": "enumeration",
-      "enum": [
-        "Burr",
-        "Blade"
-      ]
+    "warranty": {
+      "type": "string",
+      "description": "Warranty period and coverage"
     },
-    "burr_type": {
-      "type": "enumeration",
-      "enum": [
-        "Conical",
-        "Flat"
-      ]
+    "certifications": {
+      "type": "json",
+      "description": "Safety and quality certifications (UL, NSF, etc.)"
     },
-    "grind_settings": {
-      "type": "string"
+    "operating_temperature": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.temperature-range"
+    },
+    "noise_level": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.measurement"
+    },
+    "grinder_specifications": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.grinder-specs"
+    },
+    "brewing_specifications": {
+      "type": "component", 
+      "repeatable": false,
+      "component": "product.brewing-specs"
+    },
+    "espresso_specifications": {
+      "type": "component",
+      "repeatable": false, 
+      "component": "product.espresso-specs"
     }
   }
 }

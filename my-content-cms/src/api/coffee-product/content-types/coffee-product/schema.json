@@ -73,6 +73,14 @@
       "type": "boolean",
       "default": false
     },
+    "meta_title": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "meta_description": {
+      "type": "text",
+      "maxLength": 160
+    },
     "specifications": {
       "type": "component",
       "repeatable": false,

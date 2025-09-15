@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_product_measurement",
+  "info": {
+    "displayName": "Measurement",
+    "icon": "weight"
+  },
+  "attributes": {
+    "value": {
+      "type": "decimal"
+    },
+    "unit": {
+      "type": "string"
+    }
+  }
+}

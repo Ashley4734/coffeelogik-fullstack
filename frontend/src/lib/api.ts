@@ -106,12 +106,13 @@ export interface CoffeeRecipe {
 
 export interface CoffeeProduct {
   id: number;
+  documentId?: string;
   name: string;
   slug: string;
   brand: string;
-  product_type: string;
+  product_type: "Accessories" | "AeroPress" | "Brewing Equipment" | "Carafes" | "Coffee Beans" | "Coffee Grinder" | "Coffee Maker" | "Coffee Pods" | "Coffee Scales" | "Cold Brew Concentrate" | "Cold Brew Maker" | "Drip Coffee Maker" | "Espresso Machine" | "Filters" | "French Press" | "Ground Coffee" | "Instant Coffee" | "Kettles" | "Milk Frothers" | "Moka Pot" | "Mugs & Cups" | "Pour-Over Dripper" | "Syrups & Sauces" | "Tampers & Levelers" | "Travel Mugs";
   origin?: string;
-  roast_level?: string;
+  roast_level?: "Light" | "Medium-Light" | "Medium" | "Medium-Dark" | "Dark" | "Extra Dark";
   flavor_notes?: string[];
   description?: string;
   price?: number;
@@ -119,12 +120,88 @@ export interface CoffeeProduct {
   pros?: string[];
   cons?: string[];
   images?: Array<{
+    id: number;
     url: string;
+    alternativeText?: string;
+    caption?: string;
   }>;
   affiliate_link?: string;
   featured: boolean;
+  meta_title?: string;
+  meta_description?: string;
+  quick_verdict?: string;
+  specifications?: {
+    materials?: string[];
+    dimensions?: {
+      length?: number;
+      width?: number;
+      height?: number;
+      unit?: "inches" | "cm" | "mm";
+    };
+    weight?: {
+      value?: number;
+      unit?: string;
+    };
+    power?: {
+      value?: number;
+      unit?: string;
+    };
+    capacity?: {
+      value?: number;
+      unit?: string;
+    };
+    warranty?: string;
+    certifications?: string[];
+    operating_temperature?: {
+      min_temperature?: number;
+      max_temperature?: number;
+      unit?: "F" | "C";
+    };
+    noise_level?: {
+      value?: number;
+      unit?: string;
+    };
+    grinder_specifications?: {
+      grinder_type?: "Burr" | "Blade";
+      burr_type?: "Conical" | "Flat";
+      burr_material?: "Steel" | "Ceramic";
+      grind_settings?: number;
+      bean_hopper_capacity?: {
+        value?: number;
+        unit?: string;
+      };
+      grind_speed?: string;
+    };
+    brewing_specifications?: {
+      brew_temperature?: {
+        min_temperature?: number;
+        max_temperature?: number;
+        unit?: "F" | "C";
+      };
+      brew_time?: string;
+      water_reservoir_capacity?: {
+        value?: number;
+        unit?: string;
+      };
+      programmable?: boolean;
+      auto_shutoff?: boolean;
+      thermal_carafe?: boolean;
+    };
+    espresso_specifications?: {
+      pump_pressure?: {
+        value?: number;
+        unit?: string;
+      };
+      boiler_type?: "Single" | "Dual" | "Heat Exchanger";
+      portafilter_size?: number;
+      steam_wand?: boolean;
+      pre_infusion?: boolean;
+      pid_control?: boolean;
+    };
+  };
   createdAt: string;
   updatedAt: string;
+  publishedAt?: string;
 }
 
 export interface BrewingGuide {
@@ -292,6 +369,8 @@ export async function getProducts(options: {
     }
     
     params.append("populate[]", "images");
+    // Add specifications to populate for products listing
+    params.append("populate[]", "specifications");
     params.append("sort[0]", "publishedAt:desc");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
@@ -306,7 +385,15 @@ export async function getProduct(slug: string) {
   try {
     const params = new URLSearchParams();
     params.append("filters[slug][$eq]", slug);
-    params.append("populate[]", "images");
+    params.append("populate[0]", "images");
+    params.append("populate[1]", "specifications");
+    params.append("populate[2]", "specifications.dimensions");
+    params.append("populate[3]", "specifications.weight");
+    params.append("populate[4]", "specifications.power");
+    params.append("populate[5]", "specifications.capacity");
+    params.append("populate[6]", "specifications.grinder_specifications");
+    params.append("populate[7]", "specifications.brewing_specifications");
+    params.append("populate[8]", "specifications.espresso_specifications");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
     const data = response.data as StrapiResponse<CoffeeProduct>;

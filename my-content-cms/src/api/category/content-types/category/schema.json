@@ -37,6 +37,14 @@
       "required": false,
       "allowedTypes": ["images"]
     },
+    "meta_title": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "meta_description": {
+      "type": "text",
+      "maxLength": 160
+    },
     "blog_posts": {
       "type": "relation",
       "relation": "manyToMany",

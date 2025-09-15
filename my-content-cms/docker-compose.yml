@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  strapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: y0o4w84ckoockck8o0ss8s48:${SOURCE_COMMIT:-latest}
+    container_name: y0o4w84ckoockck8o0ss8s48-${RANDOM_ID:-$(date +%s)}
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=1337
+      - APP_KEYS=${APP_KEYS}
+      - API_TOKEN_SALT=${API_TOKEN_SALT}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT}
+      - JWT_SECRET=${JWT_SECRET}
+      - STRAPI_URL=${COOLIFY_URL}
+    ports:
+      - "1337:1337"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    mem_swappiness: 0
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1337/admin"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - strapi_data:/app/public/uploads
+      - strapi_db:/app/.tmp
+
+volumes:
+  strapi_data:
+    driver: local
+  strapi_db:
+    driver: local
