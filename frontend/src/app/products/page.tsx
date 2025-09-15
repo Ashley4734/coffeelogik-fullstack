@@ -201,12 +201,13 @@ export default async function ProductsPage() {
                   </span>
                 </div>
                 
-                <div className="aspect-square w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                {/* FIXED: Changed aspect ratio and object-fit to prevent cropping */}
+                <div className="h-64 w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center p-4">
                   {product.images?.[0] ? (
                     <img
                       src={getStrapiMedia(product.images[0].url)}
                       alt={product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <span className="text-6xl">☕</span>
@@ -282,7 +283,7 @@ export default async function ProductsPage() {
                     <img
                       src={getStrapiMedia(product.images[0].url)}
                       alt={product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <span className="text-5xl">☕</span>
