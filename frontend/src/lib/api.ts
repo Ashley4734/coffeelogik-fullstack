@@ -385,7 +385,15 @@ export async function getProduct(slug: string) {
   try {
     const params = new URLSearchParams();
     params.append("filters[slug][$eq]", slug);
-    params.append("populate", "*");
+    params.append("populate[0]", "images");
+    params.append("populate[1]", "specifications");
+    params.append("populate[2]", "specifications.dimensions");
+    params.append("populate[3]", "specifications.weight");
+    params.append("populate[4]", "specifications.power");
+    params.append("populate[5]", "specifications.capacity");
+    params.append("populate[6]", "specifications.grinder_specifications");
+    params.append("populate[7]", "specifications.brewing_specifications");
+    params.append("populate[8]", "specifications.espresso_specifications");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
     const data = response.data as StrapiResponse<CoffeeProduct>;
