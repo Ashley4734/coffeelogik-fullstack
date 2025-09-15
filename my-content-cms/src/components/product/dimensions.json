@@ -1,0 +1,23 @@
+// components/product/dimensions.json
+{
+  "collectionName": "components_product_dimensions",
+  "info": {
+    "displayName": "Dimensions",
+    "icon": "ruler"
+  },
+  "attributes": {
+    "length": {
+      "type": "decimal"
+    },
+    "width": {
+      "type": "decimal"
+    },
+    "height": {
+      "type": "decimal"
+    },
+    "unit": {
+      "type": "enumeration",
+      "enum": ["inches", "cm", "mm"]
+    }
+  }
+}
