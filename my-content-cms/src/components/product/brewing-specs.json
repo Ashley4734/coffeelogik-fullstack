@@ -1,0 +1,32 @@
+// components/product/brewing-specs.json
+{
+  "collectionName": "components_product_brewing_specs",
+  "info": {
+    "displayName": "Brewing Specifications",
+    "icon": "coffee"
+  },
+  "attributes": {
+    "brew_temperature": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.temperature-range"
+    },
+    "brew_time": {
+      "type": "string"
+    },
+    "water_reservoir_capacity": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.measurement"
+    },
+    "programmable": {
+      "type": "boolean"
+    },
+    "auto_shutoff": {
+      "type": "boolean"
+    },
+    "thermal_carafe": {
+      "type": "boolean"
+    }
+  }
+}
