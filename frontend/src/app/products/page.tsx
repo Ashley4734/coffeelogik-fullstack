@@ -39,7 +39,7 @@ const sortOptions = [
 ];
 
 // Utility function to strip markdown formatting
-function stripMarkdown(text) {
+function stripMarkdown(text: string) {
   if (!text) return '';
   
   return text
