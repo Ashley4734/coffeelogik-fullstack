@@ -278,7 +278,7 @@ export default async function ProductsPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {products.length > 0 ? products.map((product) => (
               <article key={product.id} className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div className="aspect-[4/3] w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center relative">
+                <div className="aspect-[4/3] w-full bg-white flex items-center justify-center relative">
                   {product.images?.[0] ? (
                     <img
                       src={getStrapiMedia(product.images[0].url)}
