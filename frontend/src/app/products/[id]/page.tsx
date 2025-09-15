@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -396,6 +396,233 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
           <div className="mb-16">
             <AmazonDisclaimer />
           </div>
+
+          {/* Technical Specifications */}
+          {product.specifications && (
+            <div className="mb-16">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+                <span className="w-1 h-8 bg-amber-600 rounded-full mr-4"></span>
+                Technical Specifications
+              </h2>
+              <div className="bg-gray-50 rounded-3xl p-8 border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  
+                  {/* Basic Specifications */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                      <CogIcon className="mr-2 h-6 w-6 text-amber-600" />
+                      Physical Specifications
+                    </h3>
+                    
+                    {/* Dimensions */}
+                    {product.specifications.dimensions && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Dimensions</h4>
+                        <div className="text-gray-700">
+                          {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
+                            <span>
+                              {product.specifications.dimensions.length}" × {product.specifications.dimensions.width}" × {product.specifications.dimensions.height}"
+                              {product.specifications.dimensions.unit && product.specifications.dimensions.unit !== 'inches' && (
+                                <span className="text-sm text-gray-500"> ({product.specifications.dimensions.unit})</span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500">Not specified</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Weight */}
+                    {product.specifications.weight && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Weight</h4>
+                        <div className="text-gray-700">
+                          {product.specifications.weight.value ? (
+                            <span>{product.specifications.weight.value} {product.specifications.weight.unit}</span>
+                          ) : (
+                            <span className="text-gray-500">Not specified</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Materials */}
+                    {product.specifications.materials && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Materials</h4>
+                        <div className="text-gray-700">
+                          {Array.isArray(product.specifications.materials) ? (
+                            <div className="flex flex-wrap gap-2">
+                              {product.specifications.materials.map((material, index) => (
+                                <span key={index} className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
+                                  {material}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span>{product.specifications.materials}</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Power */}
+                    {product.specifications.power && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Power</h4>
+                        <div className="text-gray-700">
+                          {product.specifications.power.value ? (
+                            <span>{product.specifications.power.value} {product.specifications.power.unit}</span>
+                          ) : (
+                            <span className="text-gray-500">Not specified</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Capacity */}
+                    {product.specifications.capacity && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Capacity</h4>
+                        <div className="text-gray-700">
+                          {product.specifications.capacity.value ? (
+                            <span>{product.specifications.capacity.value} {product.specifications.capacity.unit}</span>
+                          ) : (
+                            <span className="text-gray-500">Not specified</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Warranty */}
+                    {product.specifications.warranty && (
+                      <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <h4 className="font-semibold text-gray-900 mb-2">Warranty</h4>
+                        <div className="text-gray-700">{product.specifications.warranty}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category-Specific Specifications */}
+                  <div className="space-y-6">
+                    {/* Grinder Specifications */}
+                    {product.specifications.grinder_specifications && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Grinder Specifications</h3>
+                        <div className="space-y-4">
+                          {product.specifications.grinder_specifications.grinder_type && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Grinder Type</h4>
+                              <div className="text-gray-700">{product.specifications.grinder_specifications.grinder_type}</div>
+                            </div>
+                          )}
+                          {product.specifications.grinder_specifications.burr_type && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Burr Type</h4>
+                              <div className="text-gray-700">{product.specifications.grinder_specifications.burr_type}</div>
+                            </div>
+                          )}
+                          {product.specifications.grinder_specifications.burr_material && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Burr Material</h4>
+                              <div className="text-gray-700">{product.specifications.grinder_specifications.burr_material}</div>
+                            </div>
+                          )}
+                          {product.specifications.grinder_specifications.grind_settings && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Grind Settings</h4>
+                              <div className="text-gray-700">{product.specifications.grinder_specifications.grind_settings}</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Espresso Specifications */}
+                    {product.specifications.espresso_specifications && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Espresso Specifications</h3>
+                        <div className="space-y-4">
+                          {product.specifications.espresso_specifications.pump_pressure && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Pump Pressure</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.espresso_specifications.pump_pressure.value} {product.specifications.espresso_specifications.pump_pressure.unit}
+                              </div>
+                            </div>
+                          )}
+                          {product.specifications.espresso_specifications.boiler_type && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Boiler Type</h4>
+                              <div className="text-gray-700">{product.specifications.espresso_specifications.boiler_type}</div>
+                            </div>
+                          )}
+                          {product.specifications.espresso_specifications.steam_wand !== undefined && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Steam Wand</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.espresso_specifications.steam_wand ? 'Yes' : 'No'}
+                              </div>
+                            </div>
+                          )}
+                          {product.specifications.espresso_specifications.pid_control !== undefined && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">PID Control</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.espresso_specifications.pid_control ? 'Yes' : 'No'}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Brewing Specifications */}
+                    {product.specifications.brewing_specifications && (
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Brewing Specifications</h3>
+                        <div className="space-y-4">
+                          {product.specifications.brewing_specifications.water_reservoir_capacity && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Water Reservoir</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.brewing_specifications.water_reservoir_capacity.value} {product.specifications.brewing_specifications.water_reservoir_capacity.unit}
+                              </div>
+                            </div>
+                          )}
+                          {product.specifications.brewing_specifications.programmable !== undefined && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Programmable</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.brewing_specifications.programmable ? 'Yes' : 'No'}
+                              </div>
+                            </div>
+                          )}
+                          {product.specifications.brewing_specifications.auto_shutoff !== undefined && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Auto Shut-off</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.brewing_specifications.auto_shutoff ? 'Yes' : 'No'}
+                              </div>
+                            </div>
+                          )}
+                          {product.specifications.brewing_specifications.thermal_carafe !== undefined && (
+                            <div className="bg-white rounded-xl p-4 border border-gray-200">
+                              <h4 className="font-semibold text-gray-900 mb-2">Thermal Carafe</h4>
+                              <div className="text-gray-700">
+                                {product.specifications.brewing_specifications.thermal_carafe ? 'Yes' : 'No'}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Flavor Profile - Enhanced */}
           {product.flavor_notes && Array.isArray(product.flavor_notes) && product.flavor_notes.length > 0 && (
