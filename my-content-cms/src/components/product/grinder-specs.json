@@ -1,0 +1,33 @@
+// components/product/grinder-specs.json
+{
+  "collectionName": "components_product_grinder_specs",
+  "info": {
+    "displayName": "Grinder Specifications",
+    "icon": "cog"
+  },
+  "attributes": {
+    "grinder_type": {
+      "type": "enumeration",
+      "enum": ["Burr", "Blade"]
+    },
+    "burr_type": {
+      "type": "enumeration",
+      "enum": ["Conical", "Flat"]
+    },
+    "burr_material": {
+      "type": "enumeration",
+      "enum": ["Steel", "Ceramic"]
+    },
+    "grind_settings": {
+      "type": "integer"
+    },
+    "bean_hopper_capacity": {
+      "type": "component",
+      "repeatable": false,
+      "component": "product.measurement"
+    },
+    "grind_speed": {
+      "type": "string"
+    }
+  }
+}
