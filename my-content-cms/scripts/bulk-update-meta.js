@@ -1,8 +1,6 @@
 // scripts/bulk-update-meta-descriptions.js
 // Run this script from your Strapi project root: node scripts/bulk-update-meta-descriptions.js
 
-const strapi = require('@strapi/strapi');
-
 /**
  * Optimizes meta description to be under 160 characters
  */
@@ -80,15 +78,21 @@ function optimizeMetaDescription(description) {
 }
 
 async function updateMetaDescriptions() {
+  let strapi;
+  
   try {
     console.log('🚀 Starting Strapi...');
-    const app = await strapi().load();
+    
+    // Import Strapi dynamically for v5 compatibility
+    const { createStrapi } = await import('@strapi/strapi');
+    strapi = createStrapi();
+    await strapi.load();
     
     console.log('📝 Fetching blog posts with long meta descriptions...');
     
-    // Get all blog posts
-    const blogPosts = await strapi.entityService.findMany('api::blog-post.blog-post', {
-      populate: '*',
+    // Get all blog posts using the v5 API
+    const blogPosts = await strapi.documents('api::blog-post.blog-post').findMany({
+      status: 'published'
     });
     
     console.log(`Found ${blogPosts.length} blog posts to check`);
@@ -103,6 +107,7 @@ async function updateMetaDescriptions() {
         
         updates.push({
           id: post.id,
+          documentId: post.documentId,
           title: post.title,
           original: post.meta_description,
           originalLength,
@@ -123,20 +128,20 @@ async function updateMetaDescriptions() {
       console.log(`   💾 Saved: ${update.saved} characters\n`);
     });
     
-    // Ask for confirmation
+    // Ask for confirmation (you can remove this and set proceed = true for auto-update)
     if (updates.length > 0) {
-      console.log('Do you want to proceed with these updates? (y/N)');
+      console.log('Do you want to proceed with these updates? Change "proceed = false" to "proceed = true" in the script to auto-update.');
       
-      // In a real script, you'd use readline or a prompt library
-      // For now, let's assume you want to proceed (remove this in production)
-      const proceed = true; // Change to false if you want to review first
+      const proceed = false; // Change this to true to auto-update
       
       if (proceed) {
         console.log('⚡ Updating meta descriptions...');
         
         for (const update of updates) {
           try {
-            await strapi.entityService.update('api::blog-post.blog-post', update.id, {
+            // Use the v5 documents API for updates
+            await strapi.documents('api::blog-post.blog-post').update({
+              documentId: update.documentId,
               data: {
                 meta_description: update.optimized
               }
@@ -152,7 +157,7 @@ async function updateMetaDescriptions() {
         console.log(`\n🎉 Successfully updated ${updatedCount} blog post meta descriptions!`);
         console.log(`📊 Total characters saved: ${updates.reduce((sum, u) => sum + u.saved, 0)}`);
       } else {
-        console.log('❌ Update cancelled');
+        console.log('❌ Update cancelled. To proceed, change "proceed = false" to "proceed = true" in the script.');
       }
     } else {
       console.log('✅ All meta descriptions are already within the optimal length!');
@@ -161,8 +166,10 @@ async function updateMetaDescriptions() {
   } catch (error) {
     console.error('💥 Error:', error);
   } finally {
-    console.log('👋 Closing Strapi...');
-    await strapi.destroy();
+    if (strapi) {
+      console.log('👋 Closing Strapi...');
+      await strapi.destroy();
+    }
     process.exit(0);
   }
 }
