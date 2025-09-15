@@ -82,6 +82,14 @@
     "featured": {
       "type": "boolean"
     },
+    "meta_title": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "meta_description": {
+      "type": "text",
+      "maxLength": 160
+    },
     "author": {
       "type": "relation",
       "relation": "manyToOne",
