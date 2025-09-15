@@ -400,13 +400,6 @@ export async function getProduct(slug: string) {
     throw error;
   }
 }
-    
-    return data.data[0];
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    throw error;
-  }
-}
 
 export async function getAuthors() {
   try {
