@@ -38,6 +38,20 @@ const sortOptions = [
   "Oldest First"
 ];
 
+// Utility function to strip markdown formatting
+function stripMarkdown(text) {
+  if (!text) return '';
+  
+  return text
+    .replace(/^#{1,6}\s+/gm, '') // Remove headers (##, ###, etc.)
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold (**text**)
+    .replace(/\*(.*?)\*/g, '$1') // Remove italic (*text*)
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links [text](url)
+    .replace(/`([^`]+)`/g, '$1') // Remove code blocks
+    .replace(/\s+/g, ' ') // Clean up extra whitespace
+    .trim();
+}
+
 function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: number }) {
   return (
     <div className="flex items-center gap-2">
@@ -231,7 +245,7 @@ export default async function ProductsPage() {
                     </Link>
                   </h3>
                   
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{stripMarkdown(product.description)}</p>
                   
                   {product.rating && (
                     <div className="mb-4">
@@ -312,7 +326,7 @@ export default async function ProductsPage() {
                     </Link>
                   </h3>
                   
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{stripMarkdown(product.description)}</p>
                   
                   {product.rating && (
                     <div className="flex items-center gap-2 mb-4">
