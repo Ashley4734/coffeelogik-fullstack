@@ -385,7 +385,6 @@ export async function getProduct(slug: string) {
   try {
     const params = new URLSearchParams();
     params.append("filters[slug][$eq]", slug);
-    // Use the universal populate approach to get everything including nested components
     params.append("populate", "*");
     
     const response = await strapi.get(`/coffee-products?${params.toString()}`);
