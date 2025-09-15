@@ -64,33 +64,6 @@ function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: num
   );
 }
 
-// Helper function to get preview text - prioritizes quick_verdict with proper typing
-function getPreviewText(product: import("@/lib/api").CoffeeProduct): string {
-  // Use quick_verdict if available
-  if (product.quick_verdict) {
-    const text = product.quick_verdict
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/\s+/g, ' ')
-      .trim();
-    return text.length > 120 ? text.substring(0, 120) + '...' : text;
-  }
-
-  // Fallback to description
-  if (product.description) {
-    const text = product.description
-      .replace(/<[^>]*>/g, '')
-      .replace(/#{1,6}\s*/g, '')
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\*(.*?)\*/g, '$1')
-      .replace(/\s+/g, ' ')
-      .trim();
-    return text.length > 120 ? text.substring(0, 120) + '...' : text;
-  }
-
-  return `Expert review of ${product.name} by ${product.brand}`;
-}
-
-
 export default async function ProductsPage() {
   // Fetch products from Strapi
   let products: import("@/lib/api").CoffeeProduct[] = [];
@@ -106,8 +79,7 @@ export default async function ProductsPage() {
     <div className="bg-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3
-D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <div className="flex justify-center mb-8">
@@ -156,7 +128,7 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                 <div className="text-sm text-gray-600">Product Categories</div>
               </div>
             </div>
-
+            
             {/* Quality Badges */}
             <div className="text-center mb-8">
               <div className="flex flex-wrap justify-center gap-4">
@@ -190,7 +162,7 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                     ))}
                   </select>
                 </div>
-
+                
                 {/* Sort */}
                 <div>
                   <label className="text-sm font-medium text-gray-900 mb-2 block">Sort by</label>
@@ -228,19 +200,20 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                     Editor&apos;s Choice
                   </span>
                 </div>
-
-                <div className="aspect-square w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                
+                {/* FIXED: Changed aspect ratio and object-fit to prevent cropping */}
+                <div className="h-64 w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center p-4">
                   {product.images?.[0] ? (
                     <img
                       src={getStrapiMedia(product.images[0].url)}
                       alt={product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <span className="text-6xl">☕</span>
                   )}
                 </div>
-
+                
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-amber-600 font-medium">{product.brand}</span>
@@ -251,21 +224,21 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                       </div>
                     )}
                   </div>
-
+                  
                   <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 mb-3 leading-tight">
                     <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
-                      {product.name}
+                      {product.name} Review
                     </Link>
                   </h3>
-
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{getPreviewText(product)}</p>
-
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
+                  
                   {product.rating && (
                     <div className="mb-4">
                       <StarRating rating={product.rating} />
                     </div>
                   )}
-
+                  
                   <div className="flex items-center justify-between">
                     <Link 
                       href={`/products/${product.slug}`}
@@ -310,7 +283,7 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                     <img
                       src={getStrapiMedia(product.images[0].url)}
                       alt={product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <span className="text-5xl">☕</span>
@@ -324,7 +297,7 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                     </div>
                   )}
                 </div>
-
+                
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-amber-600 font-medium">{product.brand}</span>
@@ -332,22 +305,22 @@ D%22%232563eb%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D
                       {product.product_type}
                     </span>
                   </div>
-
+                  
                   <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-600 mb-2 leading-tight">
                     <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
-                      {product.name}
+                      {product.name} Review
                     </Link>
                   </h3>
-
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{getPreviewText(product)}</p>
-
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                  
                   {product.rating && (
                     <div className="flex items-center gap-2 mb-4">
                       <StarRating rating={product.rating} />
                       <span className="text-sm font-medium text-gray-900">{product.rating}</span>
                     </div>
                   )}
-
+                  
                   <div className="flex gap-2">
                     <Link 
                       href={`/products/${product.slug}`}
