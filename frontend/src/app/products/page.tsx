@@ -401,7 +401,7 @@ export default async function ProductsPage({
                   <p className="text-gray-600">
                     {categoryFilter === "All Products" 
                       ? "Create some coffee products in Strapi and mark them as featured to see them here."
-                      : `We haven{`'`}t reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
+                      : `We haven't reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
                   </p>
                 </div>
               )}
