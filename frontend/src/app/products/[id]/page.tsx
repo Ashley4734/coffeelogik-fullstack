@@ -512,7 +512,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                           <div className="text-gray-700">
                             {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
                               <span>
-                                {product.specifications.dimensions.length}" × {product.specifications.dimensions.width}" × {product.specifications.dimensions.height}"
+                                {product.specifications.dimensions.length}{`"`} × {product.specifications.dimensions.width}{`"`} × {product.specifications.dimensions.height}{`"`}
                                 {product.specifications.dimensions.unit && product.specifications.dimensions.unit !== 'inches' && (
                                   <span className="text-sm text-gray-500"> ({product.specifications.dimensions.unit})</span>
                                 )}
