@@ -26,13 +26,12 @@ import {
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
 interface CoffeeProduct {
-  id: string | number;
+  id: number;
   name: string;
   brand: string;
   product_type: string;
@@ -349,7 +348,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       <HeartIcon className="mr-2 h-5 w-5" />
                       Save for Later
                     </button>
-                    <ShareButton productName={product.name} productSlug={product.slug} />
                   </div>
                 </div>
               </div>
