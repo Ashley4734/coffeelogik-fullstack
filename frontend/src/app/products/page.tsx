@@ -6,6 +6,14 @@ import {
   CheckCircleIcon, 
   XMarkIcon, 
   ShieldCheckIcon, 
+  TrophyIcon,import Link from "next/link";
+import { 
+  ArrowLeftIcon, 
+  StarIcon, 
+  ShoppingBagIcon, 
+  CheckCircleIcon, 
+  XMarkIcon, 
+  ShieldCheckIcon, 
   TrophyIcon, 
   FireIcon, 
   CogIcon,
@@ -26,7 +34,6 @@ import {
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
@@ -349,7 +356,9 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       <HeartIcon className="mr-2 h-5 w-5" />
                       Save for Later
                     </button>
-                    <ShareButton productName={product.name} productSlug={product.slug} />
+                    <button className="inline-flex items-center justify-center rounded-xl border-2 border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors">
+                      Share
+                    </button>
                   </div>
                 </div>
               </div>
