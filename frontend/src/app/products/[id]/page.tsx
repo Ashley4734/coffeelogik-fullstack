@@ -57,7 +57,7 @@ interface CoffeeProduct {
       value?: number;
       unit?: string;
     };
-    materials?: string[] | string;
+    materials?: string[];
     power?: {
       value?: number;
       unit?: string;
@@ -71,7 +71,12 @@ interface CoffeeProduct {
       grinder_type?: string;
       burr_type?: string;
       burr_material?: string;
-      grind_settings?: string;
+      grind_settings?: number;
+      bean_hopper_capacity?: {
+        value?: number;
+        unit?: string;
+      };
+      grind_speed?: string;
     };
     espresso_specifications?: {
       pump_pressure?: {
