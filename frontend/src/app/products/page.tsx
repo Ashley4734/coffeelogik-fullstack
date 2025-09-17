@@ -1,8 +1,21 @@
 export const revalidate = 60; // Revalidate every 60 seconds
 
 import Link from "next/link";
-import { StarIcon, TrophyIcon, CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon, ShieldCheckIcon, ChartBarIcon } from "@heroicons/react/24/outline";
+import { 
+  StarIcon, 
+  TrophyIcon, 
+  CheckCircleIcon, 
+  ClockIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  ArrowsUpDownIcon
+} from "@heroicons/react/24/solid";
+import { 
+  StarIcon as StarOutlineIcon, 
+  ShieldCheckIcon, 
+  ChartBarIcon,
+  ChevronDownIcon
+} from "@heroicons/react/24/outline";
 import { getProducts, getStrapiMedia } from "@/lib/api";
 import { Metadata } from "next";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
@@ -31,11 +44,11 @@ const categories = [
 ];
 
 const sortOptions = [
-  "Featured",
-  "Highest Rated",
-  "Most Reviews",
-  "Newest First",
-  "Oldest First"
+  { id: "featured", name: "Featured" },
+  { id: "rating-desc", name: "Highest Rated" },
+  { id: "rating-asc", name: "Lowest Rated" },
+  { id: "newest", name: "Newest First" },
+  { id: "oldest", name: "Oldest First" }
 ];
 
 // Utility function to strip markdown formatting
@@ -78,17 +91,46 @@ function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: num
   );
 }
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const categoryFilter = searchParams.category as string || "All Products";
+  const sortOption = searchParams.sort as string || "featured";
+  
   // Fetch products from Strapi
   let products: import("@/lib/api").CoffeeProduct[] = [];
 
   try {
-    const productsResponse = await getProducts({ limit: 50 });
+    const productsResponse = await getProducts({ limit: 100 });
     products = Array.isArray(productsResponse?.data) ? productsResponse.data : [];
   } catch (error) {
     console.error('Error fetching products:', error);
     // Fallback to empty array if Strapi is not available
   }
+
+  // Filter products by category
+  const filteredProducts = categoryFilter === "All Products" 
+    ? products 
+    : products.filter(product => product.product_type === categoryFilter);
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortOption) {
+      case "rating-desc":
+        return (b.rating || 0) - (a.rating || 0);
+      case "rating-asc":
+        return (a.rating || 0) - (b.rating || 0);
+      case "newest":
+        return new Date(b.publishedAt || "").getTime() - new Date(a.publishedAt || "").getTime();
+      case "oldest":
+        return new Date(a.publishedAt || "").getTime() - new Date(b.publishedAt || "").getTime();
+      default:
+        return (b.featured === a.featured) ? 0 : b.featured ? -1 : 1;
+    }
+  });
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -164,29 +206,79 @@ export default async function ProductsPage() {
             {/* Filters and Sorting */}
             <div className="text-center">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter & Sort Reviews</h3>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 max-w-lg mx-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 max-w-2xl mx-auto">
                 {/* Category Filter */}
-                <div>
-                  <label className="text-sm font-medium text-gray-900 mb-2 block">Category</label>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    {categories.map((category) => (
-                      <option key={category} value={category} className="text-gray-900">
-                        {category}
-                      </option>
-                    ))}
-                  </select>
+                <div className="w-full sm:w-64">
+                  <label className="text-sm font-medium text-gray-900 mb-2 block flex items-center">
+                    <FunnelIcon className="h-4 w-4 mr-1" />
+                    Category
+                  </label>
+                  <div className="relative">
+                    <select 
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                      value={categoryFilter}
+                      onChange={(e) => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('category', e.target.value);
+                        window.location.href = url.toString();
+                      }}
+                    >
+                      {categories.map((category) => (
+                        <option key={category} value={category} className="text-gray-900">
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
                 
                 {/* Sort */}
-                <div>
-                  <label className="text-sm font-medium text-gray-900 mb-2 block">Sort by</label>
-                  <select className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    {sortOptions.map((option) => (
-                      <option key={option} value={option} className="text-gray-900">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                <div className="w-full sm:w-64">
+                  <label className="text-sm font-medium text-gray-900 mb-2 block flex items-center">
+                    <ArrowsUpDownIcon className="h-4 w-4 mr-1" />
+                    Sort by
+                  </label>
+                  <div className="relative">
+                    <select 
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                      value={sortOption}
+                      onChange={(e) => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('sort', e.target.value);
+                        window.location.href = url.toString();
+                      }}
+                    >
+                      {sortOptions.map((option) => (
+                        <option key={option.id} value={option.id} className="text-gray-900">
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                
+                {/* Search */}
+                <div className="w-full sm:w-64">
+                  <label className="text-sm font-medium text-gray-900 mb-2 block flex items-center">
+                    <MagnifyingGlassIcon className="h-4 w-4 mr-1" />
+                    Search
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const url = new URL(window.location.href);
+                          url.searchParams.set('search', (e.target as HTMLInputElement).value);
+                          window.location.href = url.toString();
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,99 +297,118 @@ export default async function ProductsPage() {
             <p className="text-lg text-gray-600">Our top-rated products that passed rigorous testing</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-3">
-            {products.filter(product => product.featured).length > 0 ? products.filter(product => product.featured).map((product) => (
-              <article key={product.id} className="group relative bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                {/* Award Badge */}
-                <div className="absolute top-4 left-4 z-10">
-                  <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
-                    <TrophyIcon className="mr-1 h-3 w-3" />
-                    Editor&apos;s Choice
-                  </span>
-                </div>
-                
-                {/* FIXED: Changed aspect ratio and object-fit to prevent cropping */}
-                <div className="h-64 w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center p-4">
-                  {product.images?.[0] ? (
-                    <img
-                      src={getStrapiMedia(product.images[0].url)}
-                      alt={product.name}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <span className="text-6xl">☕</span>
-                  )}
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-amber-600 font-medium">{product.brand}</span>
+            {sortedProducts.filter(product => product.featured).length > 0 ? 
+              sortedProducts.filter(product => product.featured).map((product) => (
+                <article key={product.id} className="group relative bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  {/* Award Badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                      <TrophyIcon className="mr-1 h-3 w-3" />
+                      Editor&apos;s Choice
+                    </span>
+                  </div>
+                  
+                  {/* Product Image */}
+                  <div className="h-64 w-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center p-4">
+                    {product.images?.[0] ? (
+                      <img
+                        src={getStrapiMedia(product.images[0].url)}
+                        alt={product.name}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-6xl">☕</span>
+                    )}
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm text-amber-600 font-medium">{product.brand}</span>
+                      {product.rating && (
+                        <div className="flex items-center gap-1">
+                          <StarIcon className="h-4 w-4 text-yellow-400" />
+                          <span className="text-sm font-medium text-gray-900">{product.rating}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 mb-3 leading-tight">
+                      <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
+                        {product.name}
+                      </Link>
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {stripMarkdown(product.meta_description || product.description)}
+                    </p>
+                    
                     {product.rating && (
-                      <div className="flex items-center gap-1">
-                        <StarIcon className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm font-medium text-gray-900">{product.rating}</span>
+                      <div className="mb-4">
+                        <StarRating rating={product.rating} />
                       </div>
                     )}
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 mb-3 leading-tight">
-                    <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
-                      {product.name}
-                    </Link>
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{stripMarkdown(product.description)}</p>
-                  
-                  {product.rating && (
-                    <div className="mb-4">
-                      <StarRating rating={product.rating} />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <Link 
-                      href={`/products/${product.slug}`}
-                      className="inline-flex items-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 transition-colors"
-                    >
-                      Read Review
-                    </Link>
-                    {product.affiliate_link && (
+                    
+                    <div className="flex items-center justify-between">
                       <Link 
-                        href={product.affiliate_link} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
+                        href={`/products/${product.slug}`}
+                        className="inline-flex items-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 transition-colors"
                       >
-                        View on Amazon
+                        Read Review
                       </Link>
-                    )}
+                      {product.affiliate_link && (
+                        <Link 
+                          href={product.affiliate_link} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
+                        >
+                          View on Amazon
+                        </Link>
+                      )}
+                    </div>
                   </div>
+                </article>
+              )) : (
+                <div className="col-span-3 text-center py-12">
+                  <span className="text-6xl mb-4 block">☕</span>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {categoryFilter === "All Products" 
+                      ? "No featured reviews yet" 
+                      : `No featured ${categoryFilter} reviews`}
+                  </h3>
+                  <p className="text-gray-600">
+                    {categoryFilter === "All Products" 
+                      ? "Create some coffee products in Strapi and mark them as featured to see them here."
+                      : `We haven't reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
+                  </p>
                 </div>
-              </article>
-            )) : (
-              <div className="col-span-3 text-center py-12">
-                <span className="text-6xl mb-4 block">☕</span>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No featured reviews yet</h3>
-                <p className="text-gray-600">Create some coffee products in Strapi and mark them as featured to see them here.</p>
-              </div>
-            )}
+              )}
           </div>
         </div>
 
         {/* All Reviews */}
         <div className="mx-auto mt-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">All Product Reviews</h2>
-            <p className="text-lg text-gray-600">Browse our complete collection of expert product reviews</p>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">
+              {categoryFilter === "All Products" 
+                ? "All Product Reviews" 
+                : `${categoryFilter} Reviews`}
+            </h2>
+            <p className="text-lg text-gray-600">
+              {categoryFilter === "All Products" 
+                ? "Browse our complete collection of expert product reviews"
+                : `Browse all our expert reviews of ${categoryFilter.toLowerCase()}`}
+            </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.length > 0 ? products.map((product) => (
+            {sortedProducts.length > 0 ? sortedProducts.map((product) => (
               <article key={product.id} className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
                 <div className="aspect-[4/3] w-full bg-white flex items-center justify-center relative">
                   {product.images?.[0] ? (
                     <img
                       src={getStrapiMedia(product.images[0].url)}
                       alt={product.name}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain p-4"
                     />
                   ) : (
                     <span className="text-5xl">☕</span>
@@ -326,40 +437,48 @@ export default async function ProductsPage() {
                     </Link>
                   </h3>
                   
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{stripMarkdown(product.description)}</p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {stripMarkdown(product.meta_description || product.description)}
+                  </p>
                   
-                  {product.rating && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <StarRating rating={product.rating} />
-                      <span className="text-sm font-medium text-gray-900">{product.rating}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <Link 
-                      href={`/products/${product.slug}`}
-                      className="flex-1 text-center rounded-lg bg-amber-600 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition-colors"
-                    >
-                      Read Review
-                    </Link>
-                    {product.affiliate_link && (
-                      <Link 
-                        href={product.affiliate_link} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
-                      >
-                        View on Amazon
-                      </Link>
+                  <div className="flex items-center justify-between">
+                    {product.rating && (
+                      <div className="flex items-center gap-2">
+                        <StarRating rating={product.rating} />
+                        <span className="text-sm font-medium text-gray-900 ml-1">{product.rating}</span>
+                      </div>
                     )}
+                    
+                    <div className="flex gap-2 ml-auto">
+                      <Link 
+                        href={`/products/${product.slug}`}
+                        className="rounded-lg bg-amber-600 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition-colors"
+                      >
+                        Review
+                      </Link>
+                      {product.affiliate_link && (
+                        <Link 
+                          href={product.affiliate_link} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-lg border border-amber-600 px-3 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
+                        >
+                          Amazon
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               </article>
             )) : (
               <div className="col-span-3 text-center py-12">
                 <span className="text-5xl mb-4 block">☕</span>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h3>
-                <p className="text-gray-600">Create some coffee products in Strapi to see reviews here.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No reviews found for {categoryFilter}
+                </h3>
+                <p className="text-gray-600">
+                  Create some coffee products in Strapi to see reviews here.
+                </p>
                 <Link href={`${process.env.NEXT_PUBLIC_STRAPI_URL}/admin`} target="_blank" className="inline-flex items-center mt-4 rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500">
                   Go to Strapi Admin
                 </Link>
