@@ -91,16 +91,38 @@ function StarRating({ rating, reviewCount }: { rating: number; reviewCount?: num
   );
 }
 
+interface CoffeeProduct {
+  id: string;
+  name: string;
+  brand: string;
+  product_type: string;
+  slug: string;
+  rating?: number;
+  price?: number;
+  affiliate_link?: string;
+  description?: string;
+  meta_description?: string;
+  publishedAt: string;
+  images?: Array<{ url: string }>;
+  flavor_notes?: string[];
+  pros?: string[];
+  cons?: string[];
+  featured?: boolean;
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const categoryFilter = searchParams.category as string || "All Products";
-  const sortOption = searchParams.sort as string || "featured";
+  // Await the searchParams Promise (Next.js 15 requirement)
+  const resolvedSearchParams = await searchParams;
+  
+  const categoryFilter = resolvedSearchParams.category as string || "All Products";
+  const sortOption = resolvedSearchParams.sort as string || "featured";
   
   // Fetch products from Strapi
-  let products: import("@/lib/api").CoffeeProduct[] = [];
+  let products: CoffeeProduct[] = [];
 
   try {
     const productsResponse = await getProducts({ limit: 100 });
@@ -174,7 +196,7 @@ export default async function ProductsPage({
                   <TrophyIcon className="h-6 w-6 text-amber-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{products.filter(product => product.featured).length}</div>
-                <div className="text-sm text-gray-600">Editor&apos;s Choice</div>
+                <div className="text-sm text-gray-600">Editor{`'`}s Choice</div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
@@ -205,7 +227,7 @@ export default async function ProductsPage({
 
             {/* Filters and Sorting */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter &amp; Sort Reviews</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter & Sort Reviews</h3>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 max-w-2xl mx-auto">
                 {/* Category Filter */}
                 <div className="w-full sm:w-64">
@@ -216,7 +238,7 @@ export default async function ProductsPage({
                   <div className="relative">
                     <select 
                       className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-                      value={categoryFilter}
+                      defaultValue={categoryFilter}
                       onChange={(e) => {
                         const url = new URL(window.location.href);
                         url.searchParams.set('category', e.target.value);
@@ -242,7 +264,7 @@ export default async function ProductsPage({
                   <div className="relative">
                     <select 
                       className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-                      value={sortOption}
+                      defaultValue={sortOption}
                       onChange={(e) => {
                         const url = new URL(window.location.href);
                         url.searchParams.set('sort', e.target.value);
@@ -293,7 +315,7 @@ export default async function ProductsPage({
         {/* Featured Reviews - Editor's Choice */}
         <div className="mx-auto mt-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">Editor&apos;s Choice Reviews</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">Editor{`'`}s Choice Reviews</h2>
             <p className="text-lg text-gray-600">Our top-rated products that passed rigorous testing</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-3">
@@ -304,7 +326,7 @@ export default async function ProductsPage({
                   <div className="absolute top-4 left-4 z-10">
                     <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
                       <TrophyIcon className="mr-1 h-3 w-3" />
-                      Editor&apos;s Choice
+                      Editor{`'`}s Choice
                     </span>
                   </div>
                   
@@ -379,7 +401,7 @@ export default async function ProductsPage({
                   <p className="text-gray-600">
                     {categoryFilter === "All Products" 
                       ? "Create some coffee products in Strapi and mark them as featured to see them here."
-                      : `We haven&apos;t reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
+                      : `We haven{`'`}t reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
                   </p>
                 </div>
               )}
