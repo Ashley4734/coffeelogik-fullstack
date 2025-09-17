@@ -23,81 +23,12 @@ import {
   ArrowsPointingOutIcon,
   ChevronDownIcon
 } from "@heroicons/react/24/outline";
-import { getProduct, getStrapiMedia } from "@/lib/api";
+import { getProduct, getStrapiMedia, type CoffeeProduct } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
-
-interface CoffeeProduct {
-  id: number;
-  name: string;
-  brand: string;
-  product_type: string;
-  slug?: string;
-  rating?: number;
-  price?: number;
-  affiliate_link?: string;
-  description?: string;
-  meta_description?: string;
-  publishedAt?: string;
-  images?: Array<{ url: string }>;
-  flavor_notes?: string[];
-  pros?: string[];
-  cons?: string[];
-  specifications?: {
-    dimensions?: {
-      length?: number;
-      width?: number;
-      height?: number;
-      unit?: string;
-    };
-    weight?: {
-      value?: number;
-      unit?: string;
-    };
-    materials?: string[];
-    power?: {
-      value?: number;
-      unit?: string;
-    };
-    capacity?: {
-      value?: number;
-      unit?: string;
-    };
-    warranty?: string;
-    grinder_specifications?: {
-      grinder_type?: string;
-      burr_type?: string;
-      burr_material?: string;
-      grind_settings?: number;
-      bean_hopper_capacity?: {
-        value?: number;
-        unit?: string;
-      };
-      grind_speed?: string;
-    };
-    espresso_specifications?: {
-      pump_pressure?: {
-        value?: number;
-        unit?: string;
-      };
-      boiler_type?: string;
-      steam_wand?: boolean;
-      pid_control?: boolean;
-    };
-    brewing_specifications?: {
-      water_reservoir_capacity?: {
-        value?: number;
-        unit?: string;
-      };
-      programmable?: boolean;
-      auto_shutoff?: boolean;
-      thermal_carafe?: boolean;
-    };
-  };
-}
 
 function StarRating({ rating, size = "default", showNumber = false }: { 
   rating: number; 
