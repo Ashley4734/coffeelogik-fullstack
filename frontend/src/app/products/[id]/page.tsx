@@ -41,7 +41,7 @@ interface CoffeeProduct {
   affiliate_link?: string;
   description?: string;
   meta_description?: string;
-  publishedAt: string;
+  publishedAt?: string;
   images?: Array<{ url: string }>;
   flavor_notes?: string[];
   pros?: string[];
@@ -367,11 +367,11 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     <span className="text-sm text-gray-600">{product.product_type}</span>
                     <span className="text-sm text-gray-500">•</span>
                     <time className="text-sm text-gray-600">
-                      {new Date(product.publishedAt).toLocaleDateString('en-US', {
+                      {product.publishedAt ? new Date(product.publishedAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
-                      })}
+                      }) : 'Date not available'}
                     </time>
                   </div>
                 </div>
