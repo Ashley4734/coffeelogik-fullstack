@@ -205,7 +205,7 @@ export default async function ProductsPage({
 
             {/* Filters and Sorting */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter & Sort Reviews</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter &amp; Sort Reviews</h3>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 max-w-2xl mx-auto">
                 {/* Category Filter */}
                 <div className="w-full sm:w-64">
@@ -379,7 +379,7 @@ export default async function ProductsPage({
                   <p className="text-gray-600">
                     {categoryFilter === "All Products" 
                       ? "Create some coffee products in Strapi and mark them as featured to see them here."
-                      : `We haven't reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
+                      : `We haven&apos;t reviewed any featured ${categoryFilter.toLowerCase()} yet. Check back soon!`}
                   </p>
                 </div>
               )}
