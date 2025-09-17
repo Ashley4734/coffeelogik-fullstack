@@ -26,13 +26,12 @@ import {
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
 interface CoffeeProduct {
-  id: string;
+  id: number;
   name: string;
   brand: string;
   product_type: string;
@@ -349,7 +348,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       <HeartIcon className="mr-2 h-5 w-5" />
                       Save for Later
                     </button>
-                    <ShareButton productName={product.name} productSlug={product.slug} />
                   </div>
                 </div>
               </div>
@@ -512,7 +510,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                           <div className="text-gray-700">
                             {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
                               <span>
-                                {product.specifications.dimensions.length}{`"`} × {product.specifications.dimensions.width}{`"`} × {product.specifications.dimensions.height}{`"`}
+                                {product.specifications.dimensions.length}&quot; × {product.specifications.dimensions.width}&quot; × {product.specifications.dimensions.height}&quot;
                                 {product.specifications.dimensions.unit && product.specifications.dimensions.unit !== 'inches' && (
                                   <span className="text-sm text-gray-500"> ({product.specifications.dimensions.unit})</span>
                                 )}
@@ -830,7 +828,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     )}
                     <p className="text-xl text-gray-700 mb-8 leading-relaxed">
                       {product.rating && product.rating >= 4.5 
-                        ? "🏆 Editor's Choice - " 
+                        ? "🏆 Editor&apos;s Choice - " 
                         : product.rating && product.rating >= 4.0 
                         ? "⭐ Highly Recommended - " 
                         : product.rating && product.rating >= 3.5 
@@ -949,7 +947,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
               
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <button className="flex justify-between items-center w-full p-6 text-left">
-                  <span className="text-lg font-medium text-gray-900">What{`'`}s the learning curve like?</span>
+                  <span className="text-lg font-medium text-gray-900">What&apos;s the learning curve like?</span>
                   <ChevronDownIcon className="h-5 w-5 text-gray-500" />
                 </button>
                 <div className="px-6 pb-6 text-gray-700">
