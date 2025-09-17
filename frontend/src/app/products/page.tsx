@@ -6,7 +6,30 @@ import {
   CheckCircleIcon, 
   XMarkIcon, 
   ShieldCheckIcon, 
-  TrophyIcon,import Link from "next/link";
+  TrophyIcon, 
+  FireIcon, 
+  CogIcon,
+  WrenchIcon,
+  BeakerIcon,
+  ScaleIcon,
+  ClockIcon,
+  LightBulbIcon,
+  UserGroupIcon,
+  QuestionMarkCircleIcon
+} from "@heroicons/react/24/solid";
+import { 
+  StarIcon as StarOutlineIcon, 
+  HeartIcon,
+  ArrowsPointingOutIcon,
+  ChevronDownIcon
+} from "@heroicons/react/24/outline";
+import { getProduct, getStrapiMedia } from "@/lib/api";
+import { notFound } from "next/navigation";
+import { marked } from "marked";
+import ShareButton from "./ShareButton";
+import { Metadata } from "next";
+import { generateArticleStructuredData } from "@/components/SEO";
+import AmazonDisclaimer from "@/components/AmazonDisclaimer";import Link from "next/link";
 import { 
   ArrowLeftIcon, 
   StarIcon, 
@@ -356,9 +379,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       <HeartIcon className="mr-2 h-5 w-5" />
                       Save for Later
                     </button>
-                    <button className="inline-flex items-center justify-center rounded-xl border-2 border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors">
-                      Share
-                    </button>
+                    <ShareButton productName={product.name} productSlug={product.slug} />
                   </div>
                 </div>
               </div>
