@@ -29,36 +29,6 @@ import { marked } from "marked";
 import ShareButton from "./ShareButton";
 import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
-import AmazonDisclaimer from "@/components/AmazonDisclaimer";import Link from "next/link";
-import { 
-  ArrowLeftIcon, 
-  StarIcon, 
-  ShoppingBagIcon, 
-  CheckCircleIcon, 
-  XMarkIcon, 
-  ShieldCheckIcon, 
-  TrophyIcon, 
-  FireIcon, 
-  CogIcon,
-  WrenchIcon,
-  BeakerIcon,
-  ScaleIcon,
-  ClockIcon,
-  LightBulbIcon,
-  UserGroupIcon,
-  QuestionMarkCircleIcon
-} from "@heroicons/react/24/solid";
-import { 
-  StarIcon as StarOutlineIcon, 
-  HeartIcon,
-  ArrowsPointingOutIcon,
-  ChevronDownIcon
-} from "@heroicons/react/24/outline";
-import { getProduct, getStrapiMedia } from "@/lib/api";
-import { notFound } from "next/navigation";
-import { marked } from "marked";
-import { Metadata } from "next";
-import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
 interface CoffeeProduct {
