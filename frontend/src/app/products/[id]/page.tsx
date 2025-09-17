@@ -763,11 +763,14 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                       </div>
                     )}
                     <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                      {product.rating && product.rating >= 4.5 ? "🏆 Editor&apos;s Choice - " :
-                       product.rating && product.rating >= 4.0 ? "⭐ Highly Recommended - " :
-                       product.rating && product.rating >= 3.5 ? "👍 Good Choice - " :
-                       "🤔 Consider Alternatives - "}
-                      The {product.name} by {product.brand} {product.rating && product.rating >= 4.0 ? "exceeds expectations" : "delivers solid performance"} in the {product.product_type.toLowerCase()} category.
+                      {product.rating && product.rating >= 4.5 
+                        ? `🏆 Editor's Choice - ` 
+                        : product.rating && product.rating >= 4.0 
+                        ? `⭐ Highly Recommended - ` 
+                        : product.rating && product.rating >= 3.5 
+                        ? `👍 Good Choice - ` 
+                        : `🤔 Consider Alternatives - `}
+                      The {product.name} by {product.brand} {product.rating && product.rating >= 4.0 ? 'exceeds expectations' : 'delivers solid performance'} in the {product.product_type.toLowerCase()} category.
                     </p>
                     {product.affiliate_link && (
                       <Link
