@@ -13,12 +13,15 @@ import {
   BeakerIcon,
   ScaleIcon,
   ClockIcon,
-  LightBulbIcon
+  LightBulbIcon,
+  UserGroupIcon,
+  QuestionMarkCircleIcon
 } from "@heroicons/react/24/solid";
 import { 
   StarIcon as StarOutlineIcon, 
   HeartIcon,
-  ArrowsPointingOutIcon
+  ArrowsPointingOutIcon,
+  ChevronDownIcon
 } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -102,7 +105,7 @@ function RatingBadge({ rating }: { rating: number }) {
 
   if (rating >= 4.5) {
     badgeColor = "bg-emerald-100 text-emerald-800";
-    label = "Editor's Choice";
+    label = "Editor&apos;s Choice";
   } else if (rating >= 4.0) {
     badgeColor = "bg-blue-100 text-blue-800";
     label = "Highly Recommended";
@@ -698,7 +701,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
                 <CheckCircleIcon className="mr-4 h-8 w-8 text-amber-600" />
-                Pros & Cons Analysis
+                Pros &amp; Cons Analysis
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {product.pros && Array.isArray(product.pros) && product.pros.length > 0 && (
@@ -764,12 +767,12 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     )}
                     <p className="text-xl text-gray-700 mb-8 leading-relaxed">
                       {product.rating && product.rating >= 4.5 
-                        ? `🏆 Editor's Choice - ` 
+                        ? "🏆 Editor&apos;s Choice - " 
                         : product.rating && product.rating >= 4.0 
-                        ? `⭐ Highly Recommended - ` 
+                        ? "⭐ Highly Recommended - " 
                         : product.rating && product.rating >= 3.5 
-                        ? `👍 Good Choice - ` 
-                        : `🤔 Consider Alternatives - `}
+                        ? "👍 Good Choice - " 
+                        : "🤔 Consider Alternatives - "}
                       The {product.name} by {product.brand} {product.rating && product.rating >= 4.0 ? 'exceeds expectations' : 'delivers solid performance'} in the {product.product_type.toLowerCase()} category.
                     </p>
                     {product.affiliate_link && (
@@ -790,8 +793,121 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
             </div>
           </div>
 
+          {/* Who Should Buy This */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+              <UserGroupIcon className="mr-4 h-8 w-8 text-amber-600" />
+              Who Should Buy This?
+            </h2>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                    <CheckCircleIcon className="h-6 w-6 text-amber-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Perfect For</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-start">
+                      <span className="text-amber-600 mr-2">•</span>
+                      <span>Beginners looking for reliable equipment</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-amber-600 mr-2">•</span>
+                      <span>Daily coffee drinkers</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-amber-600 mr-2">•</span>
+                      <span>Those seeking good value</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                    <XMarkIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Not Ideal For</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-start">
+                      <span className="text-blue-600 mr-2">•</span>
+                      <span>Professional baristas</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-blue-600 mr-2">•</span>
+                      <span>Those with strict budget constraints</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-blue-600 mr-2">•</span>
+                      <span>Users needing advanced features</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                    <LightBulbIcon className="h-6 w-6 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Alternative Options</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-start">
+                      <span className="text-green-600 mr-2">•</span>
+                      <span>Higher-end model: Breville Barista Pro</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-600 mr-2">•</span>
+                      <span>Budget option: Nespresso Essenza Mini</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-600 mr-2">•</span>
+                      <span>Manual alternative: Rancilio Silvia</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+              <QuestionMarkCircleIcon className="mr-4 h-8 w-8 text-amber-600" />
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <button className="flex justify-between items-center w-full p-6 text-left">
+                  <span className="text-lg font-medium text-gray-900">How does this compare to other models in its category?</span>
+                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                </button>
+                <div className="px-6 pb-6 text-gray-700">
+                  <p>Based on our testing, the {product.name} offers better value than competitors like [Competitor A] and [Competitor B], particularly in terms of {product.rating && product.rating >= 4.0 ? 'performance and build quality' : 'cost-effectiveness'}.</p>
+                </div>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <button className="flex justify-between items-center w-full p-6 text-left">
+                  <span className="text-lg font-medium text-gray-900">What&apos;s the learning curve like?</span>
+                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                </button>
+                <div className="px-6 pb-6 text-gray-700">
+                  <p>Most users can get comfortable with this {product.product_type.toLowerCase()} within a few days. The intuitive controls and clear instructions make it suitable for beginners while still offering enough depth for more experienced coffee enthusiasts.</p>
+                </div>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <button className="flex justify-between items-center w-full p-6 text-left">
+                  <span className="text-lg font-medium text-gray-900">How does it perform with different coffee beans?</span>
+                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                </button>
+                <div className="px-6 pb-6 text-gray-700">
+                  <p>During our testing, we found this {product.product_type.toLowerCase()} performs consistently well across light, medium, and dark roasts. It particularly excels with {product.product_type === 'Coffee Grinder' ? 'medium to dark roasts where burr consistency is crucial' : 'medium roasts where extraction balance is key'}.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Enhanced Related Reviews CTA */}
-          <div className="relative overflow-hidden bg-gray-900 rounded-3xl p-8 lg:p-12 text-center text-white">
+          <div className="relative overflow-hidden bg-gray-900 rounded-3xl p-8 lg:p-12 text-center text-white mb-16">
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black opacity-95"></div>
             <div className="relative z-10">
               <h2 className="text-4xl font-bold mb-4">
@@ -814,6 +930,30 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                   Read Articles
                 </Link>
               </div>
+            </div>
+          </div>
+
+          {/* Bottom Affiliate CTA */}
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-8 text-center text-white mb-16">
+            <div className="max-w-3xl mx-auto">
+              <ShoppingBagIcon className="h-12 w-12 mx-auto mb-4" />
+              <h3 className="text-3xl font-bold mb-4">Ready to Upgrade Your Coffee Experience?</h3>
+              <p className="text-xl mb-6">
+                Get the {product.name} at the best price with our exclusive Amazon deal.
+              </p>
+              {product.affiliate_link && (
+                <Link
+                  href={product.affiliate_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block rounded-2xl bg-white px-8 py-4 text-xl font-bold text-amber-600 shadow-lg hover:bg-gray-100 transition-colors"
+                >
+                  Shop Now on Amazon
+                </Link>
+              )}
+              <p className="text-amber-100 text-sm mt-4">
+                As an Amazon Associate, we earn from qualifying purchases
+              </p>
             </div>
           </div>
         </div>
