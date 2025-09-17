@@ -1,6 +1,25 @@
 import Link from "next/link";
-import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
+import { 
+  ArrowLeftIcon, 
+  StarIcon, 
+  ShoppingBagIcon, 
+  CheckCircleIcon, 
+  XMarkIcon, 
+  ShieldCheckIcon, 
+  TrophyIcon, 
+  FireIcon, 
+  CogIcon,
+  WrenchIcon,
+  BeakerIcon,
+  ScaleIcon,
+  ClockIcon,
+  LightBulbIcon
+} from "@heroicons/react/24/solid";
+import { 
+  StarIcon as StarOutlineIcon, 
+  HeartIcon,
+  ArrowsPointingOutIcon
+} from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
@@ -48,9 +67,9 @@ function StarRating({ rating, size = "default", showNumber = false }: {
 
 // Updated helper function with proper typing
 function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
-  // Use quick_verdict if available
-  if (product.quick_verdict) {
-    return product.quick_verdict;
+  // Use meta_description if available
+  if (product.meta_description) {
+    return product.meta_description;
   }
 
   // Fallback to description excerpt if quick_verdict is not available
@@ -115,9 +134,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const imageUrl = product.images?.[0] ? getStrapiMedia(product.images[0].url) : null;
     const url = `/products/${product.slug || id}`;
 
-    // Use quick_verdict for description if available
-    const description = product.quick_verdict
-      ? product.quick_verdict.substring(0, 160).replace(/<[^>]*>/g, '')
+    // Use meta_description for SEO if available
+    const description = product.meta_description
+      ? product.meta_description.substring(0, 160).replace(/<[^>]*>/g, '')
       : product.description
         ? product.description.substring(0, 160).replace(/<[^>]*>/g, '')
         : `Comprehensive review of ${product.name} by ${product.brand}. Read our expert analysis, pros and cons, and buying recommendations.`;
@@ -172,8 +191,8 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
   // Generate structured data for the product review
   const structuredData = generateArticleStructuredData({
     title: product.name,
-    description: product.quick_verdict
-      ? product.quick_verdict.substring(0, 160).replace(/<[^>]*>/g, '')
+    description: product.meta_description
+      ? product.meta_description.substring(0, 160).replace(/<[^>]*>/g, '')
       : product.description
         ? product.description.substring(0, 160).replace(/<[^>]*>/g, '')
         : `Expert review of ${product.name}`,
@@ -257,6 +276,15 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       ))}
                     </div>
                   )}
+
+                  {/* Save Actions */}
+                  <div className="mt-6 flex gap-3">
+                    <button className="flex-1 inline-flex items-center justify-center rounded-xl border-2 border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors">
+                      <HeartIcon className="mr-2 h-5 w-5" />
+                      Save for Later
+                    </button>
+                    <ShareButton productName={product.name} productSlug={product.slug} />
+                  </div>
                 </div>
               </div>
 
@@ -273,6 +301,14 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     <span className="text-sm font-medium text-amber-600">{product.brand}</span>
                     <span className="text-sm text-gray-500">•</span>
                     <span className="text-sm text-gray-600">{product.product_type}</span>
+                    <span className="text-sm text-gray-500">•</span>
+                    <time className="text-sm text-gray-600">
+                      {new Date(product.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </time>
                   </div>
                 </div>
 
@@ -302,18 +338,32 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                         <div className="text-sm text-gray-500">Overall</div>
                       </div>
                     </div>
+                    
+                    {/* Rating Scale Explanation */}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Poor (1.0)</span>
+                        <span>Excellent (5.0)</span>
+                      </div>
+                      <div className="h-2 w-full bg-gray-200 rounded-full mt-1">
+                        <div 
+                          className="h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full" 
+                          style={{ width: `${(product.rating / 5) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                {/* Enhanced Quick Verdict - Now uses quick_verdict field */}
+                {/* Enhanced Quick Verdict - Now uses meta_description field */}
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6 sm:p-8 mb-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <FireIcon className="mr-3 h-6 w-6 text-amber-600" />
                     Quick Verdict
                   </h3>
                   <div className="text-gray-700 leading-relaxed text-lg">
-                    {product.quick_verdict ? (
-                      <div dangerouslySetInnerHTML={{ __html: marked(product.quick_verdict) }} />
+                    {product.meta_description ? (
+                      <p>{product.meta_description}</p>
                     ) : (
                       <p>{getQuickVerdictText(product)}</p>
                     )}
@@ -322,19 +372,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                 {/* Enhanced CTA Section */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6 sm:p-8">
-                  {/* Remove the entire Price Display section - delete these lines:
-                  {product.price && (
-                    <div className="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
-                      <div className="text-center">
-                        <div className="text-sm text-green-700 font-medium mb-1">Current Price</div>
-                        <div className="text-3xl font-bold text-green-800">
-                          ${product.price.toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  */}
-
                   {/* Main CTA Button */}
                   {product.affiliate_link ? (
                     <Link
@@ -357,14 +394,13 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     </button>
                   )}
 
-                  {/* Secondary Actions */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="inline-flex items-center justify-center rounded-xl border-2 border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors">
-                      <HeartIcon className="mr-2 h-5 w-5" />
-                      Save for Later
-                    </button>
-                    <ShareButton productName={product.name} productSlug={product.slug} />
-                  </div>
+                  {/* Price Information */}
+                  {product.price && (
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">Current Price</div>
+                      <div className="text-2xl font-bold text-gray-900">${product.price.toFixed(2)}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -373,144 +409,136 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
 
         {/* Enhanced Content Section */}
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-          {/* Quick Stats Bar */}
-          <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 mb-16">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{product.brand}</div>
-                <div className="text-sm text-gray-600">Brand</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{product.product_type}</div>
-                <div className="text-sm text-gray-600">Category</div>
-              </div>
-              <div>
-                <div className="flex justify-center items-center">
-                  <StarRating rating={product.rating || 0} size="default" showNumber={true} />
-                </div>
-                <div className="text-sm text-gray-600">Expert Rating</div>
-              </div>
-            </div>
-          </div>
-
           {/* Amazon Disclaimer */}
           <div className="mb-16">
             <AmazonDisclaimer />
           </div>
 
           {/* Technical Specifications */}
-          {product.specifications && (
+          {(product.specifications && Object.keys(product.specifications).length > 0) && (
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                <span className="w-1 h-8 bg-amber-600 rounded-full mr-4"></span>
+                <CogIcon className="mr-4 h-8 w-8 text-amber-600" />
                 Technical Specifications
               </h2>
               <div className="bg-gray-50 rounded-3xl p-8 border border-gray-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   
-                  {/* Basic Specifications */}
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                      <CogIcon className="mr-2 h-6 w-6 text-amber-600" />
-                      Physical Specifications
-                    </h3>
-                    
-                    {/* Dimensions */}
-                    {product.specifications.dimensions && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Dimensions</h4>
-                        <div className="text-gray-700">
-                          {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
-                            <span>
-                              {product.specifications.dimensions.length}&quot; × {product.specifications.dimensions.width}&quot; × {product.specifications.dimensions.height}&quot;
-                              {product.specifications.dimensions.unit && product.specifications.dimensions.unit !== 'inches' && (
-                                <span className="text-sm text-gray-500"> ({product.specifications.dimensions.unit})</span>
-                              )}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">Not specified</span>
-                          )}
+                  {/* Physical Specifications */}
+                  {(
+                    product.specifications.dimensions ||
+                    product.specifications.weight ||
+                    product.specifications.materials ||
+                    product.specifications.power ||
+                    product.specifications.capacity ||
+                    product.specifications.warranty
+                  ) && (
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <ScaleIcon className="mr-2 h-6 w-6 text-amber-600" />
+                        Physical Specifications
+                      </h3>
+                      
+                      {/* Dimensions */}
+                      {product.specifications.dimensions && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Dimensions</h4>
+                          <div className="text-gray-700">
+                            {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
+                              <span>
+                                {product.specifications.dimensions.length}" × {product.specifications.dimensions.width}" × {product.specifications.dimensions.height}"
+                                {product.specifications.dimensions.unit && product.specifications.dimensions.unit !== 'inches' && (
+                                  <span className="text-sm text-gray-500"> ({product.specifications.dimensions.unit})</span>
+                                )}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">Not specified</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Weight */}
-                    {product.specifications.weight && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Weight</h4>
-                        <div className="text-gray-700">
-                          {product.specifications.weight.value ? (
-                            <span>{product.specifications.weight.value} {product.specifications.weight.unit}</span>
-                          ) : (
-                            <span className="text-gray-500">Not specified</span>
-                          )}
+                      {/* Weight */}
+                      {product.specifications.weight && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Weight</h4>
+                          <div className="text-gray-700">
+                            {product.specifications.weight.value ? (
+                              <span>{product.specifications.weight.value} {product.specifications.weight.unit}</span>
+                            ) : (
+                              <span className="text-gray-500">Not specified</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Materials */}
-                    {product.specifications.materials && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Materials</h4>
-                        <div className="text-gray-700">
-                          {Array.isArray(product.specifications.materials) ? (
-                            <div className="flex flex-wrap gap-2">
-                              {product.specifications.materials.map((material, index) => (
-                                <span key={index} className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
-                                  {material}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <span>{product.specifications.materials}</span>
-                          )}
+                      {/* Materials */}
+                      {product.specifications.materials && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Materials</h4>
+                          <div className="text-gray-700">
+                            {Array.isArray(product.specifications.materials) ? (
+                              <div className="flex flex-wrap gap-2">
+                                {product.specifications.materials.map((material: string, index: number) => (
+                                  <span key={index} className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
+                                    {material}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span>{product.specifications.materials}</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Power */}
-                    {product.specifications.power && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Power</h4>
-                        <div className="text-gray-700">
-                          {product.specifications.power.value ? (
-                            <span>{product.specifications.power.value} {product.specifications.power.unit}</span>
-                          ) : (
-                            <span className="text-gray-500">Not specified</span>
-                          )}
+                      {/* Power */}
+                      {product.specifications.power && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Power</h4>
+                          <div className="text-gray-700">
+                            {product.specifications.power.value ? (
+                              <span>{product.specifications.power.value} {product.specifications.power.unit}</span>
+                            ) : (
+                              <span className="text-gray-500">Not specified</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Capacity */}
-                    {product.specifications.capacity && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Capacity</h4>
-                        <div className="text-gray-700">
-                          {product.specifications.capacity.value ? (
-                            <span>{product.specifications.capacity.value} {product.specifications.capacity.unit}</span>
-                          ) : (
-                            <span className="text-gray-500">Not specified</span>
-                          )}
+                      {/* Capacity */}
+                      {product.specifications.capacity && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Capacity</h4>
+                          <div className="text-gray-700">
+                            {product.specifications.capacity.value ? (
+                              <span>{product.specifications.capacity.value} {product.specifications.capacity.unit}</span>
+                            ) : (
+                              <span className="text-gray-500">Not specified</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Warranty */}
-                    {product.specifications.warranty && (
-                      <div className="bg-white rounded-xl p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-900 mb-2">Warranty</h4>
-                        <div className="text-gray-700">{product.specifications.warranty}</div>
-                      </div>
-                    )}
-                  </div>
+                      {/* Warranty */}
+                      {product.specifications.warranty && (
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <h4 className="font-semibold text-gray-900 mb-2">Warranty</h4>
+                          <div className="text-gray-700">{product.specifications.warranty}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Category-Specific Specifications */}
                   <div className="space-y-6">
                     {/* Grinder Specifications */}
                     {product.specifications.grinder_specifications && (
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Grinder Specifications</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                          <WrenchIcon className="mr-2 h-6 w-6 text-amber-600" />
+                          Grinder Specifications
+                        </h3>
                         <div className="space-y-4">
                           {product.specifications.grinder_specifications.grinder_type && (
                             <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -543,7 +571,10 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     {/* Espresso Specifications */}
                     {product.specifications.espresso_specifications && (
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Espresso Specifications</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                          <BeakerIcon className="mr-2 h-6 w-6 text-amber-600" />
+                          Espresso Specifications
+                        </h3>
                         <div className="space-y-4">
                           {product.specifications.espresso_specifications.pump_pressure && (
                             <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -582,7 +613,10 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     {/* Brewing Specifications */}
                     {product.specifications.brewing_specifications && (
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Brewing Specifications</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                          <ClockIcon className="mr-2 h-6 w-6 text-amber-600" />
+                          Brewing Specifications
+                        </h3>
                         <div className="space-y-4">
                           {product.specifications.brewing_specifications.water_reservoir_capacity && (
                             <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -629,13 +663,13 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
           {product.flavor_notes && Array.isArray(product.flavor_notes) && product.flavor_notes.length > 0 && (
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                <span className="w-1 h-8 bg-amber-600 rounded-full mr-4"></span>
+                <LightBulbIcon className="mr-4 h-8 w-8 text-amber-600" />
                 Flavor Profile
               </h2>
               <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200">
                 <p className="text-gray-700 mb-6 text-lg">Our experts identified these distinct flavor notes:</p>
                 <div className="flex flex-wrap gap-3">
-                  {product.flavor_notes.map((note, index) => (
+                  {product.flavor_notes.map((note: string, index: number) => (
                     <span key={index} className="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-800 border-2 border-amber-200 shadow-sm">
                       {note}
                     </span>
@@ -649,7 +683,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
           {product.description && (
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                <span className="w-1 h-8 bg-amber-600 rounded-full mr-4"></span>
+                <ArrowsPointingOutIcon className="mr-4 h-8 w-8 text-amber-600" />
                 Our Expert Review
               </h2>
               <div className="prose prose-lg prose-amber max-w-none prose-headings:font-bold prose-h3:text-2xl prose-h4:text-xl prose-p:leading-relaxed prose-p:text-gray-700">
@@ -663,7 +697,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
             (product.cons && Array.isArray(product.cons) && product.cons.length > 0)) && (
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                <span className="w-1 h-8 bg-amber-600 rounded-full mr-4"></span>
+                <CheckCircleIcon className="mr-4 h-8 w-8 text-amber-600" />
                 Pros & Cons Analysis
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -674,10 +708,12 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                       What We Loved
                     </h3>
                     <ul className="space-y-4">
-                      {product.pros.map((pro, index) => (
+                      {product.pros.map((pro: string, index: number) => (
                         <li key={index} className="flex items-start">
                           <CheckCircleIcon className="h-6 w-6 text-emerald-500 mr-3 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700 leading-relaxed">{pro}</span>
+                          <span className="text-gray-700 leading-relaxed">
+                            {pro.replace(/^(Time-based precision with exact measurements|Technical feature with measurable impact|Performance comparison with previous experience|Build quality with time-based testing period|)\s*:\s*/, '')}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -691,10 +727,12 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                       Areas for Improvement
                     </h3>
                     <ul className="space-y-4">
-                      {product.cons.map((con, index) => (
+                      {product.cons.map((con: string, index: number) => (
                         <li key={index} className="flex items-start">
                           <XMarkIcon className="h-6 w-6 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700 leading-relaxed">{con}</span>
+                          <span className="text-gray-700 leading-relaxed">
+                            {con.replace(/^(Measurable limitation with spatial impact|Technical trade-off with exact usage data|Learning curve with specific workflow adjustment|Value consideration with relative cost context|)\s*:\s*/, '')}
+                          </span>
                         </li>
                       ))}
                     </ul>
