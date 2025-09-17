@@ -31,6 +31,69 @@ import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
+interface CoffeeProduct {
+  id: string;
+  name: string;
+  brand: string;
+  product_type: string;
+  slug?: string;
+  rating?: number;
+  price?: number;
+  affiliate_link?: string;
+  description?: string;
+  meta_description?: string;
+  publishedAt: string;
+  images?: Array<{ url: string }>;
+  flavor_notes?: string[];
+  pros?: string[];
+  cons?: string[];
+  specifications?: {
+    dimensions?: {
+      length?: number;
+      width?: number;
+      height?: number;
+      unit?: string;
+    };
+    weight?: {
+      value?: number;
+      unit?: string;
+    };
+    materials?: string[] | string;
+    power?: {
+      value?: number;
+      unit?: string;
+    };
+    capacity?: {
+      value?: number;
+      unit?: string;
+    };
+    warranty?: string;
+    grinder_specifications?: {
+      grinder_type?: string;
+      burr_type?: string;
+      burr_material?: string;
+      grind_settings?: string;
+    };
+    espresso_specifications?: {
+      pump_pressure?: {
+        value?: number;
+        unit?: string;
+      };
+      boiler_type?: string;
+      steam_wand?: boolean;
+      pid_control?: boolean;
+    };
+    brewing_specifications?: {
+      water_reservoir_capacity?: {
+        value?: number;
+        unit?: string;
+      };
+      programmable?: boolean;
+      auto_shutoff?: boolean;
+      thermal_carafe?: boolean;
+    };
+  };
+}
 
 function StarRating({ rating, size = "default", showNumber = false }: { 
   rating: number; 
@@ -69,7 +132,7 @@ function StarRating({ rating, size = "default", showNumber = false }: {
 }
 
 // Updated helper function with proper typing
-function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
+function getQuickVerdictText(product: CoffeeProduct): string {
   // Use meta_description if available
   if (product.meta_description) {
     return product.meta_description;
@@ -105,7 +168,7 @@ function RatingBadge({ rating }: { rating: number }) {
 
   if (rating >= 4.5) {
     badgeColor = "bg-emerald-100 text-emerald-800";
-    label = "Editor&apos;s Choice";
+    label = "Editor's Choice";
   } else if (rating >= 4.0) {
     badgeColor = "bg-blue-100 text-blue-800";
     label = "Highly Recommended";
@@ -178,7 +241,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function ProductReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  let product: import("@/lib/api").CoffeeProduct | null = null;
+  let product: CoffeeProduct | null = null;
 
   try {
     product = await getProduct(id);
@@ -701,7 +764,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
                 <CheckCircleIcon className="mr-4 h-8 w-8 text-amber-600" />
-                Pros &amp; Cons Analysis
+                Pros & Cons Analysis
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {product.pros && Array.isArray(product.pros) && product.pros.length > 0 && (
@@ -767,7 +830,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
                     )}
                     <p className="text-xl text-gray-700 mb-8 leading-relaxed">
                       {product.rating && product.rating >= 4.5 
-                        ? "🏆 Editor&apos;s Choice - " 
+                        ? "🏆 Editor's Choice - " 
                         : product.rating && product.rating >= 4.0 
                         ? "⭐ Highly Recommended - " 
                         : product.rating && product.rating >= 3.5 
@@ -886,7 +949,7 @@ focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all tr
               
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <button className="flex justify-between items-center w-full p-6 text-left">
-                  <span className="text-lg font-medium text-gray-900">What&apos;s the learning curve like?</span>
+                  <span className="text-lg font-medium text-gray-900">What{`'`}s the learning curve like?</span>
                   <ChevronDownIcon className="h-5 w-5 text-gray-500" />
                 </button>
                 <div className="px-6 pb-6 text-gray-700">
