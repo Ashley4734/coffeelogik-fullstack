@@ -241,7 +241,7 @@ export default async function ProductsPage() {
                   
                   <h3 className="text-xl font-semibold text-gray-900 group-hover:text-amber-600 mb-3 leading-tight">
                     <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
-                      {product.name} Review
+                      {product.name}
                     </Link>
                   </h3>
                   
@@ -322,7 +322,7 @@ export default async function ProductsPage() {
                   
                   <h3 className="text-lg font-semibold text-gray-900 group-hover:text-amber-600 mb-2 leading-tight">
                     <Link href={`/products/${product.slug}`} className="hover:text-amber-600">
-                      {product.name} Review
+                      {product.name}
                     </Link>
                   </h3>
                   
