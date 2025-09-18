@@ -27,7 +27,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
     // Convert bullet points
     result = result
       .replace(/^\s*\*\s(.*)$/gim, '<li class="ml-4">$1</li>')
-      .replace(/(<li.*<\/li>\s*)+/gs, '<ul class="list-disc my-4 space-y-2 pl-5">$&</ul>');
+      .replace(/(<li.*<\/li>[\s\S]*?)+/g, '<ul class="list-disc my-4 space-y-2 pl-5">$&</ul>');
     
     // Wrap paragraphs
     result = result
