@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon, ClockIcon, EyeIcon, ChartBarIcon, SparklesIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
-import { getProduct, getStrapiMedia } from "@/lib/api";
+import { getProduct, getStrapiMedia, CoffeeProduct } from "@/lib/api"; // Import CoffeeProduct type properly
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import ShareButton from "./ShareButton";
@@ -9,8 +9,8 @@ import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
-// Fixed: Proper handling of optional properties with TypeScript
-interface CoffeeProductWithOptionalSpecs extends import("@/lib/api").CoffeeProduct {
+// Fixed: Proper type extension - import the type first
+interface CoffeeProductWithOptionalSpecs extends CoffeeProduct {
   specifications?: {
     grinder_specifications?: {
       grinder_type?: string;
@@ -432,7 +432,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         canonical: url,
       },
     };
-  } catch (error) {
+ } catch (error) {
     console.error('Error generating metadata for product:', error);
     return {
       title: 'Product Review - CoffeeLogik',
@@ -440,7 +440,6 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     };
   }
 }
-
 // FIXED: params is now handled as a regular object, not a Promise
 export default async function ProductReviewPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -456,7 +455,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
   if (!product) {
     notFound();
   }
-
+  
   const structuredData = generateArticleStructuredData({
     title: product.meta_title || product.name,
     description: product.meta_description || getQuickVerdictText(product),
