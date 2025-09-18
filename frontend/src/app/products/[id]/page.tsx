@@ -395,9 +395,9 @@ function getQuickVerdictText(product: CoffeeProductWithOptionalSpecs): string {
   return `The ${product.name} by ${product.brand} offers excellent value in the ${product.product_type?.toLowerCase() || 'coffee equipment'} category.`;
 }
 
-// Enhanced metadata generation - FIXED: params is a regular object now
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id } = params;
+// FIXED: Update both functions to handle params as Promise
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params; // Add await here
 
   try {
     const product = await getProduct(id) as CoffeeProductWithOptionalSpecs;
@@ -441,8 +441,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 // FIXED: params is now handled as a regular object, not a Promise
-export default async function ProductReviewPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function ProductReviewPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params; // Add await here
 
   let product: CoffeeProductWithOptionalSpecs | null = null;
 
