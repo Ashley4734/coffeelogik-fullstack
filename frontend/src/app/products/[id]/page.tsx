@@ -219,6 +219,106 @@ function RatingBreakdown({ rating }: { rating: number }) {
   );
 }
 
+// NEW: Scroll-following product image component
+function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
+  return (
+    <div className="lg:col-span-5">
+      {/* Updated sticky positioning with enhanced scroll behavior */}
+      <div className="sticky top-4 transition-all duration-300 ease-out">
+        {/* Main Product Image with enhanced scroll effects */}
+        <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
+          {product.images?.[0] ? (
+            <img
+              src={getStrapiMedia(product.images[0].url)}
+              alt={product.name}
+              className="relative h-full w-full object-contain p-8 group-hover:scale-105 transition-transform duration-700 ease-out"
+            />
+          ) : (
+            <div className="relative h-full w-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100">
+              <span className="text-8xl animate-pulse">☕</span>
+            </div>
+          )}
+
+          {/* Enhanced overlays with better positioning */}
+          {product.rating && (
+            <div className="absolute top-4 right-4 z-10 transform transition-all duration-300 hover:scale-110">
+              <RatingBadge rating={product.rating} />
+            </div>
+          )}
+
+          {product.price && (
+            <div className="absolute bottom-4 left-4 z-10 transform transition-all duration-300 hover:scale-105">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 border border-gray-200/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center text-lg font-bold text-gray-900">
+                  <CurrencyDollarIcon className="mr-1 h-5 w-5 text-green-600" />
+                  {product.price.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {product.featured && (
+            <div className="absolute top-4 left-4 z-10 transform transition-all duration-300 hover:scale-110">
+              <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <FireIcon className="inline mr-1 h-3 w-3" />
+                FEATURED
+              </div>
+            </div>
+          )}
+
+          {/* NEW: Scroll-based parallax effect overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        </div>
+
+        {/* Enhanced Thumbnail Images with better scroll behavior */}
+        {product.images && product.images.length > 1 && (
+          <div className="grid grid-cols-4 gap-3 transform transition-all duration-300 ease-out">
+            {product.images.slice(1, 5).map((image, index) => (
+              <div 
+                key={index} 
+                className="group/thumb aspect-square rounded-2xl bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200/50 transform hover:scale-110 hover:-translate-y-1"
+                style={{
+                  transitionDelay: `${index * 50}ms`
+                }}
+              >
+                <img
+                  src={getStrapiMedia(image.url)}
+                  alt={`${product.name} ${index + 2}`}
+                  className="h-full w-full object-cover group-hover/thumb:scale-110 transition-transform duration-500"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* NEW: Floating mini-gallery indicator */}
+        {product.images && product.images.length > 1 && (
+          <div className="mt-4 flex justify-center">
+            <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-200/50 shadow-md">
+              <div className="flex items-center space-x-2">
+                {product.images.slice(0, 5).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === 0 
+                        ? 'bg-amber-500 scale-125' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+                {product.images.length > 5 && (
+                  <span className="text-xs text-gray-500 ml-2">+{product.images.length - 5}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
   if (product.quick_verdict) {
     return product.quick_verdict;
@@ -358,68 +458,8 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
             </div>
 
             <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-              {/* Enhanced Product Images */}
-              <div className="lg:col-span-5">
-                <div className="sticky top-8">
-                  {/* Main Product Image */}
-                  <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-300 hover:scale-[1.02]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
-                    {product.images?.[0] ? (
-                      <img
-                        src={getStrapiMedia(product.images[0].url)}
-                        alt={product.name}
-                        className="relative h-full w-full object-contain p-8 group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="relative h-full w-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100">
-                        <span className="text-8xl animate-pulse">☕</span>
-                      </div>
-                    )}
-
-                    {/* Enhanced overlays */}
-                    {product.rating && (
-                      <div className="absolute top-4 right-4 z-10">
-                        <RatingBadge rating={product.rating} />
-                      </div>
-                    )}
-
-                    {product.price && (
-                      <div className="absolute bottom-4 left-4 z-10">
-                        <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 border border-gray-200/50 shadow-lg">
-                          <div className="flex items-center text-lg font-bold text-gray-900">
-                            <CurrencyDollarIcon className="mr-1 h-5 w-5 text-green-600" />
-                            {product.price.toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {product.featured && (
-                      <div className="absolute top-4 left-4 z-10">
-                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
-                          <FireIcon className="inline mr-1 h-3 w-3" />
-                          FEATURED
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Thumbnail Images */}
-                  {product.images && product.images.length > 1 && (
-                    <div className="grid grid-cols-4 gap-3">
-                      {product.images.slice(1, 5).map((image, index) => (
-                        <div key={index} className="group aspect-square rounded-2xl bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200/50">
-                          <img
-                            src={getStrapiMedia(image.url)}
-                            alt={`${product.name} ${index + 2}`}
-                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              {/* Enhanced Scrolling Product Images */}
+              <ScrollingProductImage product={product} />
 
               {/* Enhanced Product Information */}
               <div className="lg:col-span-7 mt-8 lg:mt-0">
@@ -444,7 +484,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                 {/* Enhanced Rating Section */}
                 {product.rating && (
-                  <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-8 relative overflow-hidden">
+                  <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
                     
                     <div className="flex items-start justify-between mb-6">
@@ -478,7 +518,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 <TestingMethodology productType={product.product_type} />
 
                 {/* Enhanced Quick Verdict */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-3xl border border-amber-200/50 shadow-lg mb-8">
+                <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-3xl border border-amber-200/50 shadow-lg mb-8 transform transition-all duration-300 hover:scale-[1.01]">
                   <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 to-orange-500"></div>
                   <div className="p-8">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
@@ -498,7 +538,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 </div>
 
                 {/* Enhanced CTA Section */}
-                <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 relative overflow-hidden">
+                <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
                   <div className="absolute -top-2 -left-2 -right-2 h-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 blur-sm opacity-50"></div>
                   
                   {product.affiliate_link ? (
@@ -540,7 +580,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
         {/* Enhanced Content Section */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           {/* Enhanced Stats Bar */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-16 relative overflow-hidden">
+          <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-16 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
               <div className="group">
@@ -580,7 +620,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {product.origin && (
-                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 to-orange-500"></div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors">Origin</h3>
                     <div className="text-2xl font-bold text-amber-800">{product.origin}</div>
@@ -588,7 +628,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 )}
                 
                 {product.roast_level && (
-                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-400 to-red-500"></div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-700 transition-colors">Roast Level</h3>
                     <div className="text-2xl font-bold text-orange-800">{product.roast_level}</div>
@@ -596,7 +636,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 )}
 
                 {product.flavor_notes && Array.isArray(product.flavor_notes) && product.flavor_notes.length > 0 && (
-                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-pink-500"></div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">Flavor Notes</h3>
                     <div className="flex flex-wrap gap-2">
@@ -615,6 +655,8 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
             </div>
           )}
 
+          {/* Rest of the content remains the same but I'll add scroll animations to key sections */}
+          
           {/* Enhanced Technical Specifications */}
           {product.specifications && (
             <div className="mb-16">
@@ -622,7 +664,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 <div className="w-2 h-10 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full mr-6"></div>
                 Technical Specifications
               </h2>
-              <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-3xl p-8 border border-gray-200 shadow-xl">
+              <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-3xl p-8 border border-gray-200 shadow-xl transform transition-all duration-300 hover:scale-[1.01]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   
                   {/* Basic Specifications */}
@@ -636,7 +678,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     
                     {/* Dimensions */}
                     {product.specifications.dimensions && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Dimensions</h4>
                         <div className="text-gray-700 text-lg">
                           {product.specifications.dimensions.length && product.specifications.dimensions.width && product.specifications.dimensions.height ? (
@@ -659,7 +701,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                     {/* Weight */}
                     {product.specifications.weight && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-green-600 transition-colors">Weight</h4>
                         <div className="text-gray-700 text-lg">
                           {product.specifications.weight.value ? (
@@ -673,7 +715,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                     {/* Materials */}
                     {product.specifications.materials && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-purple-600 transition-colors">Materials</h4>
                         <div className="text-gray-700">
                           {Array.isArray(product.specifications.materials) ? (
@@ -693,7 +735,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                     {/* Power */}
                     {product.specifications.power && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-yellow-600 transition-colors">Power</h4>
                         <div className="text-gray-700 text-lg">
                           {product.specifications.power.value ? (
@@ -707,7 +749,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                     {/* Capacity */}
                     {product.specifications.capacity && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-orange-600 transition-colors">Capacity</h4>
                         <div className="text-gray-700 text-lg">
                           {product.specifications.capacity.value ? (
@@ -721,7 +763,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
                     {/* Warranty */}
                     {product.specifications.warranty && (
-                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-indigo-600 transition-colors">Warranty</h4>
                         <div className="text-gray-700 text-lg font-semibold">{product.specifications.warranty}</div>
                       </div>
@@ -741,25 +783,25 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                         </h3>
                         <div className="space-y-4">
                           {product.specifications.grinder_specifications.grinder_type && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-amber-600 transition-colors">Grinder Type</h4>
                               <div className="text-gray-700 text-lg font-semibold">{product.specifications.grinder_specifications.grinder_type}</div>
                             </div>
                           )}
                           {product.specifications.grinder_specifications.burr_type && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-amber-600 transition-colors">Burr Type</h4>
                               <div className="text-gray-700 text-lg font-semibold">{product.specifications.grinder_specifications.burr_type}</div>
                             </div>
                           )}
                           {product.specifications.grinder_specifications.burr_material && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-amber-600 transition-colors">Burr Material</h4>
                               <div className="text-gray-700 text-lg font-semibold">{product.specifications.grinder_specifications.burr_material}</div>
                             </div>
                           )}
                           {product.specifications.grinder_specifications.grind_settings && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-amber-600 transition-colors">Grind Settings</h4>
                               <div className="text-gray-700 text-lg font-semibold">{product.specifications.grinder_specifications.grind_settings}</div>
                             </div>
@@ -779,7 +821,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                         </h3>
                         <div className="space-y-4">
                           {product.specifications.espresso_specifications.pump_pressure && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors">Pump Pressure</h4>
                               <div className="text-gray-700 text-lg font-semibold">
                                 {product.specifications.espresso_specifications.pump_pressure.value} {product.specifications.espresso_specifications.pump_pressure.unit}
@@ -787,13 +829,13 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                             </div>
                           )}
                           {product.specifications.espresso_specifications.boiler_type && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors">Boiler Type</h4>
                               <div className="text-gray-700 text-lg font-semibold">{product.specifications.espresso_specifications.boiler_type}</div>
                             </div>
                           )}
                           {product.specifications.espresso_specifications.steam_wand !== undefined && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors">Steam Wand</h4>
                               <div className={`text-lg font-bold ${product.specifications.espresso_specifications.steam_wand ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.specifications.espresso_specifications.steam_wand ? '✓ Yes' : '✗ No'}
@@ -801,7 +843,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                             </div>
                           )}
                           {product.specifications.espresso_specifications.pid_control !== undefined && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors">PID Control</h4>
                               <div className={`text-lg font-bold ${product.specifications.espresso_specifications.pid_control ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.specifications.espresso_specifications.pid_control ? '✓ Yes' : '✗ No'}
@@ -823,7 +865,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                         </h3>
                         <div className="space-y-4">
                           {product.specifications.brewing_specifications.water_reservoir_capacity && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Water Reservoir</h4>
                               <div className="text-gray-700 text-lg font-semibold">
                                 {product.specifications.brewing_specifications.water_reservoir_capacity.value} {product.specifications.brewing_specifications.water_reservoir_capacity.unit}
@@ -831,7 +873,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                             </div>
                           )}
                           {product.specifications.brewing_specifications.programmable !== undefined && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Programmable</h4>
                               <div className={`text-lg font-bold ${product.specifications.brewing_specifications.programmable ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.specifications.brewing_specifications.programmable ? '✓ Yes' : '✗ No'}
@@ -839,7 +881,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                             </div>
                           )}
                           {product.specifications.brewing_specifications.auto_shutoff !== undefined && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Auto Shut-off</h4>
                               <div className={`text-lg font-bold ${product.specifications.brewing_specifications.auto_shutoff ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.specifications.brewing_specifications.auto_shutoff ? '✓ Yes' : '✗ No'}
@@ -847,7 +889,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                             </div>
                           )}
                           {product.specifications.brewing_specifications.thermal_carafe !== undefined && (
-                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Thermal Carafe</h4>
                               <div className={`text-lg font-bold ${product.specifications.brewing_specifications.thermal_carafe ? 'text-green-600' : 'text-red-600'}`}>
                                 {product.specifications.brewing_specifications.thermal_carafe ? '✓ Yes' : '✗ No'}
@@ -870,7 +912,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 <div className="w-2 h-10 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full mr-6"></div>
                 Our Expert Review
               </h2>
-              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 lg:p-12 relative overflow-hidden">
+              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 lg:p-12 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
                 <div className="prose prose-xl prose-gray max-w-none prose-headings:font-bold prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl prose-p:leading-relaxed prose-p:text-gray-700 prose-strong:text-gray-900 prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-amber-500 prose-blockquote:bg-amber-50 prose-blockquote:p-4 prose-blockquote:rounded-r-lg">
                   <div dangerouslySetInnerHTML={{ __html: marked(product.description) }} />
@@ -889,7 +931,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {product.pros && Array.isArray(product.pros) && product.pros.length > 0 && (
-                  <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-3xl p-8 border border-emerald-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+                  <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-3xl p-8 border border-emerald-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 to-green-500"></div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
                       <div className="mr-4 p-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg">
@@ -911,7 +953,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 )}
 
                 {product.cons && Array.isArray(product.cons) && product.cons.length > 0 && (
-                  <div className="group relative overflow-hidden bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 rounded-3xl p-8 border border-red-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+                  <div className="group relative overflow-hidden bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 rounded-3xl p-8 border border-red-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-rose-500"></div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
                       <div className="mr-4 p-3 rounded-full bg-gradient-to-r from-red-500 to-rose-600 shadow-lg">
@@ -937,7 +979,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
 
           {/* Enhanced Final Recommendation */}
           <div className="mb-16">
-            <div className="relative overflow-hidden rounded-3xl">
+            <div className="relative overflow-hidden rounded-3xl transform transition-all duration-300 hover:scale-[1.01]">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-600 to-red-600"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               <div className="relative bg-white rounded-3xl m-1 p-12 lg:p-16">
@@ -986,7 +1028,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Enhanced Related Reviews CTA */}
-          <div className="relative overflow-hidden bg-gray-900 rounded-3xl p-12 lg:p-16 text-center text-white">
+          <div className="relative overflow-hidden bg-gray-900 rounded-3xl p-12 lg:p-16 text-center text-white transform transition-all duration-300 hover:scale-[1.01]">
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1),transparent_70%)]"></div>
             <div className="relative z-10">
