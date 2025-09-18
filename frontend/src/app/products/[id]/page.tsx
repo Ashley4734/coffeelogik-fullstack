@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon, ClockIcon, DollarSignIcon, EyeIcon, ChartBarIcon, SparklesIcon } from "@heroicons/react/24/solid";
-import { StarIcon as StarOutlineIcon, HeartIcon, ShareIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon, ClockIcon, EyeIcon, ChartBarIcon, SparklesIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
+import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
@@ -85,7 +85,7 @@ function RatingBadge({ rating }: { rating: number }) {
 }
 
 // Floating action button component
-function FloatingActionButton({ productName, affiliateLink }: { productName: string; affiliateLink?: string }) {
+function FloatingActionButton({ affiliateLink }: { affiliateLink?: string }) {
   if (!affiliateLink) return null;
 
   return (
@@ -325,7 +325,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
       />
 
       {/* Floating Action Button */}
-      <FloatingActionButton productName={product.name} affiliateLink={product.affiliate_link} />
+      <FloatingActionButton affiliateLink={product.affiliate_link} />
 
       <div className="bg-gradient-to-br from-slate-50 via-white to-amber-50/30 min-h-screen">
         {/* Hero Section with Advanced Styling */}
@@ -387,7 +387,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       <div className="absolute bottom-4 left-4 z-10">
                         <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 border border-gray-200/50 shadow-lg">
                           <div className="flex items-center text-lg font-bold text-gray-900">
-                            <DollarSignIcon className="mr-1 h-5 w-5 text-green-600" />
+                            <CurrencyDollarIcon className="mr-1 h-5 w-5 text-green-600" />
                             {product.price.toFixed(2)}
                           </div>
                         </div>
@@ -628,7 +628,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   {/* Basic Specifications */}
                   <div className="space-y-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                                            <div className="mr-3 p-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600">
+                      <div className="mr-3 p-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600">
                         <CogIcon className="h-6 w-6 text-white" />
                       </div>
                       Physical Specifications
