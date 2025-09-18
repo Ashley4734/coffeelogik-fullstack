@@ -9,6 +9,56 @@ import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
+// Fixed: Proper handling of optional properties with TypeScript
+interface CoffeeProductWithOptionalSpecs extends import("@/lib/api").CoffeeProduct {
+  specifications?: {
+    grinder_specifications?: {
+      grinder_type?: string;
+      burr_type?: string;
+      burr_material?: string;
+      grind_settings?: string;
+    };
+    espresso_specifications?: {
+      pump_pressure?: {
+        value?: number | string;
+        unit?: string;
+      };
+      boiler_type?: string;
+      steam_wand?: boolean;
+      pid_control?: boolean;
+    };
+    brewing_specifications?: {
+      water_reservoir_capacity?: {
+        value?: number | string;
+        unit?: string;
+      };
+      programmable?: boolean;
+      auto_shutoff?: boolean;
+      thermal_carafe?: boolean;
+    };
+    dimensions?: {
+      length?: string | number;
+      width?: string | number;
+      height?: string | number;
+      unit?: string;
+    };
+    weight?: {
+      value?: string | number;
+      unit?: string;
+    };
+    materials?: string | string[];
+    power?: {
+      value?: string | number;
+      unit?: string;
+    };
+    capacity?: {
+      value?: string | number;
+      unit?: string;
+    };
+    warranty?: string;
+  };
+}
+
 function StarRating({ rating, size = "default", showNumber = false }: { 
   rating: number; 
   size?: "sm" | "default" | "lg";
@@ -75,7 +125,7 @@ function RatingBadge({ rating }: { rating: number }) {
 
   return (
     <div className="group relative">
-      <div className={`absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full opacity-30 group-hover:opacity-50 blur transition duration-300`}></div>
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full opacity-30 group-hover:opacity-50 blur transition duration-300"></div>
       <span className={`relative inline-flex items-center rounded-full px-4 py-2 text-xs font-bold ${badgeClasses} transition-all duration-300 hover:scale-105`}>
         {icon}
         {label}
@@ -220,7 +270,7 @@ function RatingBreakdown({ rating }: { rating: number }) {
 }
 
 // NEW: Scroll-following product image component
-function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
+function ScrollingProductImage({ product }: { product: CoffeeProductWithOptionalSpecs }) {
   return (
     <div className="lg:col-span-5">
       {/* Updated sticky positioning with enhanced scroll behavior */}
@@ -319,7 +369,7 @@ function ScrollingProductImage({ product }: { product: import("@/lib/api").Coffe
   );
 }
 
-function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
+function getQuickVerdictText(product: CoffeeProductWithOptionalSpecs): string {
   if (product.quick_verdict) {
     return product.quick_verdict;
   }
@@ -345,12 +395,12 @@ function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string
   return `The ${product.name} by ${product.brand} offers excellent value in the ${product.product_type?.toLowerCase() || 'coffee equipment'} category.`;
 }
 
-// Enhanced metadata generation
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
+// Enhanced metadata generation - FIXED: params is a regular object now
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const { id } = params;
 
   try {
-    const product = await getProduct(id);
+    const product = await getProduct(id) as CoffeeProductWithOptionalSpecs;
     const imageUrl = product.images?.[0] ? getStrapiMedia(product.images[0].url) : null;
     const url = `/products/${product.slug || id}`;
 
@@ -391,16 +441,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
-export default async function ProductReviewPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+// FIXED: params is now handled as a regular object, not a Promise
+export default async function ProductReviewPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
-  let product: import("@/lib/api").CoffeeProduct | null = null;
+  let product: CoffeeProductWithOptionalSpecs | null = null;
 
   try {
-    product = await getProduct(id);
+    product = await getProduct(id) as CoffeeProductWithOptionalSpecs;
   } catch (error) {
     console.error('Error fetching product:', error);
-    notFound();
   }
 
   if (!product) {
@@ -483,7 +533,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 </h1>
 
                 {/* Enhanced Rating Section */}
-                {product.rating && (
+                {typeof product.rating === 'number' && (
                   <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
                     
@@ -593,11 +643,13 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </div>
               <div className="group">
                 <div className="flex justify-center items-center mb-1">
-                  <StarRating rating={product.rating || 0} size="default" showNumber={true} />
+                  {typeof product.rating === 'number' && (
+                    <StarRating rating={product.rating} size="default" showNumber={true} />
+                  )}
                 </div>
                 <div className="text-sm text-gray-600 font-medium">Expert Rating</div>
               </div>
-              {product.price && (
+              {typeof product.price === 'number' && (
                 <div className="group">
                   <div className="text-2xl font-bold text-green-600 mb-1 group-hover:text-green-700 transition-colors">${product.price.toFixed(2)}</div>
                   <div className="text-sm text-gray-600 font-medium">Price</div>
@@ -612,7 +664,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Coffee Profile Section */}
-          {(product.origin || product.roast_level || (product.flavor_notes && product.flavor_notes.length > 0)) && (
+          {(product.origin || product.roast_level || (product.flavor_notes && Array.isArray(product.flavor_notes) && product.flavor_notes.length > 0)) && (
             <div className="mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-12 flex items-center">
                 <div className="w-2 h-10 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full mr-6"></div>
@@ -655,8 +707,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
             </div>
           )}
 
-          {/* Rest of the content remains the same but I'll add scroll animations to key sections */}
-          
           {/* Enhanced Technical Specifications */}
           {product.specifications && (
             <div className="mb-16">
@@ -677,7 +727,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     </h3>
                     
                     {/* Dimensions */}
-                    {product.specifications.dimensions && (
+                    {product.specifications?.dimensions && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Dimensions</h4>
                         <div className="text-gray-700 text-lg">
@@ -700,7 +750,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Weight */}
-                    {product.specifications.weight && (
+                    {product.specifications?.weight && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-green-600 transition-colors">Weight</h4>
                         <div className="text-gray-700 text-lg">
@@ -714,7 +764,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Materials */}
-                    {product.specifications.materials && (
+                    {product.specifications?.materials && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-purple-600 transition-colors">Materials</h4>
                         <div className="text-gray-700">
@@ -734,7 +784,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Power */}
-                    {product.specifications.power && (
+                    {product.specifications?.power && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-yellow-600 transition-colors">Power</h4>
                         <div className="text-gray-700 text-lg">
@@ -748,7 +798,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Capacity */}
-                    {product.specifications.capacity && (
+                    {product.specifications?.capacity && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-orange-600 transition-colors">Capacity</h4>
                         <div className="text-gray-700 text-lg">
@@ -762,7 +812,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Warranty */}
-                    {product.specifications.warranty && (
+                    {product.specifications?.warranty && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-indigo-600 transition-colors">Warranty</h4>
                         <div className="text-gray-700 text-lg font-semibold">{product.specifications.warranty}</div>
@@ -773,7 +823,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   {/* Category-Specific Specifications */}
                   <div className="space-y-8">
                     {/* Grinder Specifications */}
-                    {product.specifications.grinder_specifications && (
+                    {product.specifications?.grinder_specifications && (
                       <div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                           <div className="mr-3 p-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600">
@@ -811,7 +861,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Espresso Specifications */}
-                    {product.specifications.espresso_specifications && (
+                    {product.specifications?.espresso_specifications && (
                       <div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                           <div className="mr-3 p-2 rounded-full bg-gradient-to-r from-red-500 to-pink-600">
@@ -820,7 +870,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                           Espresso Specifications
                         </h3>
                         <div className="space-y-4">
-                          {product.specifications.espresso_specifications.pump_pressure && (
+                          {product.specifications.espresso_specifications.pump_pressure?.value && (
                             <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors">Pump Pressure</h4>
                               <div className="text-gray-700 text-lg font-semibold">
@@ -855,7 +905,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     )}
 
                     {/* Brewing Specifications */}
-                    {product.specifications.brewing_specifications && (
+                    {product.specifications?.brewing_specifications && (
                       <div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                           <div className="mr-3 p-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600">
@@ -864,7 +914,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                           Brewing Specifications
                         </h3>
                         <div className="space-y-4">
-                          {product.specifications.brewing_specifications.water_reservoir_capacity && (
+                          {product.specifications.brewing_specifications.water_reservoir_capacity?.value && (
                             <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                               <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">Water Reservoir</h4>
                               <div className="text-gray-700 text-lg font-semibold">
@@ -930,7 +980,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                 Pros & Cons Analysis
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {product.pros && Array.isArray(product.pros) && product.pros.length > 0 && (
+                {Array.isArray(product.pros) && product.pros.length > 0 && (
                   <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-3xl p-8 border border-emerald-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 to-green-500"></div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
@@ -952,7 +1002,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   </div>
                 )}
 
-                {product.cons && Array.isArray(product.cons) && product.cons.length > 0 && (
+                {Array.isArray(product.cons) && product.cons.length > 0 && (
                   <div className="group relative overflow-hidden bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 rounded-3xl p-8 border border-red-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-rose-500"></div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
@@ -991,7 +1041,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                     Our Final Verdict
                   </h2>
                   <div className="max-w-4xl mx-auto">
-                    {product.rating && (
+                    {typeof product.rating === 'number' && (
                       <div className="flex items-center justify-center gap-6 mb-8">
                         <StarRating rating={product.rating} size="lg" />
                         <div className="text-5xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
@@ -1000,12 +1050,12 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                       </div>
                     )}
                     <p className="text-2xl text-gray-700 mb-12 leading-relaxed font-medium">
-                      {product.rating && product.rating >= 4.7 ? "🏆 Exceptional Choice - " :
-                       product.rating && product.rating >= 4.5 ? "🏆 Editor's Choice - " :
-                       product.rating && product.rating >= 4.0 ? "⭐ Highly Recommended - " :
-                       product.rating && product.rating >= 3.5 ? "👍 Good Choice - " :
+                      {typeof product.rating === 'number' && product.rating >= 4.7 ? "🏆 Exceptional Choice - " :
+                       typeof product.rating === 'number' && product.rating >= 4.5 ? "🏆 Editor's Choice - " :
+                       typeof product.rating === 'number' && product.rating >= 4.0 ? "⭐ Highly Recommended - " :
+                       typeof product.rating === 'number' && product.rating >= 3.5 ? "👍 Good Choice - " :
                        "🤔 Consider Alternatives - "}
-                      The {product.name} by {product.brand} {product.rating && product.rating >= 4.0 ? "exceeds expectations" : "delivers solid performance"} in the {product.product_type.toLowerCase()} category.
+                      The {product.name} by {product.brand} {typeof product.rating === 'number' && product.rating >= 4.0 ? "exceeds expectations" : "delivers solid performance"} in the {product.product_type?.toLowerCase() || 'coffee equipment'} category.
                     </p>
                     {product.affiliate_link && (
                       <Link
