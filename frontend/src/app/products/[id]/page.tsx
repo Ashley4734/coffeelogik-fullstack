@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowLeftIcon, StarIcon, ShoppingBagIcon, CheckCircleIcon, XMarkIcon, ShieldCheckIcon, TrophyIcon, FireIcon, CogIcon, ClockIcon, EyeIcon, ChartBarIcon, SparklesIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutlineIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { getProduct, getStrapiMedia } from "@/lib/api";
-import type { CoffeeProduct } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import ShareButton from "./ShareButton";
@@ -10,8 +9,8 @@ import { Metadata } from "next";
 import { generateArticleStructuredData } from "@/components/SEO";
 import AmazonDisclaimer from "@/components/AmazonDisclaimer";
 
-function StarRating({ rating, size = "default", showNumber = false }: {
-  rating: number;
+function StarRating({ rating, size = "default", showNumber = false }: { 
+  rating: number; 
   size?: "sm" | "default" | "lg";
   showNumber?: boolean;
 }) {
@@ -208,7 +207,7 @@ function RatingBreakdown({ rating }: { rating: number }) {
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
+              <div 
                 className={`h-2 rounded-full ${category.color} transition-all duration-500 ease-out`}
                 style={{ width: `${(category.value / 5) * 100}%` }}
               ></div>
@@ -221,13 +220,13 @@ function RatingBreakdown({ rating }: { rating: number }) {
 }
 
 // NEW: Scroll-following product image component
-function ScrollingProductImage({ product }: { product: CoffeeProduct }) {
+function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
       {/* Updated sticky positioning with enhanced scroll behavior */}
       <div className="sticky top-4 transition-all duration-300 ease-out">
         {/* Main Product Image with enhanced scroll effects */}
-        <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl">
+        <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
           <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
           {product.images?.[0] ? (
             <img
@@ -276,8 +275,8 @@ function ScrollingProductImage({ product }: { product: CoffeeProduct }) {
         {product.images && product.images.length > 1 && (
           <div className="grid grid-cols-4 gap-3 transform transition-all duration-300 ease-out">
             {product.images.slice(1, 5).map((image, index) => (
-              <div
-                key={index}
+              <div 
+                key={index} 
                 className="group/thumb aspect-square rounded-2xl bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200/50 transform hover:scale-110 hover:-translate-y-1"
                 style={{
                   transitionDelay: `${index * 50}ms`
@@ -302,8 +301,8 @@ function ScrollingProductImage({ product }: { product: CoffeeProduct }) {
                   <div
                     key={index}
                     className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === 0
-                        ? 'bg-amber-500 scale-125'
+                      index === 0 
+                        ? 'bg-amber-500 scale-125' 
                         : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                   />
@@ -320,7 +319,7 @@ function ScrollingProductImage({ product }: { product: CoffeeProduct }) {
   );
 }
 
-function getQuickVerdictText(product: CoffeeProduct): string {
+function getQuickVerdictText(product: import("@/lib/api").CoffeeProduct): string {
   if (product.quick_verdict) {
     return product.quick_verdict;
   }
@@ -347,8 +346,8 @@ function getQuickVerdictText(product: CoffeeProduct): string {
 }
 
 // Enhanced metadata generation
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id } = params;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
 
   try {
     const product = await getProduct(id);
@@ -356,7 +355,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     const url = `/products/${product.slug || id}`;
 
     const title = product.meta_title || `${product.name} Review | CoffeeLogik`;
-    const description = product.meta_description ||
+    const description = product.meta_description || 
       (product.quick_verdict
         ? product.quick_verdict.substring(0, 160).replace(/<[^>]*>/g, '')
         : `Expert review of ${product.name} by ${product.brand}. Read our comprehensive analysis, pros and cons, and buying recommendations.`);
@@ -392,10 +391,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function ProductReviewPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function ProductReviewPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  let product: CoffeeProduct | null = null;
+  let product: import("@/lib/api").CoffeeProduct | null = null;
 
   try {
     product = await getProduct(id);
@@ -448,7 +447,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                 <span className="text-gray-400">/</span>
                 <span className="text-gray-900 font-medium">{product.name}</span>
               </nav>
-
+              
               <Link
                 href="/products"
                 className="group inline-flex items-center mt-4 text-sm font-medium text-amber-700 hover:text-amber-600 transition-all duration-200"
@@ -487,7 +486,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                 {product.rating && (
                   <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
-
+                    
                     <div className="flex items-start justify-between mb-6">
                       <div>
                         <div className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent mb-3">
@@ -498,7 +497,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Expert Rating</div>
                       </div>
-
+                      
                       <div className="text-right">
                         <div className="text-2xl font-bold text-gray-900 mb-2">
                           {product.rating >= 4.7 ? "Exceptional" :
@@ -510,7 +509,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                         <div className="text-sm text-gray-500">Overall Score</div>
                       </div>
                     </div>
-
+                    
                     <RatingBreakdown rating={product.rating} />
                   </div>
                 )}
@@ -541,7 +540,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                 {/* Enhanced CTA Section */}
                 <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
                   <div className="absolute -top-2 -left-2 -right-2 h-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 blur-sm opacity-50"></div>
-
+                  
                   {product.affiliate_link ? (
                     <Link
                       href={product.affiliate_link}
@@ -627,7 +626,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                     <div className="text-2xl font-bold text-amber-800">{product.origin}</div>
                   </div>
                 )}
-
+                
                 {product.roast_level && (
                   <div className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 border border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-400 to-red-500"></div>
@@ -657,7 +656,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
           )}
 
           {/* Rest of the content remains the same but I'll add scroll animations to key sections */}
-
+          
           {/* Enhanced Technical Specifications */}
           {product.specifications && (
             <div className="mb-16">
@@ -667,7 +666,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
               </h2>
               <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-3xl p-8 border border-gray-200 shadow-xl transform transition-all duration-300 hover:scale-[1.01]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-
+                  
                   {/* Basic Specifications */}
                   <div className="space-y-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
@@ -676,7 +675,7 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                       </div>
                       Physical Specifications
                     </h3>
-
+                    
                     {/* Dimensions */}
                     {product.specifications.dimensions && (
                       <div className="group bg-white rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -1040,14 +1039,14 @@ export default async function ProductReviewPage({ params }: { params: { id: stri
                 Explore our comprehensive collection of coffee equipment reviews, brewing guides, and expert recommendations to find your perfect setup.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-2xl mx-auto">
-                <Link
-                  href="/products"
+                <Link 
+                  href="/products" 
                   className="group flex-1 rounded-2xl bg-white px-10 py-5 text-xl font-bold text-gray-900 shadow-2xl hover:bg-gray-100 transition-all duration-300 hover:scale-105"
                 >
                   <span className="group-hover:text-amber-600 transition-colors">Browse All Reviews</span>
                 </Link>
-                <Link
-                  href="/blog"
+                <Link 
+                  href="/blog" 
                   className="group flex-1 rounded-2xl border-2 border-white px-10 py-5 text-xl font-bold text-white hover:bg-white hover:text-gray-900 transition-all duration-300 hover:scale-105"
                 >
                   Read Articles
