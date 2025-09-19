@@ -183,12 +183,12 @@ function TestingMethodology({ productType }: { productType: string }) {
   );
 }
 
-// Scroll-following product image component with proper sticky behavior
+// Scroll-following product image component with working sticky behavior
 function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
-      {/* Sticky positioning that follows scroll */}
-      <div className="lg:sticky lg:top-6">
+      {/* Fixed sticky positioning - this should work */}
+      <div className="lg:sticky lg:top-4 lg:h-fit">
         {/* Main Product Image with enhanced effects */}
         <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
           <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
@@ -421,9 +421,101 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </Link>
             </div>
 
-            <div className="lg:grid lg:grid-cols-12 lg:gap-12 lg:items-start">
-              {/* Enhanced Scrolling Product Images */}
-              <ScrollingProductImage product={product} />
+            <div className="lg:grid lg:grid-cols-12 lg:gap-12">
+              {/* Enhanced Scrolling Product Images - Fixed sticky container */}
+              <div className="lg:col-span-5">
+                <div className="lg:sticky lg:top-4 lg:h-fit lg:max-h-screen lg:overflow-y-auto">
+                  {/* Main Product Image with enhanced effects */}
+                  <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
+                    {product.images?.[0] ? (
+                      <img
+                        src={getStrapiMedia(product.images[0].url)}
+                        alt={product.name}
+                        className="relative h-full w-full object-contain p-8 group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                    ) : (
+                      <div className="relative h-full w-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100">
+                        <span className="text-8xl animate-pulse">☕</span>
+                      </div>
+                    )}
+
+                    {/* Enhanced overlays */}
+                    {product.rating && (
+                      <div className="absolute top-4 right-4 z-10 transform transition-all duration-300 hover:scale-110">
+                        <RatingBadge rating={product.rating} />
+                      </div>
+                    )}
+
+                    {product.price && (
+                      <div className="absolute bottom-4 left-4 z-10 transform transition-all duration-300 hover:scale-105">
+                        <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 border border-gray-200/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                          <div className="flex items-center text-lg font-bold text-gray-900">
+                            <CurrencyDollarIcon className="mr-1 h-5 w-5 text-green-600" />
+                            {product.price.toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {product.featured && (
+                      <div className="absolute top-4 left-4 z-10 transform transition-all duration-300 hover:scale-110">
+                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg hover:shadow-xl transition-shadow duration-300">
+                          <FireIcon className="inline mr-1 h-3 w-3" />
+                          FEATURED
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Scroll-based parallax effect overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </div>
+
+                  {/* Enhanced Thumbnail Images */}
+                  {product.images && product.images.length > 1 && (
+                    <div className="grid grid-cols-4 gap-3 transform transition-all duration-300 ease-out">
+                      {product.images.slice(1, 5).map((image, index) => (
+                        <div 
+                          key={index} 
+                          className="group/thumb aspect-square rounded-2xl bg-white shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200/50 transform hover:scale-110 hover:-translate-y-1"
+                          style={{
+                            transitionDelay: `${index * 50}ms`
+                          }}
+                        >
+                          <img
+                            src={getStrapiMedia(image.url)}
+                            alt={`${product.name} ${index + 2}`}
+                            className="h-full w-full object-cover group-hover/thumb:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Floating mini-gallery indicator */}
+                  {product.images && product.images.length > 1 && (
+                    <div className="mt-4 flex justify-center">
+                      <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-200/50 shadow-md">
+                        <div className="flex items-center space-x-2">
+                          {product.images.slice(0, 5).map((_, index) => (
+                            <div
+                              key={index}
+                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                index === 0 
+                                  ? 'bg-amber-500 scale-125' 
+                                  : 'bg-gray-300 hover:bg-gray-400'
+                              }`}
+                            />
+                          ))}
+                          {product.images.length > 5 && (
+                            <span className="text-xs text-gray-500 ml-2">+{product.images.length - 5}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Enhanced Product Information */}
               <div className="lg:col-span-7 mt-8 lg:mt-0">
