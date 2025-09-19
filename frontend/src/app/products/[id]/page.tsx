@@ -187,11 +187,7 @@ function TestingMethodology({ productType }: { productType: string }) {
 function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
-// Scroll-following product image component with proper sticky behavior
-function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
-  return (
-    <div className="lg:col-span-5">
-      {/* Sticky positioning that follows scroll - fixed implementation */}
+      {/* Sticky positioning that follows scroll */}
       <div className="lg:sticky lg:top-6">
         {/* Main Product Image with enhanced effects */}
         <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
