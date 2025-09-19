@@ -187,8 +187,12 @@ function TestingMethodology({ productType }: { productType: string }) {
 function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
-      {/* Sticky positioning that follows scroll */}
-      <div className="sticky top-8 z-20">
+// Scroll-following product image component with proper sticky behavior
+function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
+  return (
+    <div className="lg:col-span-5">
+      {/* Sticky positioning that follows scroll - fixed implementation */}
+      <div className="lg:sticky lg:top-6">
         {/* Main Product Image with enhanced effects */}
         <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
           <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
@@ -421,7 +425,7 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
               </Link>
             </div>
 
-            <div className="lg:grid lg:grid-cols-12 lg:gap-12">
+            <div className="lg:grid lg:grid-cols-12 lg:gap-12 lg:items-start">
               {/* Enhanced Scrolling Product Images */}
               <ScrollingProductImage product={product} />
 
