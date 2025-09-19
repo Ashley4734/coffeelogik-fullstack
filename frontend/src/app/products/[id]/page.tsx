@@ -183,48 +183,13 @@ function TestingMethodology({ productType }: { productType: string }) {
   );
 }
 
-// Enhanced rating breakdown component
-function RatingBreakdown({ rating }: { rating: number }) {
-  const categories = [
-    { name: "Performance", value: Math.min(5.0, rating + 0.2), color: "bg-blue-500" },
-    { name: "Build Quality", value: Math.min(5.0, rating + 0.1), color: "bg-green-500" },
-    { name: "Value", value: Math.max(1.0, rating - 0.1), color: "bg-purple-500" },
-    { name: "Ease of Use", value: Math.min(5.0, rating + 0.05), color: "bg-orange-500" }
-  ];
-
-  return (
-    <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 p-6">
-      <h4 className="text-lg font-bold text-gray-900 mb-4">Rating Breakdown</h4>
-      <div className="space-y-3">
-        {categories.map((category, index) => (
-          <div key={index} className="group">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
-                {category.name}
-              </span>
-              <span className="text-sm font-bold text-gray-900">
-                {category.value.toFixed(1)}
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full ${category.color} transition-all duration-500 ease-out`}
-                style={{ width: `${(category.value / 5) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+// NEW: Scroll-following product image component
 function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
-      {/* Updated sticky positioning with proper scroll behavior */}
-      <div className="sticky top-8 max-h-screen overflow-hidden">
-        {/* Main Product Image with enhanced effects */}
+      {/* Updated sticky positioning with enhanced scroll behavior */}
+      <div className="sticky top-4 transition-all duration-300 ease-out">
+        {/* Main Product Image with enhanced scroll effects */}
         <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
           <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
           {product.images?.[0] ? (
@@ -266,11 +231,11 @@ function ScrollingProductImage({ product }: { product: import("@/lib/api").Coffe
             </div>
           )}
 
-          {/* Scroll-based parallax effect overlay */}
+          {/* NEW: Scroll-based parallax effect overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
 
-        {/* Enhanced Thumbnail Images */}
+        {/* Enhanced Thumbnail Images with better scroll behavior */}
         {product.images && product.images.length > 1 && (
           <div className="grid grid-cols-4 gap-3 transform transition-all duration-300 ease-out">
             {product.images.slice(1, 5).map((image, index) => (
@@ -291,7 +256,7 @@ function ScrollingProductImage({ product }: { product: import("@/lib/api").Coffe
           </div>
         )}
 
-        {/* Floating mini-gallery indicator */}
+        {/* NEW: Floating mini-gallery indicator */}
         {product.images && product.images.length > 1 && (
           <div className="mt-4 flex justify-center">
             <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-200/50 shadow-md">
@@ -481,12 +446,12 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                   {product.name}
                 </h1>
 
-                {/* Enhanced Rating Section */}
+                {/* Enhanced Rating Section - SIMPLIFIED */}
                 {product.rating && (
                   <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8 mb-8 relative overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
                     
-                    <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center justify-between">
                       <div>
                         <div className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent mb-3">
                           {product.rating.toFixed(1)}
@@ -508,8 +473,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
                         <div className="text-sm text-gray-500">Overall Score</div>
                       </div>
                     </div>
-                    
-                    <RatingBreakdown rating={product.rating} />
                   </div>
                 )}
 
@@ -654,8 +617,6 @@ export default async function ProductReviewPage({ params }: { params: Promise<{ 
             </div>
           )}
 
-          {/* Rest of the content remains the same but I'll add scroll animations to key sections */}
-          
           {/* Enhanced Technical Specifications */}
           {product.specifications && (
             <div className="mb-16">
