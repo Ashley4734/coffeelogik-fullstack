@@ -183,12 +183,13 @@ function TestingMethodology({ productType }: { productType: string }) {
   );
 }
 
-("@/lib/api").CoffeeProduct }) {
+// Scroll-following product image component with proper sticky behavior
+function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
-      {/* Updated sticky positioning with enhanced scroll behavior */}
-      <div className="sticky top-4 transition-all duration-300 ease-out">
-        {/* Main Product Image with enhanced scroll effects */}
+      {/* Sticky positioning that follows scroll */}
+      <div className="sticky top-8 z-20">
+        {/* Main Product Image with enhanced effects */}
         <div className="group relative aspect-square w-full rounded-3xl bg-white shadow-2xl overflow-hidden mb-6 transform transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-3xl">
           <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50"></div>
           {product.images?.[0] ? (
@@ -203,7 +204,7 @@ function TestingMethodology({ productType }: { productType: string }) {
             </div>
           )}
 
-          {/* Enhanced overlays with better positioning */}
+          {/* Enhanced overlays */}
           {product.rating && (
             <div className="absolute top-4 right-4 z-10 transform transition-all duration-300 hover:scale-110">
               <RatingBadge rating={product.rating} />
@@ -230,11 +231,11 @@ function TestingMethodology({ productType }: { productType: string }) {
             </div>
           )}
 
-          {/* NEW: Scroll-based parallax effect overlay */}
+          {/* Scroll-based parallax effect overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
 
-        {/* Enhanced Thumbnail Images with better scroll behavior */}
+        {/* Enhanced Thumbnail Images */}
         {product.images && product.images.length > 1 && (
           <div className="grid grid-cols-4 gap-3 transform transition-all duration-300 ease-out">
             {product.images.slice(1, 5).map((image, index) => (
@@ -255,7 +256,7 @@ function TestingMethodology({ productType }: { productType: string }) {
           </div>
         )}
 
-        {/* NEW: Floating mini-gallery indicator */}
+        {/* Floating mini-gallery indicator */}
         {product.images && product.images.length > 1 && (
           <div className="mt-4 flex justify-center">
             <div className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-200/50 shadow-md">
