@@ -183,8 +183,7 @@ function TestingMethodology({ productType }: { productType: string }) {
   );
 }
 
-// NEW: Scroll-following product image component
-function ScrollingProductImage({ product }: { product: import("@/lib/api").CoffeeProduct }) {
+("@/lib/api").CoffeeProduct }) {
   return (
     <div className="lg:col-span-5">
       {/* Updated sticky positioning with enhanced scroll behavior */}
